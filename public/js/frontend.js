@@ -11607,8 +11607,10 @@ module.exports = Component.exports
 /***/ "./resources/js/frontend/minidesk.js":
 /***/ (function(module, exports) {
 
-$(document).ready(function () {
-   console.log("I'm here MiniDesk BBBBBB!");
+$('document').ready(function () {
+   $('#chart').html("This is inside chart");
+   alert("document ready");
+   $('#chart').css({ 'color': 'blue' });
 });
 
 /***/ }),

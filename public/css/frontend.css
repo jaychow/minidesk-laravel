@@ -10475,3 +10475,9 @@ a.text-dark:focus {
   max-height: 90px;
 }
 
+#chart-container {
+  height: 800px;
+  width: 800px;
+  background-color: #2f016b;
+}
+
