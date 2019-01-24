@@ -13,7 +13,8 @@ const mix = require('laravel-mix');
 
 mix.setPublicPath('public');
 
-mix.sass('resources/sass/frontend/app.scss', 'css/frontend.css')
+mix.
+    sass('resources/sass/frontend/app.scss', 'css/frontend.css')
     .sass('resources/sass/backend/app.scss', 'css/backend.css')
     .js([
         'resources/js/frontend/app.js',
@@ -25,6 +26,7 @@ mix.sass('resources/sass/frontend/app.scss', 'css/frontend.css')
         'resources/js/backend/after.js'
     ], 'js/backend.js')
     .extract([
+        'anychart',
         'jquery',
         'bootstrap',
         'popper.js/dist/umd/popper',

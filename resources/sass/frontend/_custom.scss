@@ -1,6 +1,12 @@
 // Override the Bootstrap defaults without modifying key, versioned files.
-#chart-container{
-    height:800px;
-    width:800px;
-    background-color:#2f016b;
+html,
+body,
+#app,
+#page-container,
+#chart-container,
+#chart{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
