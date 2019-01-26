@@ -181,6 +181,10 @@ ansi-styles@^3.2.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
+anychart@^8.5.0:
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/anychart/-/anychart-8.5.0.tgz#42a49fc8d29b719241b2e84980e7805f3dcc8d35"
+
 anymatch@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/anymatch/-/anymatch-2.0.0.tgz#bcb24b4f37934d9aa7ac17b4adaf89e7c76ef2eb"
