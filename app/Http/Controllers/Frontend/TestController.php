@@ -60,7 +60,7 @@ class TestController extends Controller
         }
     }
 
-    protected function getCandles($result)
+    public function getCandles($result)
     {
         $output = [];
 
