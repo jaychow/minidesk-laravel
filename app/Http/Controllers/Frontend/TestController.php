@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
-use Session;
-use Illuminate\Http\Request;
 use App\Chart;
 /**
  * Class ChartController
@@ -55,6 +53,7 @@ class TestController extends Controller
 //            echo "Close price: ".$close."<br>";
 //            echo "<br>";
 //        }
+
         foreach($output as $FirstValue)
         {
             Chart::API_data($FirstValue[0],$FirstValue[1],$FirstValue[2],$FirstValue[3],$FirstValue[4]);
