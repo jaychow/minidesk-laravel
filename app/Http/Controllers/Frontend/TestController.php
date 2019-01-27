@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
+use Session;
+use Illuminate\Http\Request;
+use App\Chart;
 /**
  * Class ChartController
  * @package App\Http\Controllers\Frontend
@@ -26,6 +29,7 @@ class TestController extends Controller
         ]);
 
         $result = $response->getBody();
+        echo $result;
         $result = json_decode($result);
 
 
@@ -53,10 +57,7 @@ class TestController extends Controller
 //        }
         foreach($output as $FirstValue)
         {
-            foreach ($FirstValue as $SecondValue)
-            {
-                echo $SecondValue;
-            }
+            Chart::API_data($FirstValue[0],$FirstValue[1],$FirstValue[2],$FirstValue[3],$FirstValue[4]);
         }
     }
 
