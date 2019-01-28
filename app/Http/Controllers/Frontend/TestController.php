@@ -33,10 +33,20 @@ class TestController extends Controller
 
         $output = $this->getCandles($result);
 
-        foreach($output as $APIData)
+        $APIData = [];
+
+        foreach($output as $data)
         {
-            Chart::API_data($APIData[0],$APIData[1],$APIData[2],$APIData[3],$APIData[4]);
+            $APIData[] =
+                [
+                    $data[0],
+                    $data[1],
+                    $data[2],
+                    $data[3],
+                    $data[4]
+                ];
         }
+        Chart::addAPIdata($APIData);
     }
 
     public function getapi()
