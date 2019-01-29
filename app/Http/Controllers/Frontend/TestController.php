@@ -76,11 +76,11 @@ class TestController extends Controller
         {
             $data[] =
             [
-                $APIData[0],
                 $APIData[1],
                 $APIData[2],
                 $APIData[3],
-                $APIData[4]
+                $APIData[4],
+                $APIData[5]
             ];
         }
         return $data;
