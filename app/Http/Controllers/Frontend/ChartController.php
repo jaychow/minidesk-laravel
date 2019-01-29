@@ -74,7 +74,6 @@ class ChartController extends Controller
     // Store API data into the DB
     public function storeAPI($data)
     {
-        $Chart = new Chart;
         $query = [];
 
         foreach ($data as $value)
@@ -90,9 +89,7 @@ class ChartController extends Controller
                     'Volume' => $value[6]
                 ];
         }
-        $Chart->fill($query);
-        //Chart::create($query);
-        $Chart->save();
+        Chart::insert($query);
     }
 
     // Response frontend request
