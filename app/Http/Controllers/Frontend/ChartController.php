@@ -21,17 +21,17 @@ class ChartController extends Controller
         return view('frontend.chart');
     }
 
-    public function getAPI(Request $reqiest)
+    public function getAPI()//Request $reqiest
     {
-        //$type = 'USD_CAD';
+        $type = 'USD_CAD';
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
-        $type = $reqiest->get('pair');
+        //$type = $reqiest->get('pair');
         $headers = [
             'Authorization' => 'Bearer '. $token,
             'accountid' => env('OANDA_ACCOUNT_ID'),
         ];
-        $response = $client->request('GET', 'v3/instruments/'.$type.'/candles', [
+        $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?granularity=M10', [
             'headers' => $headers
         ]);
 
@@ -42,22 +42,8 @@ class ChartController extends Controller
 
         $output = $this->getCandles($result);
 
-        $APIData = [];
-
-        foreach($output as $data)
-        {
-            $APIData[] =
-                [
-                    $data[0],
-                    $data[1],
-                    $data[2],
-                    $data[3],
-                    $data[4],
-                    $data[5],
-                    $data[6]
-                ];
-        }
-        Chart::addAPIdata($APIData);
+        $this->storeAPI($output);
+        //Chart::addAPIdata($output);
     }
 
     // Preproccing API data
@@ -83,6 +69,30 @@ class ChartController extends Controller
                 ];
         }
         return $output;
+    }
+
+    // Store API data into the DB
+    public function storeAPI($data)
+    {
+        $Chart = new Chart;
+        $query = [];
+
+        foreach ($data as $value)
+        {
+            $query[] =
+                [
+                    'Type' => $value[0],
+                    'Time' => $value[1],
+                    'Open' => $value[2],
+                    'High' => $value[3],
+                    'Low' => $value[4],
+                    'Close' => $value[5],
+                    'Volume' => $value[6]
+                ];
+        }
+        $Chart->fill($query);
+        //Chart::create($query);
+        $Chart->save();
     }
 
     // Response frontend request
