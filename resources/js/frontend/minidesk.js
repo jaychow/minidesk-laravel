@@ -106,3 +106,24 @@ anychart.onDocumentReady(function() {
         rangeSelector.render(chart);
     });
 });
+
+$(document).ready(function(){
+    $('#chartSubmit').on('click',function(e){
+        var data = $('#chartInput').serialize();
+
+        $.get(
+            '/test',
+            data
+        ).done(function(data){
+            var data =$.parseJSON(data);
+            console.log(data);
+        }).fail(function(data){
+            console.log("Error: " + data);
+        }).always(function(data){
+
+        });
+    });
+    $('#chartInput').on('submit',function(e){
+        e.preventDefault();
+    });
+});

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use App\Models\Chart;
+use Illuminate\Http\Request;
+
 /**
  * Class ChartController
  * @package App\Http\Controllers\Frontend
@@ -14,11 +16,11 @@ class TestController extends Controller
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $reqiest)
     {
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
-        $type = 'USD_TWD';
+        $type = $reqiest->get('pair');
         $headers = [
             'Authorization' => 'Bearer '. $token,
             'accountid' => env('OANDA_ACCOUNT_ID'),
