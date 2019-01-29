@@ -21,12 +21,12 @@ class ChartController extends Controller
         return view('frontend.chart');
     }
 
-    public function getAPI()//Request $reqiest
+    public function getAPI(Request $reqiest)
     {
-        $type = 'USD_CAD';
+        //$type = 'USD_CAD';
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
-        //$type = $reqiest->get('pair');
+        $type = $reqiest->get('pair');
         $headers = [
             'Authorization' => 'Bearer '. $token,
             'accountid' => env('OANDA_ACCOUNT_ID'),
