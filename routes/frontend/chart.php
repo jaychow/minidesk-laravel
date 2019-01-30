@@ -3,6 +3,7 @@
 use App\Http\Controllers\Frontend\ChartController;
 
 Route::get('chart', [ChartController::class, 'index'])->name('chart');
-Route::get('chart/getAPI', [ChartController::class, 'getAPI'])->name('chart.getAPI');
+Route::get('chart/getAPI', [ChartController::class, 'getAPI'])->name('getAPI');
+Route::get('chart/getTable', [ChartController::class, 'getTable'])->name('getTable');
 
 
