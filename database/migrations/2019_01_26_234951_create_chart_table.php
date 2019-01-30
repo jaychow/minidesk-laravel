@@ -15,13 +15,13 @@ class CreateChartTable extends Migration
     {
         Schema::create('chart', function (Blueprint $table)
         {
-            $table->dateTime('Time');
-            $table->text('Type');
-            $table->float('Open');
-            $table->float('High');
-            $table->float('Low');
-            $table->float('Close');
-            $table->bigInteger('Volume');
+            $table->dateTime('time');
+            $table->text('type');
+            $table->float('open');
+            $table->float('high');
+            $table->float('low');
+            $table->float('close');
+            $table->bigInteger('volume');
         });
     }
 
