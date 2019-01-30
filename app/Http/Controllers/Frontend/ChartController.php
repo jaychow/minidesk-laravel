@@ -78,15 +78,44 @@ class ChartController extends Controller
 
         foreach ($data as $value)
         {
+            $type = explode('_', $value[0]);
+            $from = $type[0];
+            $to = $type[1];
+
+            $fromType = $from.'_'.$to;
+            $toType = $to.'_'.$from;
+            $time = $value[1];
+            $volume = $value[6];
+
+            $fromOpen = $value[2];
+            $fromHigh = $value[3];
+            $fromLow = $value[4];
+            $fromClose = $value[5];
+
+            $toOpen = 1/$fromOpen;
+            $toHigh = 1/$fromHigh;
+            $toLow = 1/$fromLow;
+            $toClose = 1/$fromClose;
+
             $query[] =
                 [
-                    'Type' => $value[0],
-                    'Time' => $value[1],
-                    'Open' => $value[2],
-                    'High' => $value[3],
-                    'Low' => $value[4],
-                    'Close' => $value[5],
-                    'Volume' => $value[6]
+                    'Type' => $fromType,
+                    'Time' => $time,
+                    'Open' => $fromOpen,
+                    'High' => $fromHigh,
+                    'Low' => $fromLow,
+                    'Close' => $fromClose,
+                    'Volume' => $volume
+                ];
+            $query[] =
+                [
+                    'Type' => $toType,
+                    'Time' => $time,
+                    'Open' => $toOpen,
+                    'High' => $toHigh,
+                    'Low' => $toLow,
+                    'Close' => $toClose,
+                    'Volume' => $volume
                 ];
         }
         Chart::insert($query);
