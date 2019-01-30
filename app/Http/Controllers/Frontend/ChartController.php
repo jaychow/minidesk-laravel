@@ -124,14 +124,14 @@ class ChartController extends Controller
 //    }
 
     // Response frontend request
-    public function getTable()  //Request $request
+    public function getTable(Request $request)  //Request $request
     {
-        $type = 'USD_CAD';
-        //$type = $request->get('pair');
+        //$type = 'USD_CAD';
+        $type = $request->get('pair');
 
         // Time interval
         $time2 = date("Y-m-d h:i:s");
-        $time1 = date("Y-m-d h:i:s",strtotime('-10 minute'));
+        $time1 = date("Y-m-d h:i:s",strtotime('-1 hour'));
 
         // Check API data is exist or not ?
         $exist = Chart::where('type',$type)->whereBetween('time',array($time1,$time2))->exists();
