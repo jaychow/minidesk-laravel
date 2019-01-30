@@ -13,7 +13,7 @@ class Chart extends Model
     // Do not let created_at & updated_at columns exist
     public $timestamps = false;
 
-    protected $fillable = ['Time','Type','Open','High','Low','Close','Volume'];
+    protected $fillable = ['time','type','open','high','low','close','volume'];
 }
 
 

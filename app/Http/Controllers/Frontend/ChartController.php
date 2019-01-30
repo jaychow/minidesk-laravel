@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Frontend;
-
+use App\Models\Chart;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
-use App\Models\Chart;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
+
+date_default_timezone_set('America/Los_Angeles');
 
 /**
  * Class ChartController
@@ -21,29 +24,38 @@ class ChartController extends Controller
         return view('frontend.chart');
     }
 
-    public function getAPI()//Request $reqiest
+    public function getAPI($type)//Request $request
     {
-        $type = 'USD_CAD';
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
-        //$type = $reqiest->get('pair');
+        //$type = $request->get('currency');
         $headers = [
             'Authorization' => 'Bearer '. $token,
             'accountid' => env('OANDA_ACCOUNT_ID'),
         ];
-        $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?granularity=M10', [
-            'headers' => $headers
-        ]);
+        try
+        {
+            $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?granularity=M10&count=1000', [
+                'headers' => $headers
+            ]);
+        }
+        catch (RequestException $e)
+        {
+//            echo Psr7\str($e->getRequest());
+//            echo Psr7\str($e->getResponse());
+            echo "Can not get this API data !";
+            exit;
+        }
 
-        $result = $response->getBody();
-        echo $result;
+        $result = $response->getBody();;
+
         $result = json_decode($result);
-
 
         $output = $this->getCandles($result);
 
+        echo json_encode($result);
+
         $this->storeAPI($output);
-        //Chart::addAPIdata($output);
     }
 
     // Preproccing API data
@@ -59,8 +71,8 @@ class ChartController extends Controller
 
             $output[] =
                 [
-                    $currencyType,
                     $time = str_replace($Filter_text,' ',$candle->time),
+                    $currencyType,
                     $mid->o,
                     $mid->h,
                     $mid->l,
@@ -80,22 +92,73 @@ class ChartController extends Controller
         {
             $query[] =
                 [
-                    'Type' => $value[0],
-                    'Time' => $value[1],
-                    'Open' => $value[2],
-                    'High' => $value[3],
-                    'Low' => $value[4],
-                    'Close' => $value[5],
-                    'Volume' => $value[6]
+                    'time' => $value[0],
+                    'type' => $value[1],
+                    'open' => $value[2],
+                    'high' => $value[3],
+                    'low' => $value[4],
+                    'close' => $value[5],
+                    'volume' => $value[6]
                 ];
         }
+        //$finalQuery = $this->fliterData($query);
         Chart::insert($query);
     }
 
-    // Response frontend request
-    public function getTable()
-    {
+    // Filter duplicated data
+//    public function filterData($query)
+//    {
+//        $result = Chart::where('type',$query[0][0])->orderBy('time','desc')->get();
+//
+//        foreach ($result as $data)
+//        {
+//            if()
+//            {
+//
+//            }
+//            else
+//            {
+//
+//            }
+//        }
+//    }
 
+    // Response frontend request
+    public function getTable()  //Request $request
+    {
+        $type = 'USD_CAD';
+        //$type = $request->get('pair');
+
+        // Time interval
+        $time2 = date("Y-m-d h:i:s");
+        $time1 = date("Y-m-d h:i:s",strtotime('-10 minute'));
+
+        // Check API data is exist or not ?
+        $exist = Chart::where('type',$type)->whereBetween('time',array($time1,$time2))->exists();
+
+        if($exist)
+        {
+            $output = [];
+            $result = Chart::where('type',$type)->orderBy('time','desc')->get();
+            foreach ($result as $data)
+            {
+                $output[]=
+                    [
+                        $data->type,
+                        $data->time,
+                        $data->open,
+                        $data->high,
+                        $data->low,
+                        $data->close,
+                        $data->volume,
+                    ];
+            }
+            echo json_encode($output);
+        }
+        else
+        {
+            $this->getAPI($type);
+        }
     }
 }
 
