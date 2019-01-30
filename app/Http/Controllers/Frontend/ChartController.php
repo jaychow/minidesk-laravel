@@ -35,7 +35,7 @@ class ChartController extends Controller
         ];
         try
         {
-            $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?granularity=H1&count=1000', [
+            $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?granularity=M10&count=1000', [
                 'headers' => $headers
             ]);
         }
@@ -106,22 +106,22 @@ class ChartController extends Controller
     }
 
     // Filter duplicated data
-//    public function filterData($query)
-//    {
-//        $result = Chart::where('type',$query[0][0])->orderBy('time','desc')->get();
-//
-//        foreach ($result as $data)
-//        {
-//            if()
-//            {
-//
-//            }
-//            else
-//            {
-//
-//            }
-//        }
-//    }
+    public function filterData($query)
+    {
+        $result = Chart::where('type',$query[0][0])->orderBy('time','desc')->get();
+
+        foreach ($result as $data)
+        {
+            if($data)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+    }
 
     // Response frontend request
     public function getTable(Request $request)  //Request $request
@@ -131,7 +131,7 @@ class ChartController extends Controller
 
         // Time interval
         $time2 = date("Y-m-d h:i:s");
-        $time1 = date("Y-m-d h:i:s",strtotime('-1 hour'));
+        $time1 = date("Y-m-d h:i:s",strtotime('-10 minute'));
 
         // Check API data is exist or not ?
         $exist = Chart::where('type',$type)->whereBetween('time',array($time1,$time2))->exists();
