@@ -43,7 +43,7 @@ class ChartController extends Controller
         {
 //            echo Psr7\str($e->getRequest());
 //            echo Psr7\str($e->getResponse());
-            echo "Can not get this API data !";
+            echo "Can not get this API data";
             exit;
         }
 
