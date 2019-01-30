@@ -35,7 +35,7 @@ class ChartController extends Controller
         ];
         try
         {
-            $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?granularity=M10&count=1000', [
+            $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?granularity=H1&count=1000', [
                 'headers' => $headers
             ]);
         }
@@ -53,7 +53,7 @@ class ChartController extends Controller
 
         $output = $this->getCandles($result);
 
-        echo json_encode($result);
+        echo json_encode($output);
 
         $this->storeAPI($output);
     }
@@ -144,8 +144,8 @@ class ChartController extends Controller
             {
                 $output[]=
                     [
-                        $data->type,
                         $data->time,
+                        $data->type,
                         $data->open,
                         $data->high,
                         $data->low,

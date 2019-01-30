@@ -35,6 +35,7 @@ function renderDataToChart (data) {
         'close': 5,
         'value': 6
     });
+    debugger
     // create stock chart
     var chart = anychart.stock();
 
