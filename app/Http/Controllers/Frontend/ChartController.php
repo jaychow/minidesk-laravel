@@ -8,7 +8,7 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 
-date_default_timezone_set('America/Los_Angeles');
+date_default_timezone_set('Europe/London'); // UTC + 0
 
 /**
  * Class ChartController
@@ -24,11 +24,10 @@ class ChartController extends Controller
         return view('frontend.chart');
     }
 
-    public function getAPI($type)//Request $request
+    public function getAPI($type,$utc)
     {
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
-        //$type = $request->get('currency');
         $headers = [
             'Authorization' => 'Bearer '. $token,
             'accountid' => env('OANDA_ACCOUNT_ID'),
@@ -47,15 +46,28 @@ class ChartController extends Controller
             exit;
         }
 
-        $result = $response->getBody();;
-
+        $result = $response->getBody();
         $result = json_decode($result);
-
         $output = $this->getCandles($result);
-
-        echo json_encode($output);
-
         $this->storeAPI($output);
+
+        // Give frontend data with time calibration
+        $final = [];
+        foreach ($output as $data)
+        {
+            $final[]=
+                [
+                    $time = date("Y-m-d H:i:s",strtotime($data[0].''.$utc.' hour')),
+                    $data[1],
+                    $data[2],
+                    $data[3],
+                    $data[4],
+                    $data[5],
+                    $data[6],
+                ];
+        }
+
+        echo json_encode($final);
     }
 
     // Preproccing API data
@@ -80,23 +92,30 @@ class ChartController extends Controller
                     $candle->volume
                 ];
         }
-        return $output;
+        return array_reverse($output);
     }
 
     // Store API data into the DB
     public function storeAPI($data)
     {
         $query = [];
+        $fromType = "";
+        $toType = "";
+
+        // Get API start time and end time
+        $toTime = $data[0][0];
+        $temp = array_reverse($data);
+        $fromTime = $temp[0][0];
 
         foreach ($data as $value)
         {
-            $type = explode('_', $value[0]);
+            $type = explode('_', $value[1]);
             $from = $type[0];
             $to = $type[1];
 
             $fromType = $from.'_'.$to;
             $toType = $to.'_'.$from;
-            $time = $value[1];
+            $time = $value[0];
             $volume = $value[6];
 
             $fromOpen = $value[2];
@@ -111,56 +130,46 @@ class ChartController extends Controller
 
             $query[] =
                 [
-                    'Type' => $fromType,
-                    'Time' => $time,
-                    'Open' => $fromOpen,
-                    'High' => $fromHigh,
-                    'Low' => $fromLow,
-                    'Close' => $fromClose,
-                    'Volume' => $volume
+                    'time' => $time,
+                    'type' => $fromType,
+                    'open' => $fromOpen,
+                    'high' => $fromHigh,
+                    'low' => $fromLow,
+                    'close' => $fromClose,
+                    'volume' => $volume
                 ];
             $query[] =
                 [
-                    'Type' => $toType,
-                    'Time' => $time,
-                    'Open' => $toOpen,
-                    'High' => $toHigh,
-                    'Low' => $toLow,
-                    'Close' => $toClose,
-                    'Volume' => $volume
+                    'time' => $time,
+                    'type' => $toType,
+                    'open' => $toOpen,
+                    'high' => $toHigh,
+                    'low' => $toLow,
+                    'close' => $toClose,
+                    'volume' => $volume
                 ];
         }
-        //$finalQuery = $this->fliterData($query);
+        $this->fliterData($query,$fromTime,$toTime,$fromType,$toType);
         Chart::insert($query);
     }
 
-    // Filter duplicated data
-    public function filterData($query)
+    // Filter duplicated data in DB
+    public function fliterData($query,$fromTime,$toTime,$fromType,$toType)
     {
-        $result = Chart::where('type',$query[0][0])->orderBy('time','desc')->get();
-
-        foreach ($result as $data)
-        {
-            if($data)
-            {
-
-            }
-            else
-            {
-
-            }
-        }
+        Chart::where('type',$fromType)->orwhere('type',$toType)->whereBetween('time',array($fromTime,$toTime))->delete();
     }
 
     // Response frontend request
-    public function getTable(Request $request)  //Request $request
+    public function getTable()  //Request $request
     {
-        //$type = 'USD_CAD';
-        $type = $request->get('pair');
+        $type = 'USD_CAD';
+        $utc = -8;
+//        $type = $request->get('pair');
+//        $utc = $request->get('utc');
 
         // Time interval
-        $time2 = date("Y-m-d h:i:s");
-        $time1 = date("Y-m-d h:i:s",strtotime('-10 minute'));
+        $time2 = date("Y-m-d H:i:s");
+        $time1 = date("Y-m-d H:i:s",strtotime('-10 minute'));
 
         // Check API data is exist or not ?
         $exist = Chart::where('type',$type)->whereBetween('time',array($time1,$time2))->exists();
@@ -173,7 +182,7 @@ class ChartController extends Controller
             {
                 $output[]=
                     [
-                        $data->time,
+                        $time = date("Y-m-d H:i:s",strtotime($data->time.''.$utc.' hour')),
                         $data->type,
                         $data->open,
                         $data->high,
@@ -186,7 +195,7 @@ class ChartController extends Controller
         }
         else
         {
-            $this->getAPI($type);
+            $this->getAPI($type,$utc);
         }
     }
 }
