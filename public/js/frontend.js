@@ -11627,16 +11627,13 @@ var dataTable = anychart.data.table();
 //---------------------------------------------------------------
 $(document).ready(function () {
     // Click events: submit button in chart
-    $('#chartSubmit').on('click', function (e) {
-        var data = $('#chartInput').serialize();
-
-        //{pair: data, timeRange: '1Y'}
-        $.get('/chart/getTable', data).done(function (data) {
-            var data = $.parseJSON(data);
-            console.log(data);
-            renderDataToChart(data);
-
-            debugger;
+    $('#chartSubmitButton').on('click', function (e) {
+        //var data = $('#chartInput').serialize();
+        var inputArg = processUserInput();
+        $.get('/chart/getTable', { pair: inputArg['pair'], timeRange: '1Y' }).done(function (data) {
+            var data_json = $.parseJSON(data);
+            console.log(data_json);
+            renderDataToChart(data_json);
         }).fail(function (data) {
             console.log("Error: " + data);
         }).always(function (data) {});
@@ -11655,6 +11652,15 @@ $(document).ready(function () {
         }
     });
 });
+
+function processUserInput() {
+    var inputArg = [];
+    var form = document.getElementById("chartInput");
+
+    for (var i = 0; i < form.length - 1; i++) {
+        inputArg[form.elements[i].name] = form.elements[i].value;
+    }return inputArg;
+}
 function renderDataToChart(data) {
     // Selector Range Definition
     var customRanges = [{
@@ -11729,13 +11735,18 @@ function renderDataToChart(data) {
 
     // create EMA indicators with period 50
     plot.ema(dataTable.mapAs({
-        'value': 4
-    }), 20).series().stroke('1.5 #455a64');
+        'value': 5
+    }), 10).series().stroke('2.5 #455a64');
 
     // create candlestick series
     var series = plot.candlestick(mapping);
     series.name('Candlestick');
     series.legendItem().iconType('rising-falling');
+
+    // create line series
+    plot.line().data(dataTable.mapAs({
+        'value': 5
+    })).name('Line').stroke('1 #6f3448');
 
     // set settings for event markers
     var eventMarkers = plot.eventMarkers();
