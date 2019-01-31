@@ -55,19 +55,6 @@ $(document).ready(function(){
        }
     });
 
-});
-/*
-
-var theParent = document.querySelector("#theDude");
-theParent.addEventListener("click", doSomething, false);
-
-function identifyClickedButton(e) {
-    if (e.target != e.currentTarget) {
-        var clickedItem = e.target.textContent;
-        alert(clickedItem);
-    }
-}
-*/
 function renderDataToChart (data) {
     // Selector Range Definition
     var customRanges = [
