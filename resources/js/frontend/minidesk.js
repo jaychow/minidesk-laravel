@@ -17,44 +17,42 @@ var dataTable = anychart.data.table();
 //---------------------------------------------------------------
 //                      OTHER FUNCTION
 //---------------------------------------------------------------
-
-$(document).ready(function(){
-    // Create chart variables
-
-
-
+$(document).ready(function() {
     // Click events: submit button in chart
-    $('#chartSubmit').on('click',function(e){
+    $('#chartSubmit').on('click', function (e) {
         var data = $('#chartInput').serialize();
 
+        //{pair: data, timeRange: '1Y'}
         $.get(
             '/chart/getTable',
-            {pair: data, timeRange: '1Y'},
-        ).done(function(data){
-            var data =$.parseJSON(data);
+            data,
+        ).done(function (data) {
+            var data = $.parseJSON(data);
             console.log(data);
             renderDataToChart(data);
-        }).fail(function(data){
+
+            debugger
+        }).fail(function (data) {
             console.log("Error: " + data);
-        }).always(function(data){
+        }).always(function (data) {
 
         });
     });
 
     // prevent from the button can only submit once
-    $('#chartInput').on('submit',function(e){
+    $('#chartInput').on('submit', function (e) {
         e.preventDefault();
     });
 
 
     // Range selector button is pressed
-    $('#chart-rangeselectorContainer').on('click', function(e) {
-       if (e.target != e.currentTarget) {
-           var clickedItem = e.target.textContent;
-           alert(clickedItem);
-       }
+    $('#chart-rangeselectorContainer').on('click', function (e) {
+        if (e.target != e.currentTarget) {
+            var clickedItem = e.target.textContent;
+            alert(clickedItem);
+        }
     });
-
+});
 function renderDataToChart (data) {
     // Selector Range Definition
     var customRanges = [
@@ -137,49 +135,26 @@ function renderDataToChart (data) {
         .yMinorGrid(true)
         .xMinorGrid(true);
 
+    // create EMA indicators with period 50
+    plot.ema(dataTable.mapAs({
+        'value': 4
+    }), 20).series().stroke('1.5 #455a64');
+
     // create candlestick series
     var series = plot.candlestick(mapping);
-    series.name('NYMEX Crude Oil Futures');
+    series.name('Candlestick');
     series.legendItem().iconType('rising-falling');
 
     // set settings for event markers
     var eventMarkers = plot.eventMarkers();
     // set markers data
     eventMarkers.data([{
-        date: '2001-09-11',
-        description: '9-11 attacks'
-    },
+            date: '2001-09-11',
+            description: '9-11 attacks'
+        },
         {
             date: '2003-03-20',
             description: 'Iraq War'
-        },
-        {
-            date: '2008-08-20',
-            description: 'Global financial collapse'
-        },
-        {
-            date: '2009-02-05',
-            description: 'OPEC cuts production targets 4.2 mmbpd'
-        },
-        {
-            date: '2009-11-15',
-            description: 'Greece\'s debt crisis'
-        },
-        {
-            date: '2011-03-11',
-            description: 'Japan earthquake'
-        },
-        {
-            date: '2014-12-01',
-            description: 'Russian financial crisis'
-        },
-        {
-            date: '2015-03-15',
-            description: 'OPEC production quota unchanged'
-        },
-        {
-            date: '2017-11-15',
-            description: 'Just fot fun !'
         }
     ]);
 
@@ -197,26 +172,6 @@ function renderDataToChart (data) {
 
     // create scroller series with mapped data
     chart.scroller().area(mapping);
-    /*
-    // set container id for the chart
-    chart.container('chart');
-    // initiate chart drawing
-    chart.draw();
-
-    // create range picker
-    var rangePicker = anychart.ui.rangePicker();  // rangePicker included in chart
-    rangePicker.render(document.getElementById("chart-rangepickerContainer"));
-    // init range picker
-    //rangePicker.render(chart);
-
-    // create range selector
-    var rangeSelector = anychart.ui.rangeSelector();    // rangeSelector included in chart
-    rangeSelector.render(document.getElementById('chart-rangeselectorContainer'));
-    rangeSelector.ranges(customRanges);
-    //rangeSelector.addEventListener("click", identifyClickedButton, false);
-    // init range selector
-    //rangeSelector.render(chart);
-    */
 
     var rangePicker = anychart.ui.rangePicker();
     var rangeSelector = anychart.ui.rangeSelector();

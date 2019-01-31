@@ -10,13 +10,15 @@ use Illuminate\Http\Request;
 
 date_default_timezone_set('America/Los_Angeles');
 
-/* Class ChartController
+/**
+ * Class ChartController
  * @package App\Http\Controllers\Frontend
-*/
+ */
 class ChartController extends Controller
 {
-/* @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-*/
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
         return view('frontend.chart');
