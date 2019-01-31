@@ -11983,3 +11983,17 @@ body,
   padding: 0;
 }
 
+#chart-rangeSelectorContainer {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#chart-pickerContainer {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
