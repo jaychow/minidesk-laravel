@@ -1,10 +1,35 @@
+//---------------------------------------------------------------
+//                      GLOBAL VARIABLES
+//---------------------------------------------------------------
+// Create chart variables
+// create stock chart
+var chart = anychart.stock();
+
+// create data table on loaded data
+var dataTable = anychart.data.table();
+
+
+//---------------------------------------------------------------
+//                      INITIAL CHART
+//---------------------------------------------------------------
+
+
+//---------------------------------------------------------------
+//                      OTHER FUNCTION
+//---------------------------------------------------------------
+
 $(document).ready(function(){
+    // Create chart variables
+
+
+
     // Click events: submit button in chart
     $('#chartSubmit').on('click',function(e){
         var data = $('#chartInput').serialize();
+
         $.get(
             '/chart/getTable',
-            data,
+            {pair: data, timeRange: '1Y'},
         ).done(function(data){
             var data =$.parseJSON(data);
             console.log(data);
@@ -20,12 +45,90 @@ $(document).ready(function(){
     $('#chartInput').on('submit',function(e){
         e.preventDefault();
     });
-});
 
+
+    // Range selector button is pressed
+    $('#chart-rangeselectorContainer').on('click', function(e) {
+       if (e.target != e.currentTarget) {
+           var clickedItem = e.target.textContent;
+           alert(clickedItem);
+       }
+    });
+
+});
+/*
+
+var theParent = document.querySelector("#theDude");
+theParent.addEventListener("click", doSomething, false);
+
+function identifyClickedButton(e) {
+    if (e.target != e.currentTarget) {
+        var clickedItem = e.target.textContent;
+        alert(clickedItem);
+    }
+}
+*/
 function renderDataToChart (data) {
-    // create data table on loaded data
-    var dataTable = anychart.data.table();
-    dataTable.addData(data);
+    // Selector Range Definition
+    var customRanges = [
+        {
+            'text': '1D',
+            'type': 'unit',
+            'unit': 'day',
+            'count': 1,
+            'anchor': 'last-data'
+        },
+        {
+            'text': '1W',
+            'type': 'unit',
+            'unit': 'day',
+            'count': 7,
+            'anchor': 'last-data'
+        },
+        {
+            'text': '1M',
+            'type': 'unit',
+            'unit': 'day',
+            'count': 31,
+            'anchor': 'last-data'
+        },
+        {
+            'text': '6M',
+            'type': 'unit',
+            'unit': 'day',
+            'count': 186,    // 31 * 6 = 186
+            'anchor': 'last-data'
+        },
+        {
+            'text': '1Y',
+            'type': 'unit',
+            'unit': 'year',
+            'count': 1,
+            'anchor': 'last-data'
+        },
+        {
+            'text': '5Y',
+            'type': 'unit',
+            'unit': 'year',
+            'count': 5,
+            'anchor': 'last-data'
+        }
+    ];
+
+    // Splitting data
+    var dataSplit = [];
+
+    while (data.length > 0)
+        dataSplit.push(data.splice(0, 1000)); // split data into array whose size is 1000
+
+    // Clear dataTable;
+    dataTable.remove();
+
+    // Adding data
+    var i;
+    for (i = 0; i < dataSplit.length; i++) {
+        dataTable.addData(dataSplit[i]);
+    }
 
     // map loaded data for the ohlc series
     var mapping = dataTable.mapAs({
@@ -35,9 +138,6 @@ function renderDataToChart (data) {
         'close': 5,
         'value': 6
     });
-    debugger
-    // create stock chart
-    var chart = anychart.stock();
 
     // set chart title
     chart.title('it work right.');
@@ -110,20 +210,41 @@ function renderDataToChart (data) {
 
     // create scroller series with mapped data
     chart.scroller().area(mapping);
-
+    /*
     // set container id for the chart
     chart.container('chart');
     // initiate chart drawing
     chart.draw();
 
     // create range picker
-    var rangePicker = anychart.ui.rangePicker();
+    var rangePicker = anychart.ui.rangePicker();  // rangePicker included in chart
+    rangePicker.render(document.getElementById("chart-rangepickerContainer"));
     // init range picker
-    rangePicker.render(chart);
+    //rangePicker.render(chart);
 
     // create range selector
-    var rangeSelector = anychart.ui.rangeSelector();
+    var rangeSelector = anychart.ui.rangeSelector();    // rangeSelector included in chart
+    rangeSelector.render(document.getElementById('chart-rangeselectorContainer'));
+    rangeSelector.ranges(customRanges);
+    //rangeSelector.addEventListener("click", identifyClickedButton, false);
     // init range selector
-    rangeSelector.render(chart);
+    //rangeSelector.render(chart);
+    */
 
+    var rangePicker = anychart.ui.rangePicker();
+    var rangeSelector = anychart.ui.rangeSelector();
+
+    // specify which chart range selector controls
+    rangeSelector.target(chart);
+    rangePicker.target(chart);
+
+    // Render the range selection controls into containers on a page
+    rangeSelector.render(document.getElementById("chart-rangeselectorContainer"));
+    rangePicker.render(document.getElementById("chart-rangepickerContainer"));
+
+    // Customize range selector
+    rangeSelector.ranges(customRanges);
+
+    chart.container("chart");
+    chart.draw();
 }

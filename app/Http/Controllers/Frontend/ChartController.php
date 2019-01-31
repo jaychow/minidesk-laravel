@@ -10,15 +10,13 @@ use Illuminate\Http\Request;
 
 date_default_timezone_set('America/Los_Angeles');
 
-/**
- * Class ChartController
+/* Class ChartController
  * @package App\Http\Controllers\Frontend
- */
+*/
 class ChartController extends Controller
 {
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
+/* @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+*/
     public function index()
     {
         return view('frontend.chart');
@@ -43,7 +41,7 @@ class ChartController extends Controller
         {
 //            echo Psr7\str($e->getRequest());
 //            echo Psr7\str($e->getResponse());
-            echo "Can not get this API data !";
+            echo "Can not get this API data";
             exit;
         }
 
@@ -124,14 +122,14 @@ class ChartController extends Controller
 //    }
 
     // Response frontend request
-    public function getTable()  //Request $request
+    public function getTable(Request $request)  //Request $request
     {
-        $type = 'USD_CAD';
-        //$type = $request->get('pair');
+        //$type = 'USD_CAD';
+        $type = $request->get('pair');
 
         // Time interval
         $time2 = date("Y-m-d h:i:s");
-        $time1 = date("Y-m-d h:i:s",strtotime('-10 minute'));
+        $time1 = date("Y-m-d h:i:s",strtotime('-1 hour'));
 
         // Check API data is exist or not ?
         $exist = Chart::where('type',$type)->whereBetween('time',array($time1,$time2))->exists();
@@ -161,4 +159,3 @@ class ChartController extends Controller
         }
     }
 }
-

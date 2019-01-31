@@ -6,6 +6,9 @@
         <input type="text" name="pair" />
         <button id="chartSubmit">Submit</button>
     </form>
+    <div id="chart-rangeselectorContainer"></div>
+    <div id="chart-rangepickerContainer"></div>
     <div id="chart"></div>
 </div>
+
 @endsection
