@@ -8,12 +8,10 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 date_default_timezone_set('Europe/London'); // UTC + 0
-
 /**
  * Class ChartController
  * @package App\Http\Controllers\Frontend
  */
-
 class ChartController extends Controller
 {
     /**
@@ -50,7 +48,6 @@ class ChartController extends Controller
             $result = json_decode($result);
             $output = $this->getCandles($result);
             $this->storeAPI($output,$timeRange);
-
             // Give frontend data with time calibration
             $final = [];
             if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
@@ -87,7 +84,6 @@ class ChartController extends Controller
                 }
                 echo json_encode($final);
             }
-
         }
         catch (RequestException $e)
         {
@@ -135,7 +131,6 @@ class ChartController extends Controller
         $toTime = $data[0][0];
         $temp = array_reverse($data);
         $fromTime = $temp[0][0];
-
         foreach ($data as $value)
         {
             $type = explode('_', $value[1]);
@@ -174,9 +169,7 @@ class ChartController extends Controller
                     'volume' => $volume
                 ];
         }
-
         $this->fliterData($query,$fromTime,$toTime,$fromType,$toType,$timeRange);
-
         if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
         {
             Chart_minute::insert($query);
@@ -217,12 +210,10 @@ class ChartController extends Controller
 //      $timeRange = $request->get('timeRange');
 //      $fromTime = $request->get('from');
 //      $toTime = $request->get('to');
-
         if(!(strcmp($timeRange,"5Y") || strcmp($timeRange,"1Y") || strcmp($timeRange,"6M") || strcmp($timeRange,"1M") || strcmp($timeRange,"1W") || strcmp($timeRange,"1D")))
         {
             $timeRange = "1Y";
         }
-
         switch($timeRange)
         {
             case "1D":
@@ -244,7 +235,6 @@ class ChartController extends Controller
                 $fromTime = date("Y-m-d",strtotime('-5 year')).' 00:00:00';
                 break;
         }
-
         if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
         {
             $toTime = date("Y-m-d H:i:s");
