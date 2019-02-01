@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
-class Chart extends Model
+class Chart_day extends Model
 {
     // Assign table from DB
-    protected $table = 'chart';
+    protected $table = 'chart_day_data';
 
     // Do not let created_at & updated_at columns exist
     public $timestamps = false;
