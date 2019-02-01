@@ -32,7 +32,7 @@ class ChartController extends Controller
         ];
         try
         {
-            if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
+            if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
             {
                 $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?from='.$fromTime.'&to='.$toTime.'&granularity=M10', [
                     'headers' => $headers
@@ -92,6 +92,7 @@ class ChartController extends Controller
             echo "Can not get this API data"."<br>";
             echo $fromTime."<br>";
             echo $toTime."<br>";
+            echo $timeRange."<br>";
             echo $type."<br>";
 //            exit;
         }
@@ -170,7 +171,7 @@ class ChartController extends Controller
                 ];
         }
         $this->fliterData($query,$fromTime,$toTime,$fromType,$toType,$timeRange);
-        if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
+        if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
         {
             Chart_minute::insert($query);
         }
@@ -183,7 +184,7 @@ class ChartController extends Controller
     // Filter duplicated data in DB
     public function fliterData($query,$fromTime,$toTime,$fromType,$toType,$timeRange)
     {
-        if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
+        if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
         {
             Chart_minute::where('type',$fromType)->orwhere('type',$toType)->whereBetween('time',array($fromTime,$toTime))->delete();
         }
@@ -193,8 +194,36 @@ class ChartController extends Controller
         }
     }
 
+    // Process data for different time scale candlestick
+    public function dataProcess($type,$timeRange)
+    {
+        $close = Chart_minute::orderBy('time', 'desc')->first();
+        $open= Chart_minute::orderBy('time', 'asc')->first();
+        $high = Chart_minute::orderBy('high', 'desc')->first();
+        $low = Chart_minute::orderBy('low', 'asc')->first();
+//        $output = [];
+//        foreach ($result as $data)
+//        {
+//            $output[]=
+//                [
+//                    $time = date("Y-m-d H:i:s"),
+//                    $data->type,
+//                    $data->open,
+//                    $data->high,
+//                    $data->low,
+//                    $data->close,
+//                    $data->volume,
+//                ];
+//        }
+        echo $close."<br>";
+        echo $open."<br>";
+        echo $high."<br>";
+        echo $low."<br>";
+        exit;
+    }
+
     // Response frontend request
-    public function getTable()  //Request $request
+    public function getTable(Request $request)  //Request $request
     {
         // Common parameter (Default)
         $type = 'USD_CAD';
@@ -204,10 +233,11 @@ class ChartController extends Controller
         $timeRange = "1D";
         $time2 = date("Y-m-d H:i:s");
         $time1 = date("Y-m-d H:i:s",strtotime('-1 day'));
+        //$this->dataProcess($type,$timeRange);
 
-//      $type = $request->get('pair');
-//      $utc = $request->get('utc');
-//      $timeRange = $request->get('timeRange');
+      $type = $request->get('pair');
+      $utc = $request->get('utc');
+      $timeRange = $request->get('timeRange');
 //      $fromTime = $request->get('from');
 //      $toTime = $request->get('to');
         if(!(strcmp($timeRange,"5Y") || strcmp($timeRange,"1Y") || strcmp($timeRange,"6M") || strcmp($timeRange,"1M") || strcmp($timeRange,"1W") || strcmp($timeRange,"1D")))
@@ -223,21 +253,23 @@ class ChartController extends Controller
                 $fromTime = date("Y-m-d",strtotime('-1 week')).' 00:00:00';
                 break;
             case "1M":
-                $fromTime = date("Y-m-d",strtotime('-1 month')).' 00:00:00';
+                $fromTime = date("Y-m-d",strtotime('-1 month'));
                 break;
             case "6M":
-                $fromTime = date("Y-m-d",strtotime('-6 month')).' 00:00:00';
+                $fromTime = date("Y-m-d",strtotime('-6 month'));
                 break;
             case "1Y":
-                $fromTime = date("Y-m-d",strtotime('-1 year')).' 00:00:00';
+                $fromTime = date("Y-m-d",strtotime('-1 year'));
                 break;
             case "5Y":
-                $fromTime = date("Y-m-d",strtotime('-5 year')).' 00:00:00';
+                $fromTime = date("Y-m-d",strtotime('-5 year'));
                 break;
         }
-        if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
+
+        if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
         {
-            $toTime = date("Y-m-d H:i:s");
+
+            $toTime = date("Y-m-d H:i:s",strtotime('-1 day'));
 
             // Time interval
             $time2 = date("Y-m-d H:i:s");
@@ -275,7 +307,7 @@ class ChartController extends Controller
 
             // Time interval
             $time2 = date("Y-m-d H:i:s");
-            $time1 = date("Y-m-d H:i:s",strtotime('-1 day'));
+            $time1 = date("Y-m-d H:i:s");
 
             // Check API data is exist or not ?
             $exist = Chart_day::where('type',$type)->whereBetween('time',array($time1,$time2))->exists();
