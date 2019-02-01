@@ -32,9 +32,9 @@ class ChartController extends Controller
         ];
         try
         {
-            if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
+            if(($timeRange == '1W') || ($timeRange == '1D'))
             {
-                $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?from='.$fromTime.'&to='.$toTime.'&granularity=M10', [
+                $response = $client->request('GET', 'v3/instruments/'.$type.'/candles?from='.$fromTime.'&granularity=M10', [
                     'headers' => $headers
                 ]);
             }
@@ -48,9 +48,10 @@ class ChartController extends Controller
             $result = json_decode($result);
             $output = $this->getCandles($result);
             $this->storeAPI($output,$timeRange);
+
             // Give frontend data with time calibration
             $final = [];
-            if(strcmp($timeRange,"1D") || strcmp($timeRange,"1W"))
+            if(($timeRange == '1W') || ($timeRange == '1D'))
             {
                 foreach ($output as $data)
                 {
@@ -171,7 +172,7 @@ class ChartController extends Controller
                 ];
         }
         $this->fliterData($query,$fromTime,$toTime,$fromType,$toType,$timeRange);
-        if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
+        if(($timeRange == '1W') || ($timeRange == '1D'))
         {
             Chart_minute::insert($query);
         }
@@ -184,7 +185,7 @@ class ChartController extends Controller
     // Filter duplicated data in DB
     public function fliterData($query,$fromTime,$toTime,$fromType,$toType,$timeRange)
     {
-        if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
+        if(($timeRange == '1W') || ($timeRange == '1D'))
         {
             Chart_minute::where('type',$fromType)->orwhere('type',$toType)->whereBetween('time',array($fromTime,$toTime))->delete();
         }
@@ -240,7 +241,7 @@ class ChartController extends Controller
       $timeRange = $request->get('timeRange');
 //      $fromTime = $request->get('from');
 //      $toTime = $request->get('to');
-        if(!(strcmp($timeRange,"5Y") || strcmp($timeRange,"1Y") || strcmp($timeRange,"6M") || strcmp($timeRange,"1M") || strcmp($timeRange,"1W") || strcmp($timeRange,"1D")))
+        if(!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '1W') || ($timeRange == '1D')))
         {
             $timeRange = "1Y";
         }
@@ -266,10 +267,10 @@ class ChartController extends Controller
                 break;
         }
 
-        if(!(strcmp($timeRange,"1D") && strcmp($timeRange,"1W")))
+        if(($timeRange == '1W') || ($timeRange == '1D'))
         {
 
-            $toTime = date("Y-m-d H:i:s",strtotime('-1 day'));
+            $toTime = date("Y-m-d");
 
             // Time interval
             $time2 = date("Y-m-d H:i:s");
