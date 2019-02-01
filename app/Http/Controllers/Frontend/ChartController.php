@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Models\Chart_day;
-use App\Models\Chart_minute;
+use App\Models\Chart_hour;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
@@ -36,9 +36,9 @@ class ChartController extends Controller
         ];
         try
         {
-            if (($timeRange == '1W') || ($timeRange == '1D'))
+            if (($timeRange == '1W'))
             {
-                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=M10', [
+                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=H1', [
                     'headers' => $headers
                 ]);
             }
@@ -55,7 +55,7 @@ class ChartController extends Controller
 
             // Give frontend data with time calibration
             $final = [];
-            if (($timeRange == '1W') || ($timeRange == '1D'))
+            if (($timeRange == '1W'))
             {
                 foreach ($output as $data)
                 {
@@ -174,8 +174,8 @@ class ChartController extends Controller
                 ];
         }
         $this->fliterData($query, $fromTime, $toTime, $fromType, $toType, $timeRange);
-        if (($timeRange == '1W') || ($timeRange == '1D')) {
-            Chart_minute::insert($query);
+        if (($timeRange == '1W')) {
+            Chart_hour::insert($query);
         } else {
             Chart_day::insert($query);
         }
@@ -184,8 +184,8 @@ class ChartController extends Controller
     // Filter duplicated data in DB
     public function fliterData($query, $fromTime, $toTime, $fromType, $toType, $timeRange)
     {
-        if (($timeRange == '1W') || ($timeRange == '1D')) {
-            Chart_minute::where('type', $fromType)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
+        if (($timeRange == '1W')) {
+            Chart_hour::where('type', $fromType)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
         } else {
             Chart_day::where('type', $fromType)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
         }
@@ -194,10 +194,10 @@ class ChartController extends Controller
     // Process data for different time scale candlestick
     public function dataProcess($type, $timeRange)
     {
-        $close = Chart_minute::orderBy('time', 'desc')->first();
-        $open = Chart_minute::orderBy('time', 'asc')->first();
-        $high = Chart_minute::orderBy('high', 'desc')->first();
-        $low = Chart_minute::orderBy('low', 'asc')->first();
+        $close = Chart_hour::orderBy('time', 'desc')->first();
+        $open = Chart_hour::orderBy('time', 'asc')->first();
+        $high = Chart_hour::orderBy('high', 'desc')->first();
+        $low = Chart_hour::orderBy('low', 'asc')->first();
 //        $output = [];
 //        foreach ($result as $data)
 //        {
@@ -225,7 +225,7 @@ class ChartController extends Controller
         // Common parameter (Default)
         $type = 'USD_CAD';
         $utc = -8;      // San Diego
-        $timeRange = '1D';
+        $timeRange = '1Y';
         $fromTime = date("Y-m-d", strtotime('-1 year'));
         $toTime = date("Y-m-d", strtotime('-1 day'));
         $time2 = date("Y-m-d H:i:s");
@@ -238,15 +238,12 @@ class ChartController extends Controller
 //      $fromTime = $request->get('from');
 //      $toTime = $request->get('to');
         
-        if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '1W') || ($timeRange == '1D')))
+        if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '1W')))
         {
             $timeRange = "1Y";
         }
         switch ($timeRange)
         {
-            case "1D":
-                $fromTime = date("Y-m-d", strtotime('-1 day'));
-                break;
             case "1W":
                 $fromTime = date("Y-m-d", strtotime('-1 week'));
                 break;
@@ -264,21 +261,21 @@ class ChartController extends Controller
                 break;
         }
 
-        if (($timeRange == '1W') || ($timeRange == '1D'))
+        if (($timeRange == '1W'))
         {
 
             $toTime = date("Y-m-d");
 
             // Time interval
             $time2 = date("Y-m-d H:i:s");
-            $time1 = date("Y-m-d H:i:s", strtotime('-10 minute'));
+            $time1 = date("Y-m-d H:i:s", strtotime('-1 hour'));
 
             // Check API data is exist or not ?
-            $exist = Chart_minute::where('type', $type)->whereBetween('time', array($time1, $time2))->exists();
+            $exist = Chart_hour::where('type', $type)->whereBetween('time', array($time1, $time2))->exists();
             if ($exist)
             {
                 $output = [];
-                $result = Chart_minute::where('type', $type)->orderBy('time', 'desc')->get();
+                $result = Chart_hour::where('type', $type)->orderBy('time', 'desc')->get();
                 foreach ($result as $data)
                 {
                     $output[] =
