@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateChartTable extends Migration
+class CreateChartMinuteDataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateChartTable extends Migration
      */
     public function up()
     {
-        Schema::create('chart', function (Blueprint $table)
+        Schema::create('chart_minute_data', function (Blueprint $table)
         {
             $table->dateTime('time');
             $table->text('type');
@@ -32,6 +32,6 @@ class CreateChartTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chart');
+        Schema::dropIfExists('chart_minute_data');
     }
 }
