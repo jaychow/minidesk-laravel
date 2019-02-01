@@ -11626,17 +11626,19 @@ var dataTable = anychart.data.table();
 //                      OTHER FUNCTION
 //---------------------------------------------------------------
 $(document).ready(function () {
+    var inputArg;
     // Click events: submit button in chart
     $('#chartSubmitButton').on('click', function (e) {
-        //var data = $('#chartInput').serialize();
-        var inputArg = processUserInput();
-        $.get('/chart/getTable', { pair: inputArg['pair'], timeRange: '1Y' }).done(function (data) {
-            var data_json = $.parseJSON(data);
-            console.log(data_json);
-            renderDataToChart(data_json);
-        }).fail(function (data) {
-            console.log("Error: " + data);
-        }).always(function (data) {});
+
+        inputArg = processInputForm();
+        inputArg['timeRange'] = '1Y';
+
+        // adding timezone info
+        var d = new Date();
+        inputArg['utc'] = -(d.getTimezoneOffset() / 60);
+
+        // request GET/POST to backend
+        requestData(inputArg);
     });
 
     // prevent from the button can only submit once
@@ -11648,12 +11650,24 @@ $(document).ready(function () {
     $('#chart-rangeselectorContainer').on('click', function (e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.textContent;
-            alert(clickedItem);
+            inputArg['timeRange'] = clickedItem;
+            requestData(inputArg);
         }
     });
 });
 
-function processUserInput() {
+function requestData(argument) {
+    //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
+    $.get('/chart/getTable', { pair: argument['pair'], timeRange: argument['timeRange'], utc: argument['utc'] }).done(function (data) {
+        var data_json = $.parseJSON(data);
+        console.log(data_json);
+        if (dataTable.bc.b.length > 0) renderDataToChart(data_json);else initiateChartSetting(data_json);
+    }).fail(function (data) {
+        console.log("Error: " + data);
+    }).always(function (data) {});
+}
+
+function processInputForm() {
     var inputArg = [];
     var form = document.getElementById("chartInput");
 
@@ -11661,7 +11675,8 @@ function processUserInput() {
         inputArg[form.elements[i].name] = form.elements[i].value;
     }return inputArg;
 }
-function renderDataToChart(data) {
+
+function initiateChartSetting(data) {
     // Selector Range Definition
     var customRanges = [{
         'text': '1D',
@@ -11701,22 +11716,6 @@ function renderDataToChart(data) {
         'anchor': 'last-data'
     }];
 
-    // Splitting data
-    var dataSplit = [];
-
-    while (data.length > 0) {
-        dataSplit.push(data.splice(0, 1000));
-    } // split data into array whose size is 1000
-
-    // Clear dataTable;
-    dataTable.remove();
-
-    // Adding data
-    var i;
-    for (i = 0; i < dataSplit.length; i++) {
-        dataTable.addData(dataSplit[i]);
-    }
-
     // map loaded data for the ohlc series
     var mapping = dataTable.mapAs({
         'open': 2,
@@ -11726,11 +11725,12 @@ function renderDataToChart(data) {
         'value': 6
     });
 
-    // set chart title
-    chart.title('it work right.');
+    // Put the data into data table
+    dataTable.addData(data);
 
     // create first plot on the chart and set settings
     var plot = chart.plot(0);
+
     plot.height('75%').yGrid(true).xGrid(true).yMinorGrid(true).xMinorGrid(true);
 
     // create EMA indicators with period 50
@@ -11790,6 +11790,13 @@ function renderDataToChart(data) {
 
     chart.container("chart");
     chart.draw();
+}
+
+function renderDataToChart(data) {
+    console.log('REFRESH!');
+    // Clear dataTable;
+    dataTable.remove();
+    dataTable.addData(data);
 }
 
 /***/ }),

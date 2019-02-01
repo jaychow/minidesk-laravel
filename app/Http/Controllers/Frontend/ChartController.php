@@ -147,12 +147,12 @@ class ChartController extends Controller
     public function getTable(Request $request)  //Request $request
     {
         //$type = 'USD_CAD';
-        $utc = -8;      // San Dirgo
+        //$utc = -8;      // San Diego
         $fromTime = date("Y-m-d",strtotime('-1 year'));
-        $toTime = date("Y-m-d");
+        $toTime = date("Y-m-d",strtotime('-1 day'));
         $timeRange = "";
         $type = $request->get('pair');
-//      $utc = $request->get('utc');
+        $utc = $request->get('utc');
         $timeRange = $request->get('timeRange');
 //      $fromTime = $request->get('from');
 //      $toTime = $request->get('to');
