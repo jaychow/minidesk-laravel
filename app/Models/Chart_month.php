@@ -1,21 +1,22 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: rocky
+ * Date: 2/1/19
+ * Time: 8:32 PM
+ */
 
 namespace App\Models;
-
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
-class Chart_day extends Model
+
+class Chart_month extends Model
 {
     // Assign table from DB
-    protected $table = 'chart_day_data';
+    protected $table = 'chart_month_data';
 
     // Do not let created_at & updated_at columns exist
     public $timestamps = false;
 
     protected $fillable = ['time','type','open','high','low','close','volume'];
 }
-
-
-
-

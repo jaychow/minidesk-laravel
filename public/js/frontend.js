@@ -11661,7 +11661,7 @@ function requestData(argument) {
     $.get('/chart/getTable', { pair: argument['pair'], timeRange: argument['timeRange'], utc: argument['utc'] }).done(function (data) {
         var data_json = $.parseJSON(data);
         console.log(data_json);
-        if (dataTable.bc.b.length > 0) renderDataToChart(data_json);else initiateChartSetting(data_json);
+        if (dataTable.bc.b.length > 0) renderDataToChart(data);else initiateChartSetting(data);
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {});

@@ -57,9 +57,9 @@ function requestData (argument) {
         var data_json = $.parseJSON(data);
         console.log(data_json);
         if (dataTable.bc.b.length > 0)
-            renderDataToChart(data_json);
+            renderDataToChart(data);
         else
-            initiateChartSetting(data_json);
+            initiateChartSetting(data);
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {

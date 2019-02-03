@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Models\Chart_day;
-use App\Models\Chart_hour;
+use App\Models\Chart_week;
+use App\Models\Chart_month;
+use App\Models\Chart_six_months;
+use App\Models\Chart_year;
+use App\Models\Chart_five_years;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
+use function GuzzleHttp\json_encode;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
@@ -26,7 +30,56 @@ class ChartController extends Controller
         return view('frontend.chart');
     }
 
-    public function getAPI($type, $utc, $fromTime, $toTime, $timeRange)
+    // Check API data is exist or not ?
+    protected function dataCheck($type,$timeRange,$fromTime)
+    {
+        $from = '';
+        $to = '';
+        $fromTime = $fromTime.' 05:00:00';
+        $toTime = '';
+
+        switch ($timeRange)
+        {
+            case "1W":
+                $toTime = date("Y-m-d",strtotime("+1 week",strtotime($fromTime))).' 22:00:00';
+                $from = Chart_week::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = Chart_week::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
+                break;
+            case "1M":
+                $toTime = date("Y-m-d",strtotime("+1 month",strtotime($fromTime))).' 22:00:00';
+                $from = Chart_month::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = Chart_month::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                break;
+            case "6M":
+                $toTime = date("Y-m-d",strtotime("+6 month",strtotime($fromTime))).' 22:00:00';
+                $from = Chart_six_months::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = Chart_six_months::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                break;
+            case "1Y":
+                $toTime = date("Y-m-d",strtotime("+1 year",strtotime($fromTime))).' 22:00:00';
+                $from = Chart_year::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = Chart_year::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                break;
+            case "5Y":
+                $toTime = date("Y-m-d",strtotime("+5 year",strtotime($fromTime))).' 22:00:00';
+                $from = Chart_five_years::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = Chart_five_years::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                break;
+        }
+
+        if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // Get API data from Oanda
+    protected function getAPI($type, $utc, $fromTime,$timeRange,$chart_model)
     {
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
@@ -34,77 +87,77 @@ class ChartController extends Controller
             'Authorization' => 'Bearer ' . $token,
             'accountid' => env('OANDA_ACCOUNT_ID'),
         ];
+        $response ='';
+
         try
         {
-            if (($timeRange == '1W'))
+            switch ($timeRange)
             {
-                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=H1', [
-                    'headers' => $headers
-                ]);
+                case "1W":
+                    $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=H1', [
+                        'headers' => $headers
+                    ]);
+                    break;
+                case "1M":
+                    $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=H4', [
+                        'headers' => $headers
+                    ]);
+                    break;
+                case "6M":
+                    $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=D', [
+                        'headers' => $headers
+                    ]);
+                    break;
+                case "1Y":
+                    $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=W', [
+                        'headers' => $headers
+                    ]);
+                    break;
+                case "5Y":
+                    $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=M', [
+                        'headers' => $headers
+                    ]);
+                    break;
             }
-            else
-            {
-                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&to=' . $toTime . '&granularity=D', [
-                    'headers' => $headers
-                ]);
-            }
+
             $result = $response->getBody();
             $result = json_decode($result);
             $output = $this->getCandles($result);
-            $this->storeAPI($output, $timeRange);
+            $this->storeAPI($output,$chart_model);
 
             // Give frontend data with time calibration
             $final = [];
-            if (($timeRange == '1W'))
+
+            foreach ($output as $data)
             {
-                foreach ($output as $data)
-                {
-                    $final[] =
-                        [
-                            $time = date("Y-m-d H:i:s", strtotime($data[0] . '' . $utc . ' hour')),
-                            $data[1],
-                            $data[2],
-                            $data[3],
-                            $data[4],
-                            $data[5],
-                            $data[6],
-                        ];
-                }
-                 return response()->json($final);
+                $final[] =
+                    [
+                        $time = date("Y-m-d H:i:s", strtotime($data[0] . '' . $utc . ' hour')),
+                        $data[1],
+                        $data[2],
+                        $data[3],
+                        $data[4],
+                        $data[5],
+                        $data[6],
+                    ];
             }
-            else
-            {
-                foreach ($output as $data)
-                {
-                    $final[] =
-                        [
-                            $time = date("Y-m-d", strtotime($data[0] . '' . $utc . ' hour')),
-                            $data[1],
-                            $data[2],
-                            $data[3],
-                            $data[4],
-                            $data[5],
-                            $data[6],
-                        ];
-                }
-                 return response()->json($final);
-            }
+            return response()->json($final);
         }
+
         catch (RequestException $e)
         {
 //            echo Psr7\str($e->getRequest());
 //            echo Psr7\str($e->getResponse());
             echo "Can not get this API data" . "<br>";
             echo $fromTime . "<br>";
-            echo $toTime . "<br>";
             echo $timeRange . "<br>";
             echo $type . "<br>";
-//            exit;
+            exit;
         }
     }
 
     // Preproccing API data
-    public function getCandles($result)
+    protected function getCandles($result)
     {
         $output = [];
         $currencyType = $result->instrument;
@@ -127,16 +180,19 @@ class ChartController extends Controller
     }
 
     // Store API data into the DB
-    public function storeAPI($data, $timeRange)
+    protected function storeAPI($data,$chart_model)
     {
         $query = [];
         $fromType = "";
         $toType = "";
+
         // Get API start time and end time
         $toTime = $data[0][0];
         $temp = array_reverse($data);
         $fromTime = $temp[0][0];
-        foreach ($data as $value) {
+
+        foreach ($data as $value)
+        {
             $type = explode('_', $value[1]);
             $from = $type[0];
             $to = $type[1];
@@ -173,162 +229,80 @@ class ChartController extends Controller
                     'volume' => $volume
                 ];
         }
-        $this->fliterData($query, $fromTime, $toTime, $fromType, $toType, $timeRange);
-        if (($timeRange == '1W')) {
-            Chart_hour::insert($query);
-        } else {
-            Chart_day::insert($query);
-        }
-    }
 
-    // Filter duplicated data in DB
-    public function fliterData($query, $fromTime, $toTime, $fromType, $toType, $timeRange)
-    {
-        if (($timeRange == '1W')) {
-            Chart_hour::where('type', $fromType)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
-        } else {
-            Chart_day::where('type', $fromType)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
-        }
-    }
+        // Filter duplicated data in DB
+        $chart_model::where('type', $fromType)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
 
-    // Process data for different time scale candlestick
-    public function dataProcess($type, $timeRange)
-    {
-        $close = Chart_hour::orderBy('time', 'desc')->first();
-        $open = Chart_hour::orderBy('time', 'asc')->first();
-        $high = Chart_hour::orderBy('high', 'desc')->first();
-        $low = Chart_hour::orderBy('low', 'asc')->first();
-//        $output = [];
-//        foreach ($result as $data)
-//        {
-//            $output[]=
-//                [
-//                    $time = date("Y-m-d H:i:s"),
-//                    $data->type,
-//                    $data->open,
-//                    $data->high,
-//                    $data->low,
-//                    $data->close,
-//                    $data->volume,
-//                ];
-//        }
-        echo $close . "<br>";
-        echo $open . "<br>";
-        echo $high . "<br>";
-        echo $low . "<br>";
-        exit;
+        // Insert data into DB
+        $chart_model::insert($query);
     }
 
     // Response frontend request
     public function getTable(Request $request)  //Request $request
     {
         // Common parameter (Default)
-        $type = 'USD_CAD';
-        $utc = -8;      // San Diego
-        $timeRange = '1Y';
-        $fromTime = date("Y-m-d", strtotime('-1 year'));
-        $toTime = date("Y-m-d", strtotime('-1 day'));
-        $time2 = date("Y-m-d H:i:s");
-        $time1 = date("Y-m-d H:i:s", strtotime('-1 day'));
-        //$this->dataProcess($type,$timeRange);
-
-        $type = $request->get('pair');
-        $utc = $request->get('utc');
-        $timeRange = $request->get('timeRange');
-//      $fromTime = $request->get('from');
-//      $toTime = $request->get('to');
+        $type = ($request->get('pair') == '') ? 'USD_CAD':$request->get('pair');
+        $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
+        $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
+        $fromTime = ($request->get('from') == '') ? date("Y-m-d", strtotime('-1 year')):$request->get('from');
+        $chart_model = new Chart_year;
         
         if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '1W')))
         {
             $timeRange = "1Y";
         }
+        // Temporary use
         switch ($timeRange)
         {
             case "1W":
                 $fromTime = date("Y-m-d", strtotime('-1 week'));
+                $chart_model = new Chart_week;
                 break;
             case "1M":
                 $fromTime = date("Y-m-d", strtotime('-1 month'));
+                $chart_model = new Chart_month;
                 break;
             case "6M":
                 $fromTime = date("Y-m-d", strtotime('-6 month'));
+                $chart_model = new Chart_six_months;
                 break;
             case "1Y":
                 $fromTime = date("Y-m-d", strtotime('-1 year'));
+                $chart_model = new Chart_year;
                 break;
             case "5Y":
                 $fromTime = date("Y-m-d", strtotime('-5 year'));
+                $chart_model = new Chart_five_years;
                 break;
         }
 
-        if (($timeRange == '1W'))
+        // Check API data is exist or not ?
+        $exist = $this->dataCheck($type,$timeRange,$fromTime);
+
+        if ($exist)     // Get data from Database
         {
+            $toTime = date("Y-m-d",strtotime("+1 week",strtotime($fromTime))).' 22:00:00';
+            $result = $chart_model::where('type', $type)->whereBetween('time', array($fromTime.' 05:00:00', $toTime))->orderBy('time', 'desc')->get();
+            $output = [];
 
-            $toTime = date("Y-m-d");
-
-            // Time interval
-            $time2 = date("Y-m-d H:i:s");
-            $time1 = date("Y-m-d H:i:s", strtotime('-1 hour'));
-
-            // Check API data is exist or not ?
-            $exist = Chart_hour::where('type', $type)->whereBetween('time', array($time1, $time2))->exists();
-            if ($exist)
+            foreach ($result as $data)
             {
-                $output = [];
-                $result = Chart_hour::where('type', $type)->orderBy('time', 'desc')->get();
-                foreach ($result as $data)
-                {
-                    $output[] =
-                        [
-                            $time = date("Y-m-d H:i:s", strtotime($data->time . '' . $utc . ' hour')),
-                            $data->type,
-                            $data->open,
-                            $data->high,
-                            $data->low,
-                            $data->close,
-                            $data->volume,
-                        ];
-                }
+                $output[] =
+                    [
+                        $time = date("Y-m-d H:i:s", strtotime($data->time . '' . $utc . ' hour')),
+                        $data->type,
+                        $data->open,
+                        $data->high,
+                        $data->low,
+                        $data->close,
+                        $data->volume,
+                    ];
+            }
                 return response()->json($output);
             }
-            else
-            {
-                $this->getAPI($type, $utc, $fromTime, $toTime, $timeRange);
-            }
-        }
-        else
+        else    // Call Oanda API
         {
-            $toTime = date("Y-m-d");                                                                          
-
-            // Time interval
-            $time2 = date("Y-m-d H:i:s");
-            $time1 = date("Y-m-d H:i:s", strtotime('-1 day'));
-
-            // Check API data is exist or not ?
-            $exist = Chart_day::where('type', $type)->whereBetween('time', array($time1, $time2))->exists();
-            if ($exist)
-            {
-                $output = [];
-                $result = Chart_day::where('type', $type)->orderBy('time', 'desc')->get();
-                foreach ($result as $data)
-                {
-                    $output[] =
-                        [
-                            $time = date("Y-m-d", strtotime($data->time . '' . $utc . ' hour')),
-                            $data->type,
-                            $data->open,
-                            $data->high,
-                            $data->low,
-                            $data->close,
-                            $data->volume,
-                        ];
-                }
-                return response()->json($output);
-            }
-            else
-            {
-                $this->getAPI($type, $utc, $fromTime, $toTime, $timeRange);
-            }
+            $this->getAPI($type, $utc, $fromTime,$timeRange,$chart_model);
         }
     }
 }
