@@ -11646,7 +11646,7 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    // Range selector button is pressed
+    // range selector button is pressed
     $('#chart-rangeselectorContainer').on('click', function (e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.textContent;
@@ -11654,13 +11654,18 @@ $(document).ready(function () {
             requestData(inputArg);
         }
     });
+    /*
+        // range picker textbox is changed
+        $('#chart-rangepickerContainer').on('change', function(e) {
+            debugger;
+            console.log(e);
+        });
+        */
 });
-
 function requestData(argument) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get('/chart/getTable', { pair: argument['pair'], timeRange: argument['timeRange'], utc: argument['utc'] }).done(function (data) {
-        var data_json = $.parseJSON(data);
-        console.log(data_json);
+        //var data_json = $.parseJSON(data);
         if (dataTable.bc.b.length > 0) renderDataToChart(data);else initiateChartSetting(data);
     }).fail(function (data) {
         console.log("Error: " + data);
@@ -11679,12 +11684,6 @@ function processInputForm() {
 function initiateChartSetting(data) {
     // Selector Range Definition
     var customRanges = [{
-        'text': '1D',
-        'type': 'unit',
-        'unit': 'day',
-        'count': 1,
-        'anchor': 'last-data'
-    }, {
         'text': '1W',
         'type': 'unit',
         'unit': 'day',

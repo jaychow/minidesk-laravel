@@ -142,6 +142,7 @@ class ChartController extends Controller
                     ];
             }
             return response()->json($final);
+            //echo json_encode($final);
         }
 
         catch (RequestException $e)
@@ -302,7 +303,7 @@ class ChartController extends Controller
             }
         else    // Call Oanda API
         {
-            $this->getAPI($type, $utc, $fromTime,$timeRange,$chart_model);
+            return $this->getAPI($type, $utc, $fromTime,$timeRange,$chart_model);
         }
     }
 }

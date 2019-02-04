@@ -19,7 +19,7 @@ var dataTable = anychart.data.table();
 $(document).ready(function() {
     var inputArg;
     // Click events: submit button in chart
-    $('#chartSubmitButton').on('click', function (e) {
+    $('#chartSubmitButton').on('click', function(e) {
 
         inputArg = processInputForm();
         inputArg['timeRange'] = '1Y';
@@ -33,29 +33,33 @@ $(document).ready(function() {
     });
 
     // prevent from the button can only submit once
-    $('#chartInput').on('submit', function (e) {
+    $('#chartInput').on('submit', function(e) {
         e.preventDefault();
     });
 
-
-    // Range selector button is pressed
-    $('#chart-rangeselectorContainer').on('click', function (e) {
+    // range selector button is pressed
+    $('#chart-rangeselectorContainer').on('click', function(e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.textContent;
             inputArg['timeRange'] = clickedItem;
             requestData(inputArg);
         }
     });
+/*
+    // range picker textbox is changed
+    $('#chart-rangepickerContainer').on('change', function(e) {
+        debugger;
+        console.log(e);
+    });
+    */
 });
-
 function requestData (argument) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get(
         '/chart/getTable',
         {pair: argument['pair'], timeRange: argument['timeRange'], utc: argument['utc']}
     ).done(function (data) {
-        var data_json = $.parseJSON(data);
-        console.log(data_json);
+        //var data_json = $.parseJSON(data);
         if (dataTable.bc.b.length > 0)
             renderDataToChart(data);
         else
@@ -80,13 +84,6 @@ function processInputForm () {
 function initiateChartSetting (data) {
     // Selector Range Definition
     var customRanges = [
-        {
-            'text': '1D',
-            'type': 'unit',
-            'unit': 'day',
-            'count': 1,
-            'anchor': 'last-data'
-        },
         {
             'text': '1W',
             'type': 'unit',
