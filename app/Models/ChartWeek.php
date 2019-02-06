@@ -10,7 +10,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Chart_week extends Model
+class ChartWeek extends Model
 {
     // Assign table from DB
     protected $table = 'chart_week_data';

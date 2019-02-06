@@ -3,16 +3,17 @@
  * Created by PhpStorm.
  * User: rocky
  * Date: 2/1/19
- * Time: 8:44 PM
+ * Time: 8:32 PM
  */
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class Chart_six_months extends Model
+
+class ChartMonth extends Model
 {
     // Assign table from DB
-    protected $table = 'chart_six_months_data';
+    protected $table = 'chart_month_data';
 
     // Do not let created_at & updated_at columns exist
     public $timestamps = false;

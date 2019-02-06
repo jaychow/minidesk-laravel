@@ -10,7 +10,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Chart_year extends Model
+class ChartYear extends Model
 {
     // Assign table from DB
     protected $table = 'chart_year_data';

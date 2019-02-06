@@ -9,10 +9,10 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class Chart_five_years extends Model
+class ChartSixMonths extends Model
 {
     // Assign table from DB
-    protected $table = 'chart_five_years_data';
+    protected $table = 'chart_six_months_data';
 
     // Do not let created_at & updated_at columns exist
     public $timestamps = false;

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Models\Chart_week;
-use App\Models\Chart_month;
-use App\Models\Chart_six_months;
-use App\Models\Chart_year;
-use App\Models\Chart_five_years;
+use App\Models\ChartWeek;
+use App\Models\ChartMonth;
+use App\Models\ChartSixMonths;
+use App\Models\ChartYear;
+use App\Models\ChartFiveYears;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use function GuzzleHttp\json_encode;
@@ -42,29 +42,29 @@ class ChartController extends Controller
         {
             case "1W":
                 $toTime = date("Y-m-d",strtotime("+1 week",strtotime($fromTime))).' 22:00:00';
-                $from = Chart_week::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = Chart_week::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartWeek::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartWeek::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
                 break;
             case "1M":
                 $toTime = date("Y-m-d",strtotime("+1 month",strtotime($fromTime))).' 22:00:00';
-                $from = Chart_month::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = Chart_month::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartMonth::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartMonth::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "6M":
                 $toTime = date("Y-m-d",strtotime("+6 month",strtotime($fromTime))).' 22:00:00';
-                $from = Chart_six_months::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = Chart_six_months::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartSixMonths::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartSixMonths::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "1Y":
                 $toTime = date("Y-m-d",strtotime("+1 year",strtotime($fromTime))).' 22:00:00';
-                $from = Chart_year::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = Chart_year::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartYear::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartYear::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "5Y":
                 $toTime = date("Y-m-d",strtotime("+5 year",strtotime($fromTime))).' 22:00:00';
-                $from = Chart_five_years::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = Chart_five_years::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartFiveYears::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartFiveYears::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
         }
 
@@ -246,7 +246,7 @@ class ChartController extends Controller
         $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
         $fromTime = ($request->get('from') == '') ? date("Y-m-d", strtotime('-1 year')):$request->get('from');
-        $chart_model = new Chart_year;
+        $chart_model = new ChartYear;
         
         if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '1W')))
         {
@@ -257,23 +257,23 @@ class ChartController extends Controller
         {
             case "1W":
                 $fromTime = date("Y-m-d", strtotime('-1 week'));
-                $chart_model = new Chart_week;
+                $chart_model = new ChartWeek;
                 break;
             case "1M":
                 $fromTime = date("Y-m-d", strtotime('-1 month'));
-                $chart_model = new Chart_month;
+                $chart_model = new ChartMonth;
                 break;
             case "6M":
                 $fromTime = date("Y-m-d", strtotime('-6 month'));
-                $chart_model = new Chart_six_months;
+                $chart_model = new ChartSixMonths;
                 break;
             case "1Y":
                 $fromTime = date("Y-m-d", strtotime('-1 year'));
-                $chart_model = new Chart_year;
+                $chart_model = new ChartYear;
                 break;
             case "5Y":
                 $fromTime = date("Y-m-d", strtotime('-5 year'));
-                $chart_model = new Chart_five_years;
+                $chart_model = new ChartFiveYears;
                 break;
         }
 
