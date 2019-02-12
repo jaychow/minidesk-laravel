@@ -70,24 +70,41 @@ class ChartController extends Controller
 
         if(($timeRange == '1W')||($timeRange == '1M'))
         {
-            $fromTime = date("Y-m-d",strtotime($fromTime)).' 05:00:00';
-            // Decide whether the data is in DB or not?
-            if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
+            if($timeRange == '1M')
             {
-                return true;
+                $toTime = date("Y-m-d H", strtotime('-4 hour')).':00:00';
+                // Decide whether the data is in DB or not?
+                if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
-                return false;
+                // Decide whether the data is in DB or not?
+                if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
-        else    // Close time may be 21:00 not 22:00
+        else
         {
             $fromTime = date("Y-m-d",strtotime($fromTime));
             $from = date("Y-m-d",strtotime($from));
+            $toTime = date("Y-m-d");
+            $to = date("Y-m-d",strtotime($to));
 
             // Decide whether the data is in DB or not?
-            if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime(date("Y-m-d H:i:s",strtotime($toTime.' +1 hour')))))
+            if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
             {
                 return true;
             }
@@ -157,6 +174,9 @@ class ChartController extends Controller
 
                 // Give frontend data with time calibration
                 $final = [];
+                // Calculate average volume
+                $average = $this->averageVolume($output,'API');
+
                 if($reverseFlag >= 1)
                 {
                     foreach ($output as $data)
@@ -170,6 +190,7 @@ class ChartController extends Controller
                                 1/$data[4],
                                 1/$data[5],
                                 $data[6],
+                                $average,
                             ];
                     }
                 }
@@ -186,6 +207,7 @@ class ChartController extends Controller
                                 $data[4],
                                 $data[5],
                                 $data[6],
+                                $average,
                             ];
                     }
                 }
@@ -299,6 +321,32 @@ class ChartController extends Controller
         $chart_model::insert($query);
     }
 
+    // Calculate average volume
+    protected function averageVolume($output,$source)
+    {
+        $counter = 0;
+        $sum = 0;
+
+        if($source == 'DB')
+        {
+            foreach ($output as $data)
+            {
+                $counter = $counter + 1;
+                $sum = $sum + $data->volume;
+            }
+        }
+        else
+        {
+            foreach ($output as $data)
+            {
+                $counter = $counter + 1;
+                $sum = $sum + $data[6];
+            }
+        }
+
+        return intval($sum/$counter);
+    }
+
     // Response frontend request
     public function getTable(Request $request)  //Request $request
     {
@@ -313,15 +361,15 @@ class ChartController extends Controller
         {
             $timeRange = "1Y";
         }
-        // Temporary use
+        // Select time scale , each time scale start from open market time
         switch ($timeRange)
         {
             case "1W":
-                $fromTime = date("Y-m-d H", strtotime('-1 week')).':00:00';
+                $fromTime = date("Y-m-d", strtotime('-1 week')).' 05:00:00';
                 $chart_model = new ChartWeek;
                 break;
             case "1M":
-                $fromTime = date("Y-m-d H", strtotime('-1 month')).':00:00';
+                $fromTime = date("Y-m-d", strtotime('-1 month')).' 02:00:00';
                 $chart_model = new ChartMonth;
                 break;
             case "3M":
@@ -350,6 +398,8 @@ class ChartController extends Controller
             $result = $chart_model::where('type', $type)->whereBetween('time', array($fromTime,date("Y-m-d H:i:s")))->orderBy('time', 'desc')->get();
             $output = [];
 
+            // Calculate average volume
+            $average = $this->averageVolume($result,'DB');
             foreach ($result as $data)
             {
                 $output[] =
@@ -361,8 +411,10 @@ class ChartController extends Controller
                         $data->low,
                         $data->close,
                         $data->volume,
+                        $average,
                     ];
             }
+
                 return response()->json($output);
             }
         else    // Call Oanda API
