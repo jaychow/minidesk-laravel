@@ -11627,9 +11627,8 @@ var dataTable = anychart.data.table();
 //---------------------------------------------------------------
 $(document).ready(function () {
     var inputArg;
-    // Click events: submit button in chart
-    $('#chartSubmitButton').on('click', function (e) {
 
+    $('#pairsOption').on('change', function (e) {
         inputArg = processInputForm();
         inputArg['timeRange'] = '1Y';
 
@@ -11644,27 +11643,23 @@ $(document).ready(function () {
     // prevent from the button can only submit once
     $('#chartInput').on('submit', function (e) {
         e.preventDefault();
+
+        debugger;
     });
 
     // range selector button is pressed
-    $('#chart-rangeselectorContainer').on('click', function (e) {
-        if (e.target != e.currentTarget) {
-            var clickedItem = e.target.textContent;
-            inputArg['timeRange'] = clickedItem;
-            requestData(inputArg);
-        }
-    });
-    /*
-        // range picker textbox is changed
-        $('#chart-rangepickerContainer').on('change', function(e) {
-            debugger;
-            console.log(e);
-        });
-        */
+    // $('#chart-rangeselectorContainer').on('click', function(e) {
+    //     if (e.target != e.currentTarget) {
+    //         var clickedItem = e.target.textContent;
+    //         inputArg['timeRange'] = clickedItem;
+    //         requestData(inputArg);
+    //     }
+    // });
+
 });
 function requestData(argument) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
-    $.get('/chart/getTable', { pair: argument['pair'], timeRange: argument['timeRange'], utc: argument['utc'] }).done(function (data) {
+    $.get('/chart/getTable', { pair: argument['pairsOption'], timeRange: argument['timeRange'], utc: argument['utc'] }).done(function (data) {
         //var data_json = $.parseJSON(data);
         if (dataTable.bc.b.length > 0) renderDataToChart(data);else initiateChartSetting(data);
     }).fail(function (data) {
@@ -11676,9 +11671,10 @@ function processInputForm() {
     var inputArg = [];
     var form = document.getElementById("chartInput");
 
-    for (var i = 0; i < form.length - 1; i++) {
+    for (var i = 0; i < form.length; i++) {
         inputArg[form.elements[i].name] = form.elements[i].value;
-    }return inputArg;
+    }debugger;
+    return inputArg;
 }
 
 function initiateChartSetting(data) {
@@ -11694,6 +11690,12 @@ function initiateChartSetting(data) {
         'type': 'unit',
         'unit': 'day',
         'count': 31,
+        'anchor': 'last-data'
+    }, {
+        'text': '3M',
+        'type': 'unit',
+        'unit': 'day',
+        'count': 93,
         'anchor': 'last-data'
     }, {
         'text': '6M',
@@ -11732,11 +11734,6 @@ function initiateChartSetting(data) {
 
     plot.height('75%').yGrid(true).xGrid(true).yMinorGrid(true).xMinorGrid(true);
 
-    // create EMA indicators with period 50
-    plot.ema(dataTable.mapAs({
-        'value': 5
-    }), 10).series().stroke('2.5 #455a64');
-
     // create candlestick series
     var series = plot.candlestick(mapping);
     series.name('Candlestick');
@@ -11746,47 +11743,32 @@ function initiateChartSetting(data) {
     plot.line().data(dataTable.mapAs({
         'value': 5
     })).name('Line').stroke('1 #6f3448');
-
+    /*
     // set settings for event markers
     var eventMarkers = plot.eventMarkers();
     // set markers data
     eventMarkers.data([{
-        date: '2001-09-11',
-        description: '9-11 attacks'
-    }, {
-        date: '2003-03-20',
-        description: 'Iraq War'
-    }]);
-
-    // create second plot
-    var volumePlot = chart.plot(1);
-    // set yAxis labels formatter
-    volumePlot.yAxis().labels().format('{%Value}{scale:(1000)(1)|(k)}');
-    // set crosshair y-label formatter
-    volumePlot.crosshair().yLabel().format('{%Value}{scale:(1000)(1)|(k)}');
-
-    // create volume series on the plot
-    var volumeSeries = volumePlot.column(mapping);
-    // set series settings
-    volumeSeries.name('Volume');
-
-    // create scroller series with mapped data
-    chart.scroller().area(mapping);
-
-    var rangePicker = anychart.ui.rangePicker();
+            date: '2001-09-11',
+            description: '9-11 attacks'
+        },
+        {
+            date: '2003-03-20',
+            description: 'Iraq War'
+        }
+    ]);
+    */
+    /*
+    //var rangePicker = anychart.ui.rangePicker();
     var rangeSelector = anychart.ui.rangeSelector();
-
-    // specify which chart range selector controls
+     // specify which chart range selector controls
     rangeSelector.target(chart);
-    rangePicker.target(chart);
-
-    // Render the range selection controls into containers on a page
+    //rangePicker.target(chart);
+     // Render the range selection controls into containers on a page
     rangeSelector.render(document.getElementById("chart-rangeselectorContainer"));
-    rangePicker.render(document.getElementById("chart-rangepickerContainer"));
-
-    // Customize range selector
+    //rangePicker.render(document.getElementById("chart-rangepickerContainer"));
+     // Customize range selector
     rangeSelector.ranges(customRanges);
-
+    */
     chart.container("chart");
     chart.draw();
 }
