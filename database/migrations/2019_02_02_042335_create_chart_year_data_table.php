@@ -17,10 +17,10 @@ class CreateChartYearDataTable extends Migration
         {
             $table->dateTime('time');
             $table->text('type');
-            $table->float('open');
-            $table->float('high');
-            $table->float('low');
-            $table->float('close');
+            $table->float('open',8,4);
+            $table->float('high',8,4);
+            $table->float('low',8,4);
+            $table->float('close',8,4);
             $table->bigInteger('volume');
         });
     }
