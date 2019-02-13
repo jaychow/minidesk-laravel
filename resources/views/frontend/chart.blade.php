@@ -10,8 +10,15 @@
             <option value="CAD_USD">CAD_USD</option>
             <option value="EUR_USD">EUR_USD</option>
             <option value="USD_EUR">USD_EUR</option>
-        </select>
-
+        </select> <br/>
+        <div class="chart-timescaleButtons" id="chart-timescaleButtons">
+            <button>1W</button>
+            <button>1M</button>
+            <button>3M</button>
+            <button>6M</button>
+            <button>1Y</button>
+            <button>5Y</button>
+        </div>
         <div id="chart-rangeselectorContainer"></div>
     </form>
     <div id="chart-container">

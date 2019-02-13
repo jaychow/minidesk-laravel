@@ -11630,7 +11630,7 @@ $(document).ready(function () {
 
     $('#pairsOption').on('change', function (e) {
         inputArg = processInputForm();
-        inputArg['timeRange'] = '1Y';
+        inputArg['timeRange'] = '1W';
 
         // adding timezone info
         var d = new Date();
@@ -11647,15 +11647,17 @@ $(document).ready(function () {
         debugger;
     });
 
-    // range selector button is pressed
-    // $('#chart-rangeselectorContainer').on('click', function(e) {
-    //     if (e.target != e.currentTarget) {
-    //         var clickedItem = e.target.textContent;
-    //         inputArg['timeRange'] = clickedItem;
-    //         requestData(inputArg);
-    //     }
-    // });
-
+    // timescale buttons pressed
+    //$('#chart-rangeselectorContainer').on('click', function(e) {
+    $('#chart-timescaleButtons').on('click', function (e) {
+        if (e.target != e.currentTarget) {
+            var clickedItem = e.target.textContent;
+            inputArg['timeRange'] = clickedItem;
+            console.log(clickedItem);
+            debugger;
+            requestData(inputArg);
+        }
+    });
 });
 function requestData(argument) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
@@ -11678,44 +11680,51 @@ function processInputForm() {
 }
 
 function initiateChartSetting(data) {
-    // Selector Range Definition
-    var customRanges = [{
-        'text': '1W',
-        'type': 'unit',
-        'unit': 'day',
-        'count': 7,
-        'anchor': 'last-data'
-    }, {
-        'text': '1M',
-        'type': 'unit',
-        'unit': 'day',
-        'count': 31,
-        'anchor': 'last-data'
-    }, {
-        'text': '3M',
-        'type': 'unit',
-        'unit': 'day',
-        'count': 93,
-        'anchor': 'last-data'
-    }, {
-        'text': '6M',
-        'type': 'unit',
-        'unit': 'day',
-        'count': 186, // 31 * 6 = 186
-        'anchor': 'last-data'
-    }, {
-        'text': '1Y',
-        'type': 'unit',
-        'unit': 'year',
-        'count': 1,
-        'anchor': 'last-data'
-    }, {
-        'text': '5Y',
-        'type': 'unit',
-        'unit': 'year',
-        'count': 5,
-        'anchor': 'last-data'
-    }];
+    // // Selector Range Definition
+    // var customRanges = [
+    //     {
+    //         'text': '1W',
+    //         'type': 'unit',
+    //         'unit': 'day',
+    //         'count': 7,
+    //         'anchor': 'last-data'
+    //     },
+    //     {
+    //         'text': '1M',
+    //         'type': 'unit',
+    //         'unit': 'day',
+    //         'count': 31,
+    //         'anchor': 'last-data'
+    //     },
+    //     {
+    //         'text': '3M',
+    //         'type': 'unit',
+    //         'unit': 'day',
+    //         'count': 93,
+    //         'anchor': 'last-data'
+    //     },
+    //     {
+    //         'text': '6M',
+    //         'type': 'unit',
+    //         'unit': 'day',
+    //         'count': 186,    // 31 * 6 = 186
+    //         'anchor': 'last-data'
+    //     },
+    //     {
+    //         'text': '1Y',
+    //         'type': 'unit',
+    //         'unit': 'year',
+    //         'count': 1,
+    //         'anchor': 'last-data'
+    //     },
+    //     {
+    //         'text': '5Y',
+    //         'type': 'unit',
+    //         'unit': 'year',
+    //         'count': 5,
+    //         'anchor': 'last-data'
+    //     }
+    // ];
 
     // map loaded data for the ohlc series
     var mapping = dataTable.mapAs({
@@ -11732,7 +11741,7 @@ function initiateChartSetting(data) {
     // create first plot on the chart and set settings
     var plot = chart.plot(0);
 
-    plot.height('75%').yGrid(true).xGrid(true).yMinorGrid(true).xMinorGrid(true);
+    plot.height('75%').yGrid(false).xGrid(false).yMinorGrid(false).xMinorGrid(false);
 
     // create candlestick series
     var series = plot.candlestick(mapping);
@@ -11743,6 +11752,7 @@ function initiateChartSetting(data) {
     plot.line().data(dataTable.mapAs({
         'value': 5
     })).name('Line').stroke('1 #6f3448');
+
     /*
     // set settings for event markers
     var eventMarkers = plot.eventMarkers();
