@@ -174,8 +174,12 @@ class ChartController extends Controller
 
                 // Give frontend data with time calibration
                 $final = [];
+
                 // Calculate average volume
                 $average = $this->averageVolume($output,'API');
+
+                // Get the first value of open market price
+                $baseCurrency = $output[0][2];
 
                 if($reverseFlag >= 1)
                 {
@@ -185,12 +189,13 @@ class ChartController extends Controller
                             [
                                 $time = date("Y-m-d H:i:s", strtotime($data[0] .' ' .$utc.' hour')),
                                 $type,
-                                1/$data[2],
-                                1/$data[3],
-                                1/$data[4],
-                                1/$data[5],
+                                number_format(1/$data[2],4),
+                                number_format(1/$data[3],4),
+                                number_format(1/$data[4],4),
+                                number_format(1/$data[5],4),
                                 $data[6],
                                 $average,
+                                $percentage = $this->currencyPercentage($baseCurrency,1/$data[2]),
                             ];
                     }
                 }
@@ -208,6 +213,7 @@ class ChartController extends Controller
                                 $data[5],
                                 $data[6],
                                 $average,
+                                $percentage = $this->currencyPercentage($baseCurrency,$data[2]),
                             ];
                     }
                 }
@@ -253,10 +259,10 @@ class ChartController extends Controller
                 [
                     $time = str_replace($Filter_text, ' ', $candle->time),
                     $currencyType,
-                    $mid->o,
-                    $mid->h,
-                    $mid->l,
-                    $mid->c,
+                    number_format($mid->o,4),
+                    number_format($mid->h,4),
+                    number_format($mid->l,4),
+                    number_format($mid->c,4),
                     $candle->volume
                 ];
         }
@@ -347,6 +353,13 @@ class ChartController extends Controller
         return intval($sum/$counter);
     }
 
+    // Calculate the percentage of currency
+    protected function currencyPercentage($baseCurrency,$currency)
+    {
+        $result = (($currency - $baseCurrency)/$baseCurrency)*100;
+        return number_format($result,2);
+    }
+
     // Response frontend request
     public function getTable(Request $request)  //Request $request
     {
@@ -400,6 +413,10 @@ class ChartController extends Controller
 
             // Calculate average volume
             $average = $this->averageVolume($result,'DB');
+
+            // Get the first value of open market price
+            $baseCurrency = $result[0]->open;
+
             foreach ($result as $data)
             {
                 $output[] =
@@ -412,6 +429,7 @@ class ChartController extends Controller
                         $data->close,
                         $data->volume,
                         $average,
+                        $percentage = $this->currencyPercentage($baseCurrency,$data->open),
                     ];
             }
 
