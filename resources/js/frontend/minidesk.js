@@ -8,6 +8,9 @@ var chart = anychart.stock();
 // create data table on loaded data
 var dataTable = anychart.data.table();
 
+// create plot for chart
+var plot;
+
 //---------------------------------------------------------------
 //                      INITIAL CHART
 //---------------------------------------------------------------
@@ -19,9 +22,9 @@ var dataTable = anychart.data.table();
 $(document).ready(function() {
     var inputArg;
 
-    $('#pairsOption').on('change', function(e) {
+    $('#pairOptions').on('change', function(e) {
         inputArg = processInputForm();
-        inputArg['timeRange'] = '1W';
+        inputArg['timescale'] = '1Y';
 
         // adding timezone info
         var d = new Date();
@@ -34,29 +37,34 @@ $(document).ready(function() {
     // prevent from the button can only submit once
     $('#chartInput').on('submit', function(e) {
         e.preventDefault();
-
-        debugger
     });
 
     // timescale buttons pressed
-    //$('#chart-rangeselectorContainer').on('click', function(e) {
-    $('#chart-timescaleButtons').on('click', function(e) {
+    $('#timescaleButton').on('click', function(e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.textContent;
-            inputArg['timeRange'] = clickedItem;
+            inputArg['timescale'] = clickedItem;
             console.log(clickedItem);
-            debugger
             requestData(inputArg);
         }
     });
 
+    // type of graph
+    $('#candleLineButton').on('click', function(e) {
+        if (e.target != e.currentTarget) {
+            var clickedItem = e.target.value;
+            inputArg['type'] = clickedItem;
+            console.log(clickedItem);
+            switchType(clickedItem)
+        }
+    });
 
 });
 function requestData (argument) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get(
         '/chart/getTable',
-        {pair: argument['pairsOption'], timeRange: argument['timeRange'], utc: argument['utc']}
+        {pair: argument['pair'], timeRange: argument['timescale'], utc: argument['utc']}
     ).done(function (data) {
         //var data_json = $.parseJSON(data);
         if (dataTable.bc.b.length > 0)
@@ -76,59 +84,12 @@ function processInputForm () {
 
     for (var i = 0; i < form.length; i++)
         inputArg[form.elements[i].name] = form.elements[i].value;
-    debugger;
     return inputArg;
 }
 
 function initiateChartSetting (data) {
-    // // Selector Range Definition
-    // var customRanges = [
-    //     {
-    //         'text': '1W',
-    //         'type': 'unit',
-    //         'unit': 'day',
-    //         'count': 7,
-    //         'anchor': 'last-data'
-    //     },
-    //     {
-    //         'text': '1M',
-    //         'type': 'unit',
-    //         'unit': 'day',
-    //         'count': 31,
-    //         'anchor': 'last-data'
-    //     },
-    //     {
-    //         'text': '3M',
-    //         'type': 'unit',
-    //         'unit': 'day',
-    //         'count': 93,
-    //         'anchor': 'last-data'
-    //     },
-    //     {
-    //         'text': '6M',
-    //         'type': 'unit',
-    //         'unit': 'day',
-    //         'count': 186,    // 31 * 6 = 186
-    //         'anchor': 'last-data'
-    //     },
-    //     {
-    //         'text': '1Y',
-    //         'type': 'unit',
-    //         'unit': 'year',
-    //         'count': 1,
-    //         'anchor': 'last-data'
-    //     },
-    //     {
-    //         'text': '5Y',
-    //         'type': 'unit',
-    //         'unit': 'year',
-    //         'count': 5,
-    //         'anchor': 'last-data'
-    //     }
-    // ];
-
-    // map loaded data for the ohlc series
-    var mapping = dataTable.mapAs({
+    // map loaded data for candlestick/line
+    var candle_mapping = dataTable.mapAs({
         'open': 2,
         'high': 3,
         'low': 4,
@@ -136,11 +97,15 @@ function initiateChartSetting (data) {
         'value': 6
     });
 
+    var line_mapping = dataTable.mapAs({
+        'value': 5
+    })
+
     // Put the data into data table
     dataTable.addData(data);
 
     // create first plot on the chart and set settings
-    var plot = chart.plot(0);
+    plot = chart.plot(0);
 
     plot.height('75%')
         .yGrid(false)
@@ -148,20 +113,13 @@ function initiateChartSetting (data) {
         .yMinorGrid(false)
         .xMinorGrid(false);
 
-    // create candlestick series
-    var series = plot.candlestick(mapping);
-    series.name('Candlestick');
-    series.legendItem().iconType('rising-falling');
+    // create candlestick and line series
+    candlestick_series = plot.candlestick(candle_mapping);
+    line_series = plot.line(line_mapping)
 
-    // create line series
-    plot.line()
-        .data(dataTable.mapAs({
-            'value': 5
-        }))
-        .name('Line')
-        .stroke('1 #6f3448');
-
-
+    // set id for each series
+    candlestick_series.id("candle")
+    line_series.id("line")
 
     /*
     // set settings for event markers
@@ -177,21 +135,6 @@ function initiateChartSetting (data) {
         }
     ]);
     */
-    /*
-    //var rangePicker = anychart.ui.rangePicker();
-    var rangeSelector = anychart.ui.rangeSelector();
-
-    // specify which chart range selector controls
-    rangeSelector.target(chart);
-    //rangePicker.target(chart);
-
-    // Render the range selection controls into containers on a page
-    rangeSelector.render(document.getElementById("chart-rangeselectorContainer"));
-    //rangePicker.render(document.getElementById("chart-rangepickerContainer"));
-
-    // Customize range selector
-    rangeSelector.ranges(customRanges);
-    */
     chart.container("chart");
     chart.draw();
 }
@@ -201,4 +144,12 @@ function renderDataToChart (data) {
     // Clear dataTable;
     dataTable.remove();
     dataTable.addData(data);
+}
+
+function switchType(type) {
+    for (var i = 0; i < plot.getSeriesCount(); i++) {
+        plot.getSeriesAt(i).enabled(false);
+    }
+    var series = plot.getSeries(type);
+    series.enabled(true);
 }

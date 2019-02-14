@@ -11983,7 +11983,7 @@ body,
   padding: 0;
 }
 
-.timescaleButtons button {
+.chartButtons button {
   border: 1px solid slategrey;
   /* Green border */
   text-align: center;
@@ -11991,6 +11991,7 @@ body,
   display: inline-block;
   font-size: 10px;
   cursor: pointer;
+  border-radius: 10%;
   float: left;
 }
 
