@@ -192,7 +192,8 @@ class ChartController extends Controller
                                 $data[6],
                                 $average,
                                 $percentage = $this->priceChange(1/$data[2],1/$data[5]),
-                                $range = $this->priceRange(1/$data[3],1/$data[4])
+                                $range = $this->priceRange(1/$data[3],1/$data[4]),
+                                $volumeChange = $this->volumeChange($data[6],$average)
                             ];
                     }
                 }
@@ -211,7 +212,8 @@ class ChartController extends Controller
                                 $data[6],
                                 $average,
                                 $percentage = $this->priceRange($data[2],$data[5]),
-                                $range = $this->priceRange($data[3],$data[4])
+                                $range = $this->priceRange($data[3],$data[4]),
+                                $volumeChange = $this->volumeChange($data[6],$average)
                             ];
                     }
                 }
@@ -358,7 +360,14 @@ class ChartController extends Controller
         return intval($sum/$counter);
     }
 
-    // Calculate the price percentage change of each candlestick
+    // Calculate volume % change
+    protected function volumeChange($volume,$averageVolume)
+    {
+        $result = (($volume - $averageVolume) / $averageVolume)*100;
+        return number_format($result,3);
+    }
+
+    // Calculate the price % change of each candlestick
     protected function priceChange($open,$close)
     {
         $result = (($close - $open)/$open)*100;
@@ -438,7 +447,8 @@ class ChartController extends Controller
                         $data->volume,
                         $average,
                         $percentage = $this->priceChange($data->open,$data->close),
-                        $range = $this->priceRange($data->high,$data->low)
+                        $range = $this->priceRange($data->high,$data->low),
+                        $volumeChange = $this->volumeChange($data->volume,$average)
                     ];
             }
 
