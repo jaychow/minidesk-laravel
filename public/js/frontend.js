@@ -11631,6 +11631,9 @@ var plot;
 $(document).ready(function () {
     var inputArg;
 
+    //===========================================================
+    //                      CLICK EVENTS
+    //===========================================================
     $('#pairOptions').on('change', function (e) {
         inputArg = processInputForm();
         inputArg['timescale'] = '1Y';
@@ -11648,37 +11651,38 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    // timescale buttons pressed
+    // timescale buttons pressed (1D/1W/1M/3M/1Y/5Y)
     $('#timescaleButton').on('click', function (e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.textContent;
             inputArg['timescale'] = clickedItem;
             console.log(clickedItem);
-            debugger;
             requestData(inputArg);
         }
     });
 
-    // type of graph
+    // type of graph (candle/line)
     $('#candleLineButton').on('click', function (e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.value;
             inputArg['type'] = clickedItem;
             console.log(clickedItem);
-            debugger;
-            switchType(clickedItem);
+            switchChartType(clickedItem);
         }
     });
+
+    // axes labels (% or $)
+    $('#pricePercentageButton').on('click', function (e) {
+        if (e.target != e.currentTarget) {
+            var clickedItem = e.target.value;
+            inputArg['ylabelType'] = clickedItem;
+            switchLabelType(clickedItem);
+        }
+    });
+    //===========================================================
+    //                      CLICK EVENTS
+    //===========================================================
 });
-function requestData(argument) {
-    //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
-    $.get('/chart/getTable', { pair: argument['pair'], timeRange: argument['timescale'], utc: argument['utc'] }).done(function (data) {
-        //var data_json = $.parseJSON(data);
-        if (dataTable.bc.b.length > 0) renderDataToChart(data);else initiateChartSetting(data);
-    }).fail(function (data) {
-        console.log("Error: " + data);
-    }).always(function (data) {});
-}
 
 function processInputForm() {
     var inputArg = [];
@@ -11687,6 +11691,16 @@ function processInputForm() {
     for (var i = 0; i < form.length; i++) {
         inputArg[form.elements[i].name] = form.elements[i].value;
     }return inputArg;
+}
+
+function requestData(argument) {
+    //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
+    $.get('/chart/getTable', { pair: argument['pair'], timeRange: argument['timescale'], utc: argument['utc'] }).done(function (data) {
+        //var data_json = $.parseJSON(data);
+        if (dataTable.bc.b.length > 0) renderDataToChart(data);else initiateChartSetting(data);
+    }).fail(function (data) {
+        console.log("Error: " + data);
+    }).always(function (data) {});
 }
 
 function initiateChartSetting(data) {
@@ -11719,24 +11733,29 @@ function initiateChartSetting(data) {
     candlestick_series.id("candle");
     line_series.id("line");
 
-    plot.line().data(dataTable.mapAs({
-        'value': 5
-    })).name('Line').stroke('1 #6f3448');
+    // hide line series
+    line_series.enabled(false);
 
-    /*
-    // set settings for event markers
-    var eventMarkers = plot.eventMarkers();
-    // set markers data
-    eventMarkers.data([{
-            date: '2001-09-11',
-            description: '9-11 attacks'
-        },
-        {
-            date: '2003-03-20',
-            description: 'Iraq War'
-        }
-    ]);
-    */
+    // disable legend
+    plot.legend(false);
+
+    // y-axis format settings
+    var yLabels_price = plot.yAxis(0).labels();
+    yLabels_price.format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+
+    // // set settings for event markers
+    // var eventMarkers = plot.eventMarkers();
+    // // set markers data
+    // eventMarkers.data([{
+    //         date: '2001-09-11',
+    //         description: '9-11 attacks'
+    //     },
+    //     {
+    //         date: '2003-03-20',
+    //         description: 'Iraq War'
+    //     }
+    // ]);
+
     chart.container("chart");
     chart.draw();
 }
@@ -11748,12 +11767,18 @@ function renderDataToChart(data) {
     dataTable.addData(data);
 }
 
-function switchType(type) {
+function switchChartType(type) {
+    // hide all the series in plot
     for (var i = 0; i < plot.getSeriesCount(); i++) {
         plot.getSeriesAt(i).enabled(false);
     }
-    var series = plot.getSeries(type);
-    series.enabled(true);
+
+    // show the type user assigned only
+    plot.getSeries(type).enabled(true);
+}
+
+function switchLabelType(type) {
+    alert('not yet.');
 }
 
 /***/ }),

@@ -23,9 +23,9 @@
             <button value="candle">Candle</button>
             <button value="line">Line</button>
         </div> <br/>
-        <div class="chartButtons" id="valuePercentageButton">
-            <button>%</button>
-            <button>$</button>
+        <div class="chartButtons" id="pricePercentageButton">
+            <button value="percent">%</button>
+            <button value="price">$</button>
         </div>
         <div id="chart-rangeselectorContainer"></div>
     </form>
