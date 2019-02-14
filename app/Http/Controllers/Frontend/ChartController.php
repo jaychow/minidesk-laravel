@@ -170,16 +170,12 @@ class ChartController extends Controller
                 $result = $response->getBody();
                 $result = json_decode($result);
                 $output = $this->getCandles($result);
-                $this->storeAPI($output,$chart_model);
 
                 // Give frontend data with time calibration
                 $final = [];
 
                 // Calculate average volume
                 $average = $this->averageVolume($output,'API');
-
-                // Get the first value of open market price
-                $baseCurrency = $output[0][2];
 
                 if($reverseFlag >= 1)
                 {
@@ -189,13 +185,14 @@ class ChartController extends Controller
                             [
                                 $time = date("Y-m-d H:i:s", strtotime($data[0] .' ' .$utc.' hour')),
                                 $type,
-                                number_format(1/$data[2],4),
-                                number_format(1/$data[3],4),
-                                number_format(1/$data[4],4),
-                                number_format(1/$data[5],4),
+                                number_format(1/$data[2],5),
+                                number_format(1/$data[3],5),
+                                number_format(1/$data[4],5),
+                                number_format(1/$data[5],5),
                                 $data[6],
                                 $average,
-                                $percentage = $this->currencyPercentage($baseCurrency,1/$data[2]),
+                                $percentage = $this->priceChange(1/$data[2],1/$data[5]),
+                                $range = $this->priceRange(1/$data[3],1/$data[4])
                             ];
                     }
                 }
@@ -213,10 +210,12 @@ class ChartController extends Controller
                                 $data[5],
                                 $data[6],
                                 $average,
-                                $percentage = $this->currencyPercentage($baseCurrency,$data[2]),
+                                $percentage = $this->priceRange($data[2],$data[5]),
+                                $range = $this->priceRange($data[3],$data[4])
                             ];
                     }
                 }
+                $this->storeAPI($final,$chart_model);
                 return response()->json($final);
                 //echo json_encode($final);
             }
@@ -259,10 +258,10 @@ class ChartController extends Controller
                 [
                     $time = str_replace($Filter_text, ' ', $candle->time),
                     $currencyType,
-                    number_format($mid->o,4),
-                    number_format($mid->h,4),
-                    number_format($mid->l,4),
-                    number_format($mid->c,4),
+                    number_format($mid->o,5),
+                    number_format($mid->h,5),
+                    number_format($mid->l,5),
+                    number_format($mid->c,5),
                     $candle->volume
                 ];
         }
@@ -290,13 +289,15 @@ class ChartController extends Controller
             $toType = $to . '_' . $from;
             $time = $value[0];
             $volume = $value[6];
+            $priceChange = $value[8];
+            $priceRange = $value[9];
             $fromOpen = $value[2];
             $fromHigh = $value[3];
             $fromLow = $value[4];
             $fromClose = $value[5];
             $toOpen = 1 / $fromOpen;
-            $toHigh = 1 / $fromHigh;
-            $toLow = 1 / $fromLow;
+            $toHigh = 1 / $fromLow;
+            $toLow = 1 / $fromHigh;
             $toClose = 1 / $fromClose;
             $query[] =
                 [
@@ -306,7 +307,9 @@ class ChartController extends Controller
                     'high' => $fromHigh,
                     'low' => $fromLow,
                     'close' => $fromClose,
-                    'volume' => $volume
+                    'volume' => $volume,
+                    'price_change' => $priceChange,
+                    'price_range' => $priceRange
                 ];
             $query[] =
                 [
@@ -316,7 +319,9 @@ class ChartController extends Controller
                     'high' => $toHigh,
                     'low' => $toLow,
                     'close' => $toClose,
-                    'volume' => $volume
+                    'volume' => $volume,
+                    'price_change' => $this->priceChange($toOpen,$toClose),
+                    'price_range' => $this->priceRange($toHigh,$toLow)
                 ];
         }
 
@@ -353,11 +358,17 @@ class ChartController extends Controller
         return intval($sum/$counter);
     }
 
-    // Calculate the percentage of currency
-    protected function currencyPercentage($baseCurrency,$currency)
+    // Calculate the price percentage change of each candlestick
+    protected function priceChange($open,$close)
     {
-        $result = (($currency - $baseCurrency)/$baseCurrency)*100;
-        return number_format($result,2);
+        $result = (($close - $open)/$open)*100;
+        return number_format($result,3);
+    }
+
+    // Calculate the price range of each candlestick
+    protected function priceRange($high,$low)
+    {
+        return number_format($high - $low,5);
     }
 
     // Response frontend request
@@ -414,9 +425,6 @@ class ChartController extends Controller
             // Calculate average volume
             $average = $this->averageVolume($result,'DB');
 
-            // Get the first value of open market price
-            $baseCurrency = $result[0]->open;
-
             foreach ($result as $data)
             {
                 $output[] =
@@ -429,7 +437,8 @@ class ChartController extends Controller
                         $data->close,
                         $data->volume,
                         $average,
-                        $percentage = $this->currencyPercentage($baseCurrency,$data->open),
+                        $percentage = $this->priceChange($data->open,$data->close),
+                        $range = $this->priceRange($data->high,$data->low)
                     ];
             }
 
