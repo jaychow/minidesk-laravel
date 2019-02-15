@@ -11754,6 +11754,8 @@ function initiateChartSetting(data) {
     yAxis.scale(yScale);
     yAxis.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
 
+    // disable tooltip
+    chart.tooltip(false);
     // // set settings for event markers
     // var eventMarkers = plot.eventMarkers();
     // // set markers data
