@@ -11740,9 +11740,6 @@ function initiateChartSetting(data) {
     // hide line series
     line_series.enabled(false);
 
-    // disable legend
-    plot.legend(false);
-
     // x-axis orientation
     plot.xAxis().orientation("bottom");
 
@@ -11756,6 +11753,21 @@ function initiateChartSetting(data) {
 
     // disable tooltip
     chart.tooltip(false);
+
+    // disable legend
+    plot.legend(true);
+
+    // set the source mode of the legend
+    plot.legend().iconSize(0);
+
+    // enable html for legend items
+    candlestick_series.legendItem(true);
+    line_series.legendItem(false);
+    candlestick_series.legendItem().useHtml(true);
+
+    // configure the format of legend items
+    candlestick_series.legendItem().format("<span style='color:#455a64;font-weight:600'>{%seriesName}: " + "</span>O {%open} H {%high} L {%low} C {%close}");
+
     // // set settings for event markers
     // var eventMarkers = plot.eventMarkers();
     // // set markers data
@@ -11782,13 +11794,33 @@ function renderDataToChart(data) {
 }
 
 function switchChartType(type) {
-    // hide all the series in plot
+    // hide all the series in plot, hide the legend of all series
     for (var i = 0; i < plot.getSeriesCount(); i++) {
         plot.getSeriesAt(i).enabled(false);
+        plot.getSeriesAt(i).legendItem(false);
     }
 
     // show the type user assigned only
-    plot.getSeries(type).enabled(true);
+    var series = plot.getSeries(type);
+    series.enabled(true);
+    series.legendItem(true);
+
+    // enable html for legend items
+    series.legendItem().useHtml(true);
+
+    // set the source mode of the legend
+    //plot.legend().iconSize(0);
+
+    // configure the format of legend items
+    switch (type) {
+        case 'line':
+            series.legendItem().format("<span style='color:#455a64;font-weight:600'>{%seriesName}: " + "</span>{%value}");
+            break;
+
+        case 'candle':
+            series.legendItem().format("<span style='color:#455a64;font-weight:600'>{%seriesName}: " + "</span>O {%open} H {%high} L {%low} C {%close}");
+            break;
+    }
 }
 
 function switchYaxisType(type) {
