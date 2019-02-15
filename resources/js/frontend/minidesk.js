@@ -67,7 +67,7 @@ $(document).ready(function() {
        if (e.target != e.currentTarget) {
            var clickedItem = e.target.value;
            inputArg['ylabelType'] = clickedItem;
-           switchLabelType(clickedItem);
+           switchYaxisType(clickedItem);
        }
     });
     //===========================================================
@@ -114,9 +114,10 @@ function initiateChartSetting (data) {
         'value': 6
     });
 
+    //
     var line_mapping = dataTable.mapAs({
         'value': 5
-    })
+    });
 
     // Put the data into data table
     dataTable.addData(data);
@@ -130,13 +131,16 @@ function initiateChartSetting (data) {
         .yMinorGrid(false)
         .xMinorGrid(false);
 
+    // chart position
+    chart.bounds(0, '3%', '95%', '80%');
+
     // create candlestick and line series
     candlestick_series = plot.candlestick(candle_mapping);
-    line_series = plot.line(line_mapping)
+    line_series = plot.line(line_mapping);
 
     // set id for each series
-    candlestick_series.id("candle")
-    line_series.id("line")
+    candlestick_series.id("candle");
+    line_series.id("line");
 
     // hide line series
     line_series.enabled(false);
@@ -144,9 +148,16 @@ function initiateChartSetting (data) {
     // disable legend
     plot.legend(false);
 
-    // y-axis format settings
-    var yLabels_price = plot.yAxis(0).labels();
-    yLabels_price.format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+    // x-axis orientation
+    plot.xAxis().orientation("bottom");
+
+    // y-axis(price) format settings
+    var yAxis = plot.yAxis();
+    yAxis.orientation("right");
+    var yScale = plot.yScale();
+    yScale.comparisonMode("none");
+    yAxis.scale(yScale);
+    yAxis.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
 
     // // set settings for event markers
     // var eventMarkers = plot.eventMarkers();
@@ -157,6 +168,7 @@ function initiateChartSetting (data) {
     //     },
     //     {
     //         date: '2003-03-20',
+    //
     //         description: 'Iraq War'
     //     }
     // ]);
@@ -182,6 +194,24 @@ function switchChartType(type) {
     plot.getSeries(type).enabled(true);
 }
 
-function switchLabelType(type) {
-    alert('not yet.')
+function switchYaxisType(type) {
+    // getting yaxis
+    var yAxis = plot.yAxis();
+    yAxis.orientation("right");
+
+    // yscale
+    var yScale = plot.yScale();
+    switch(type) {
+        case "percent":         // button: " % "
+            yScale.comparisonMode("percent");
+            yScale.compareWith("seriesStart");
+            yAxis.labels().format("{%value}{decimalsCount:2, zeroFillDecimals:true} %");
+            break;
+
+        case "price":           // button: " $ "
+            yScale.comparisonMode("none");
+            yAxis.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+            break;
+    }
+    yAxis.scale(yScale);
 }
