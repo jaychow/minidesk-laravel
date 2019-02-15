@@ -17,11 +17,13 @@ class CreateChartMonthDataTable extends Migration
         {
             $table->dateTime('time');
             $table->text('type');
-            $table->float('open',8,4);
-            $table->float('high',8,4);
-            $table->float('low',8,4);
-            $table->float('close',8,4);
+            $table->float('open',8,5);
+            $table->float('high',8,5);
+            $table->float('low',8,5);
+            $table->float('close',8,5);
             $table->bigInteger('volume');
+            $table->float('price_change',8,3);
+            $table->float('price_range',8,5);
         });
     }
 
