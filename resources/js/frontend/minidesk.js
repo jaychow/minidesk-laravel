@@ -111,7 +111,12 @@ function initiateChartSetting (data) {
         'high': 3,
         'low': 4,
         'close': 5,
-        'value': 6
+        'value': 6,
+        // 'average_volume': 7,        // further info (show in legend when hovering around)
+        // 'delta_volume_p': 8,       // further info (show in legend when hovering around)
+        // 'delta_volume': 9,          // further info (show in legend when hovering around)
+        // 'average_volume_p': 10     // further info (show in legend when hovering around)
+
     });
 
     //
@@ -135,8 +140,8 @@ function initiateChartSetting (data) {
     chart.bounds(0, '3%', '95%', '80%');
 
     // create candlestick and line series
-    candlestick_series = plot.candlestick(candle_mapping);
-    line_series = plot.line(line_mapping);
+    var candlestick_series = plot.candlestick(candle_mapping);
+    var line_series = plot.line(line_mapping);
 
     // set id for each series
     candlestick_series.id("candle");
@@ -145,8 +150,22 @@ function initiateChartSetting (data) {
     // hide line series
     line_series.enabled(false);
 
-    // x-axis orientation
-    plot.xAxis().orientation("bottom");
+    // x-axis(date-time) format settings
+    var xAxis = plot.xAxis();
+    xAxis.orientation("bottom");
+
+    // setting y scale type as dateTime and adjusting minimum and maximum values
+    // var dateScale = anychart.scales.dateTime();
+    // var dateTicks = dateScale.ticks();
+    // dateTicks.interval(0, 1);
+    // var dateMinorTicks = dateScale.minorTicks();
+    // dateMinorTicks.interval(0, 0, 15);
+    // plot.xScale(dateScale);
+
+    // var ticks = plot.xScale().ticks();
+    // ticks.interval(0, 1);    // Y, M, D, h, m, s
+    // var minorTicks = plot.xScale().minorTicks();
+    // minorTicks.interval(0, 0, 15);
 
     // y-axis(price) format settings
     var yAxis = plot.yAxis();
@@ -159,23 +178,40 @@ function initiateChartSetting (data) {
     // disable tooltip
     chart.tooltip(false);
 
+    // disable scroller
+    chart.scroller().enabled(false);
 
-    // disable legend
+    // enable legend
     plot.legend(true);
 
     // set the source mode of the legend
     plot.legend().iconSize(0);
 
     // enable html for legend items
-    candlestick_series.legendItem(true);
-    line_series.legendItem(false);
-    candlestick_series.legendItem().useHtml(true);
+    // candlestick_series.legendItem(true);
+    // line_series.legendItem(false);
+    // candlestick_series.legendItem().useHtml(true);
+    //
+    // // configure the format of legend items
+    // candlestick_series.legendItem().format(
+    //     "<span style='color:#455a64;font-weight:600'>{%seriesName}: " +
+    //     "</span>O {%open} H {%high} L {%low} C {%close}"
+    // );
 
-    // configure the format of legend items
-    candlestick_series.legendItem().format(
-        "<span style='color:#455a64;font-weight:600'>{%seriesName}: " +
-        "</span>O {%open} H {%high} L {%low} C {%close}"
-    );
+
+    //===========================================================
+    //                      CROSSHAIR
+    //===========================================================
+
+    // enable the crosshair
+    chart.crosshair(true);
+
+    // configure the crosshair
+    chart.crosshair().xLabel().format(function(e) {
+        return anychart.format.dateTime(this.value, "MMM d, yyyy");
+    });
+    chart.crosshair().yLabel().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+
 
     // // set settings for event markers
     // var eventMarkers = plot.eventMarkers();
@@ -190,6 +226,21 @@ function initiateChartSetting (data) {
     //         description: 'Iraq War'
     //     }
     // ]);
+
+    // configure the format of legend items
+    // plot.legend().itemsFormat(function() {
+    //     var series = this.series;
+    //     if (series.getType() == "line") {
+    //         return "<span style='color:#455a64;font-weight:600'>" +
+    //             series.name() + ":</span> " + this.value;
+    //     }
+    //     if (series.getType() == "ohlc") {
+    //         return "<span style='color:#455a64;font-weight:600'>" +
+    //             series.name() + ":</span> " +
+    //             this.open + " / " + this.high + " / " +
+    //             this.low + " / " + this.close;
+    //     }
+    // });
 
     chart.container("chart");
     chart.draw();
@@ -258,4 +309,15 @@ function switchYaxisType(type) {
             break;
     }
     yAxis.scale(yScale);
+
+    // crosshair
+    var crosshair = chart.crosshair();
+    switch(type) {
+        case "percent":
+            crosshair.yLabel().format("{%value}{decimalsCount:2, zeroFillDecimals:true} %");
+            break;
+        case "price":
+            crosshair.yLabel().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+            break;
+    }
 }
