@@ -11746,7 +11746,7 @@ function initiateChartSetting(data) {
     // create candlestick and line series
     var candlestick_series = plot.candlestick(candle_mapping);
     var line_series = plot.line(line_mapping);
-    var avg_series = plot.line(vol_mapping);
+    var vol_series = plot.line(vol_mapping);
     var avgVol_series = plot.line(avg_volume_mapping);
     var delVolPercentage_series = plot.line(del_volume_p_mapping);
     var delVol_series = plot.line(del_volume_mapping);
@@ -11757,7 +11757,7 @@ function initiateChartSetting(data) {
     line_series.id("line");
 
     // set the name for series
-    avg_series.name("Vol");
+    vol_series.name("Vol");
     avgVol_series.name("Avg Volume");
     delVolPercentage_series.name("Delta Volume(%)");
     delVol_series.name("Delta Volume");
@@ -11765,7 +11765,7 @@ function initiateChartSetting(data) {
 
     // hide line series
     line_series.enabled(false);
-    avg_series.enabled(false);
+    vol_series.enabled(false);
     avgVol_series.enabled(false);
     delVolPercentage_series.enabled(false);
     delVol_series.enabled(false);
@@ -11811,7 +11811,7 @@ function initiateChartSetting(data) {
 
     // set position and alignment of legend
     // change size in height
-    plot.legend().height(35);
+    plot.legend().height(50);
 
     // adjust the paginator
     plot.legend().paginator(false);
@@ -11822,11 +11822,11 @@ function initiateChartSetting(data) {
     // enable html for legend items
     candlestick_series.legendItem(true);
     line_series.legendItem(false);
-    avg_series.legendItem(true);
-    avgVol_series.legendItem(true);
-    delVolPercentage_series.legendItem(true);
-    delVol_series.legendItem(true);
-    avgVolPercentage_series.legendItem(true);
+    vol_series.legendItem(false);
+    avgVol_series.legendItem(false);
+    delVolPercentage_series.legendItem(false);
+    delVol_series.legendItem(false);
+    avgVolPercentage_series.legendItem(false);
 
     // legend style
     candlestick_series.legendItem().useHtml(true);
@@ -11835,15 +11835,18 @@ function initiateChartSetting(data) {
 
     // configure the format of legend items (candlestick)
     candlestick_series.legendItem().format(function (e) {
-        // var data = candle_mapping.(this.index, 'date');
-        //var a = candlestick_series.get(this.index, 'date');
-        return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: O " + this.open + " H " + this.high + " L " + this.low + " C " + this.close;
+        var length = jsonData.length;
+        if (length > 0 && this.index < length && this.index > 0) {
+            return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> " + this.open + " <b>H</b> " + this.high + " <b>L</b> " + this.low + " <b>C</b> " + this.close + "<br/>" + "<b>Vol</b> " + jsonData[length - this.index - 1][6] + " <b>Avg Vol</b> " + jsonData[length - this.index - 1][7] + " <b>Delta Vol(%)</b> " + jsonData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonData[length - this.index - 1][10] + "%";
+        } else {
+            return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" + "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta Vol(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
+        }
     });
 
     // configure the format of legend items (info)
-    avg_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
+    vol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
     avgVol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
-    delVolPercentage_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:2, zeroFillDecimals:true} %");
+    delVolPercentage_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:2, " + "zeroFillDecimals:true} %");
     delVol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
     avgVolPercentage_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:2, zeroFillDecimals:true} %");
 
@@ -11925,7 +11928,14 @@ function switchChartType(type) {
             break;
 
         case 'candle':
-            series.legendItem().format("<span style='color:#455a64;font-weight:600'>{%seriesName}: " + "</span>O {%open} H {%high} L {%low} C {%close}");
+            series.legendItem().format(function (e) {
+                var length = jsonData.length;
+                if (length > 0 && this.index < length && this.index > 0) {
+                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> " + this.open + " <b>H</b> " + this.high + " <b>L</b> " + this.low + " <b>C</b> " + this.close + "<br/>" + "<b>Vol</b> " + jsonData[length - this.index - 1][6] + " <b>Avg Vol</b> " + jsonData[length - this.index - 1][7] + " <b>Delta Vol(%)</b> " + jsonData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonData[length - this.index - 1][10] + "%";
+                } else {
+                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" + "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta Vol(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
+                }
+            });
             break;
     }
 }
