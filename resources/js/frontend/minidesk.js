@@ -246,11 +246,11 @@ function initiateChartSetting (data) {
             return "<span style='color:#455a64;font-weight:600'>" + this.index +
                 "</span>: <b>O</b> " + this.open + " <b>H</b> " + this.high + " <b>L</b> " + this.low + " <b>C</b> " + this.close + "<br/>" +
                 "<b>Vol</b> " + jsonData[length - this.index - 1][6] + " <b>Avg Vol</b> " + jsonData[length - this.index - 1][7] +
-                " <b>Delta Vol(%)</b> " + jsonData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonData[length - this.index - 1][10] + "%";
+                " <b>Delta O-C(%)</b> " + jsonData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonData[length - this.index - 1][10] + "%";
         } else {
             return "<span style='color:#455a64;font-weight:600'>" + this.index +
                 "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" +
-                "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta Vol(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
+                "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
         }
     });
 
@@ -346,17 +346,19 @@ function switchChartType(type) {
             break;
 
         case 'candle':
+            series.legnedItem().clear()
             series.legendItem().format( function(e) {
+
                 var length = jsonData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
                     return "<span style='color:#455a64;font-weight:600'>" + this.index +
                         "</span>: <b>O</b> " + this.open + " <b>H</b> " + this.high + " <b>L</b> " + this.low + " <b>C</b> " + this.close + "<br/>" +
                         "<b>Vol</b> " + jsonData[length - this.index - 1][6] + " <b>Avg Vol</b> " + jsonData[length - this.index - 1][7] +
-                        " <b>Delta Vol(%)</b> " + jsonData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonData[length - this.index - 1][10] + "%";
+                        " <b>Delta O-C(%)</b> " + jsonData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonData[length - this.index - 1][10] + "%";
                 } else {
                     return "<span style='color:#455a64;font-weight:600'>" + this.index +
                         "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" +
-                        "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta Vol(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
+                        "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
                 }
 
             });
