@@ -11616,9 +11616,12 @@ var chart = anychart.stock();
 
 // create data table on loaded data
 var dataTable = anychart.data.table();
-
+var jsonData;
 // create plot for chart
 var plot;
+
+// create mapping for candle and line;
+var candle_mapping, line_mapping;
 
 //---------------------------------------------------------------
 //                      INITIAL CHART
@@ -11696,6 +11699,7 @@ function processInputForm() {
 function requestData(argument) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get('/chart/getTable', { pair: argument['pair'], timeRange: argument['timescale'], utc: argument['utc'] }).done(function (data) {
+        jsonData = data;
         //var data_json = $.parseJSON(data);
         if (dataTable.bc.b.length > 0) renderDataToChart(data);else initiateChartSetting(data);
     }).fail(function (data) {
@@ -11705,12 +11709,12 @@ function requestData(argument) {
 
 function initiateChartSetting(data) {
     // map loaded data for candlestick/line
-    var candle_mapping = dataTable.mapAs({
+    candle_mapping = dataTable.mapAs({
         'open': 2,
         'high': 3,
         'low': 4,
-        'close': 5,
-        'value': 6
+        'close': 5
+        // 'value': 6,
         // 'average_volume': 7,        // further info (show in legend when hovering around)
         // 'delta_volume_p': 8,       // further info (show in legend when hovering around)
         // 'delta_volume': 9,          // further info (show in legend when hovering around)
@@ -11718,10 +11722,15 @@ function initiateChartSetting(data) {
 
     });
 
-    //
-    var line_mapping = dataTable.mapAs({
+    line_mapping = dataTable.mapAs({
         'value': 5
     });
+
+    var vol_mapping = dataTable.mapAs({ 'x': 0, 'value': 6 });
+    var avg_volume_mapping = dataTable.mapAs({ 'x': 0, 'value': 7 });
+    var del_volume_p_mapping = dataTable.mapAs({ 'x': 0, 'value': 8 });
+    var del_volume_mapping = dataTable.mapAs({ 'x': 0, 'value': 9 });
+    var avg_volume_p_mapping = dataTable.mapAs({ 'x': 0, 'value': 10 });
 
     // Put the data into data table
     dataTable.addData(data);
@@ -11737,13 +11746,30 @@ function initiateChartSetting(data) {
     // create candlestick and line series
     var candlestick_series = plot.candlestick(candle_mapping);
     var line_series = plot.line(line_mapping);
+    var avg_series = plot.line(vol_mapping);
+    var avgVol_series = plot.line(avg_volume_mapping);
+    var delVolPercentage_series = plot.line(del_volume_p_mapping);
+    var delVol_series = plot.line(del_volume_mapping);
+    var avgVolPercentage_series = plot.line(avg_volume_p_mapping);
 
     // set id for each series
     candlestick_series.id("candle");
     line_series.id("line");
 
+    // set the name for series
+    avg_series.name("Vol");
+    avgVol_series.name("Avg Volume");
+    delVolPercentage_series.name("Delta Volume(%)");
+    delVol_series.name("Delta Volume");
+    avgVolPercentage_series.name("Avg Volume(%)");
+
     // hide line series
     line_series.enabled(false);
+    avg_series.enabled(false);
+    avgVol_series.enabled(false);
+    delVolPercentage_series.enabled(false);
+    delVol_series.enabled(false);
+    avgVolPercentage_series.enabled(false);
 
     // x-axis(date-time) format settings
     var xAxis = plot.xAxis();
@@ -11776,23 +11802,50 @@ function initiateChartSetting(data) {
     // disable scroller
     chart.scroller().enabled(false);
 
+    //===========================================================
+    //                      LEGEND
+    //===========================================================
+
     // enable legend
     plot.legend(true);
 
+    // set position and alignment of legend
+    // change size in height
+    plot.legend().height(35);
+
+    // adjust the paginator
+    plot.legend().paginator(false);
+
     // set the source mode of the legend
     plot.legend().iconSize(0);
-
+    //candlestick_series.legendItem().iconSize(0);
     // enable html for legend items
-    // candlestick_series.legendItem(true);
-    // line_series.legendItem(false);
-    // candlestick_series.legendItem().useHtml(true);
-    //
-    // // configure the format of legend items
-    // candlestick_series.legendItem().format(
-    //     "<span style='color:#455a64;font-weight:600'>{%seriesName}: " +
-    //     "</span>O {%open} H {%high} L {%low} C {%close}"
-    // );
+    candlestick_series.legendItem(true);
+    line_series.legendItem(false);
+    avg_series.legendItem(true);
+    avgVol_series.legendItem(true);
+    delVolPercentage_series.legendItem(true);
+    delVol_series.legendItem(true);
+    avgVolPercentage_series.legendItem(true);
 
+    // legend style
+    candlestick_series.legendItem().useHtml(true);
+    // info_series.legendItem().iconType('rising-falling');
+
+
+    // configure the format of legend items (candlestick)
+    candlestick_series.legendItem().format(function (e) {
+        // var data = candle_mapping.(this.index, 'date');
+        //var a = candlestick_series.get(this.index, 'date');
+        return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: O " + this.open + " H " + this.high + " L " + this.low + " C " + this.close;
+    });
+
+    // configure the format of legend items (info)
+    avg_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
+    avgVol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
+    delVolPercentage_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:2, zeroFillDecimals:true} %");
+    delVol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
+    avgVolPercentage_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:2, zeroFillDecimals:true} %");
 
     //===========================================================
     //                      CROSSHAIR
@@ -11802,18 +11855,9 @@ function initiateChartSetting(data) {
     chart.crosshair(true);
 
     // configure the crosshair
-
-    // crosshair - xLabel setting
-    // chart.crosshair().xLabel().format(function(e) {
-    //     //chart.xAxis().labels().format('{%Value}{dateTimeFormat:MM-dd}');
-    //
-    //     return "{this.value}{dateTimeFormat:MM-dd}";
-    // });
-
     chart.crosshair().xLabel().format(function (e) {
         return anychart.format.dateTime(this.value, "MMM d, yyyy");
     });
-    // set the text of the y-label
     chart.crosshair().yLabel().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
 
     // // set settings for event markers
