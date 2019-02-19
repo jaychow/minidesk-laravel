@@ -186,13 +186,13 @@ class ChartController extends Controller
                                 $time = date("Y-m-d H:i:s", strtotime($data[0] .' ' .$utc.' hour')),
                                 $type,
                                 number_format(1/$data[2],5),
-                                number_format(1/$data[3],5),
                                 number_format(1/$data[4],5),
+                                number_format(1/$data[3],5),
                                 number_format(1/$data[5],5),
                                 $data[6],
                                 $average,
                                 $percentage = $this->priceChange(1/$data[2],1/$data[5]),
-                                $range = $this->priceRange(1/$data[3],1/$data[4]),
+                                $range = $this->priceRange(1/$data[4],1/$data[3]),
                                 $volumeChange = $this->volumeChange($data[6],$average)
                             ];
                     }
@@ -201,6 +201,7 @@ class ChartController extends Controller
                 {
                     foreach ($output as $data)
                     {
+                        $percentage = $this->priceRange($data[2],$data[5]);
                         $final[] =
                             [
                                 $time = date("Y-m-d H:i:s", strtotime($data[0] .' ' .$utc.' hour')),
@@ -211,7 +212,7 @@ class ChartController extends Controller
                                 $data[5],
                                 $data[6],
                                 $average,
-                                $percentage = $this->priceRange($data[2],$data[5]),
+                                $percentage = $this->priceChange($data[2],$data[5]),
                                 $range = $this->priceRange($data[3],$data[4]),
                                 $volumeChange = $this->volumeChange($data[6],$average)
                             ];
@@ -447,7 +448,7 @@ class ChartController extends Controller
                         $data->volume,
                         $average,
                         $percentage = $this->priceChange($data->open,$data->close),
-                        $range = $this->priceRange($data->high,$data->low),
+                        $data->price_range,
                         $volumeChange = $this->volumeChange($data->volume,$average)
                     ];
             }
