@@ -448,7 +448,7 @@ class ChartController extends Controller
                         $data->volume,
                         $average,
                         $percentage = $this->priceChange($data->open,$data->close),
-                        $data->price_range,
+                        $change = $this->priceRange($data->high,$data->low),
                         $volumeChange = $this->volumeChange($data->volume,$average)
                     ];
             }
