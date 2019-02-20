@@ -127,13 +127,6 @@ function initiateChartSetting (data) {
         'value': 5
     });
 
-    var vol_mapping = dataTable.mapAs({'x': 0, 'value': 6});
-    var avg_volume_mapping = dataTable.mapAs({'x': 0, 'value': 7});
-    var del_volume_p_mapping = dataTable.mapAs({'x': 0, 'value': 8});
-    var del_volume_mapping = dataTable.mapAs({'x': 0, 'value': 9});
-    var avg_volume_p_mapping = dataTable.mapAs({'x': 0, 'value': 10});
-
-
     // Put the data into data table
     dataTable.addData(data);
 
@@ -152,30 +145,13 @@ function initiateChartSetting (data) {
     // create candlestick and line series
     var candlestick_series = plot.candlestick(candle_mapping);
     var line_series = plot.line(line_mapping);
-    var vol_series = plot.line(vol_mapping);
-    var avgVol_series = plot.line(avg_volume_mapping);
-    var delVolPercentage_series = plot.line(del_volume_p_mapping);
-    var delVol_series = plot.line(del_volume_mapping);
-    var avgVolPercentage_series = plot.line(avg_volume_p_mapping);
 
     // set id for each series
     candlestick_series.id("candle");
     line_series.id("line");
 
-    // set the name for series
-    vol_series.name("Vol");
-    avgVol_series.name("Avg Volume");
-    delVolPercentage_series.name("Delta Volume(%)");
-    delVol_series.name("Delta Volume");
-    avgVolPercentage_series.name("Avg Volume(%)");
-
     // hide line series
     line_series.enabled(false);
-    vol_series.enabled(false);
-    avgVol_series.enabled(false);
-    delVolPercentage_series.enabled(false);
-    delVol_series.enabled(false);
-    avgVolPercentage_series.enabled(false);
 
     // x-axis(date-time) format settings
     var xAxis = plot.xAxis();
@@ -224,20 +200,14 @@ function initiateChartSetting (data) {
 
     // set the source mode of the legend
     plot.legend().iconSize(0);
-    //candlestick_series.legendItem().iconSize(0);
+
     // enable html for legend items
     candlestick_series.legendItem(true);
     line_series.legendItem(false);
-    vol_series.legendItem(false);
-    avgVol_series.legendItem(false);
-    delVolPercentage_series.legendItem(false);
-    delVol_series.legendItem(false);
-    avgVolPercentage_series.legendItem(false);
 
     // legend style
     candlestick_series.legendItem().useHtml(true);
     // info_series.legendItem().iconType('rising-falling');
-
 
     // configure the format of legend items (candlestick)
     candlestick_series.legendItem().format( function(e) {
@@ -253,15 +223,6 @@ function initiateChartSetting (data) {
                 "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
         }
     });
-
-    // configure the format of legend items (info)
-    vol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
-    avgVol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
-    delVolPercentage_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:2, " +
-        "zeroFillDecimals:true} %");
-    delVol_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:4, zeroFillDecimals:true}");
-    avgVolPercentage_series.legendItem().format("{%seriesName}: {%value}{decimalsCount:2, zeroFillDecimals:true} %");
-
 
 
     //===========================================================
@@ -339,10 +300,11 @@ function switchChartType(type) {
     // configure the format of legend items
     switch(type) {
         case 'line':
-            series.legendItem().format(
-                "<span style='color:#455a64;font-weight:600'>{%seriesName}: " +
-                "</span>{%value}"
-            );
+            series.legendItem().format( function(e) {
+                var length = jsonData.length;
+                return "<span style='color:#455a64;font-weight:600'>" + this.index +
+                    "</span>: <b>Close</b> " + this.value + " <b>Delta O-C(%)</b> " + jsonData[length - this.index - 1][8];
+            });
             break;
 
         case 'candle':
@@ -376,7 +338,7 @@ function switchYaxisType(type) {
     switch(type) {
         case "percent":         // button: " % "
             yScale.comparisonMode("percent");
-            yScale.compareWith("seriesStart");
+            yScale.compareWith("seriesEnd");
             yAxis.labels().format("{%value}{decimalsCount:2, zeroFillDecimals:true} %");
             break;
 
