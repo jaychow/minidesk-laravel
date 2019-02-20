@@ -7,6 +7,7 @@ use App\Models\ChartMonth;
 use App\Models\ChartSixMonths;
 use App\Models\ChartYear;
 use App\Models\ChartFiveYears;
+use App\Models\ChartZone;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use function GuzzleHttp\json_encode;
@@ -190,10 +191,8 @@ class ChartZoneController extends Controller
                                 number_format(1/$data[3],5),
                                 number_format(1/$data[5],5),
                                 $data[6],
-                                $average,
                                 $percentage = $this->priceChange(1/$data[2],1/$data[5]),
-                                $range = $this->priceRange(1/$data[4],1/$data[3]),
-                                $volumeChange = $this->volumeChange($data[6],$average)
+                                $range = $this->priceRange(1/$data[4],1/$data[3])
                             ];
                     }
                 }
@@ -211,10 +210,8 @@ class ChartZoneController extends Controller
                                 $data[4],
                                 $data[5],
                                 $data[6],
-                                $average,
                                 $percentage = $this->priceChange($data[2],$data[5]),
-                                $range = $this->priceRange($data[3],$data[4]),
-                                $volumeChange = $this->volumeChange($data[6],$average)
+                                $range = $this->priceRange($data[3],$data[4])
                             ];
                     }
                 }
@@ -335,39 +332,6 @@ class ChartZoneController extends Controller
         $chart_model::insert($query);
     }
 
-    // Calculate average volume
-    protected function averageVolume($output,$source)
-    {
-        $counter = 0;
-        $sum = 0;
-
-        if($source == 'DB')
-        {
-            foreach ($output as $data)
-            {
-                $counter = $counter + 1;
-                $sum = $sum + $data->volume;
-            }
-        }
-        else
-        {
-            foreach ($output as $data)
-            {
-                $counter = $counter + 1;
-                $sum = $sum + $data[6];
-            }
-        }
-
-        return intval($sum/$counter);
-    }
-
-    // Calculate volume % change
-    protected function volumeChange($volume,$averageVolume)
-    {
-        $result = (($volume - $averageVolume) / $averageVolume)*100;
-        return number_format($result,3);
-    }
-
     // Calculate the price % change of each candlestick
     protected function priceChange($open,$close)
     {
@@ -381,14 +345,14 @@ class ChartZoneController extends Controller
         return number_format($high - $low,5);
     }
 
-    // Response frontend request
+    // Response backend request get currency data
     public function getTable(Request $request)  //Request $request
     {
         // Common parameter (Default)
         $type = ($request->get('pair') == '') ? 'USD_CAD':$request->get('pair');
         $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
-        $fromTime = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
+        $fromTime = $request->get('fromTime');
         $chart_model = new ChartYear;
 
         if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '3M') || ($timeRange == '1W')))
@@ -399,27 +363,27 @@ class ChartZoneController extends Controller
         switch ($timeRange)
         {
             case "1W":
-                $fromTime = date("Y-m-d", strtotime('-1 week')).' 05:00:00';
+                $fromTime = $fromTime.' 05:00:00';
                 $chart_model = new ChartWeek;
                 break;
             case "1M":
-                $fromTime = date("Y-m-d", strtotime('-1 month')).' 02:00:00';
+                $fromTime = $fromTime.' 02:00:00';
                 $chart_model = new ChartMonth;
                 break;
             case "3M":
-                $fromTime = date("Y-m-d", strtotime('-3 month')).' 21:00:00';
+                $fromTime = $fromTime.' 21:00:00';
                 $chart_model = new ChartSixMonths;
                 break;
             case "6M":
-                $fromTime = date("Y-m-d", strtotime('-6 month')).' 21:00:00';
+                $fromTime = $fromTime.' 21:00:00';
                 $chart_model = new ChartSixMonths;
                 break;
             case "1Y":
-                $fromTime = date("Y-m-d", strtotime('-1 year')).' 21:00:00';
+                $fromTime = $fromTime.' 21:00:00';
                 $chart_model = new ChartYear;
                 break;
             case "5Y":
-                $fromTime = date("Y-m-d", strtotime('-5 year')).' 21:00:00';
+                $fromTime = $fromTime.' 21:00:00';
                 $chart_model = new ChartFiveYears;
                 break;
         }
@@ -446,10 +410,6 @@ class ChartZoneController extends Controller
                         $data->low,
                         $data->close,
                         $data->volume,
-                        $average,
-                        $data->price_change,
-                        $data->price_range,
-                        $volumeChange = $this->volumeChange($data->volume,$average)
                     ];
             }
 
@@ -459,5 +419,13 @@ class ChartZoneController extends Controller
         {
             return $this->getAPI($type, $utc, $fromTime,$timeRange,$chart_model);
         }
+    }
+
+    // Response backend request
+    public function getZone(Request $request)  //Request $request
+    {
+        // Common parameter (Default)
+        $currency = ($request->get('pair') == '') ? 'USD_CAD' : $request->get('pair');
+        $result = ChartZone::where('currency', $currency)->orderBy('high', 'desc')->get();
     }
 }
