@@ -17,10 +17,6 @@ use Illuminate\Http\Request;
 
 date_default_timezone_set('Europe/London'); // UTC + 0
 
-/**
- * Class ChartController
- * @package App\Http\Controllers\Frontend
- */
 class ChartZoneController extends Controller
 {
     public function index()
