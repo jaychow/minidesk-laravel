@@ -457,20 +457,25 @@ class ChartZoneController extends Controller
                     'currency' => $currency,
                     'trade' => 'Buy',
                     'enable'=> true,
-                    'date' => $fromTime,
+                    'date' => $fromTimes[$i],
                     'high' => $highs[$i],
                     'low' => $lows[$i]
                 ];
             $i = $i + 1;
         }
 
-        // Refresh data in DB
-        ChartZone::where('currency', $currency)->delete();
+        try
+        {
+            // Refresh data in DB
+            ChartZone::where('currency', $currency)->delete();
 
-        // Insert data into DB
-        $result = ChartZone::insert($query);
-
-        if(!$result) { return 'Fail to insert the data into DB'; }
-        else { return 'OK'; }
+            // Insert data into DB
+            ChartZone::insert($query);
+        }
+        catch(\Illuminate\Database\QueryException $ex)
+        {
+            return 'Fail to insert the data into DB';
+        }
+        return 'OK';
     }
 }
