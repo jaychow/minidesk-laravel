@@ -26,6 +26,8 @@
                 </form>
 
                 <button id="refreshButton" class="panelButton">refresh</button> <br/>
+                @csrf
+                <button id="submitTest" class="btn">Submit</button>
 
             </div> <br/> <hr> <br/>
 

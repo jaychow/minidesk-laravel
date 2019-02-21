@@ -3165,6 +3165,27 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
+    $('#submitTest').on('click', function (e) {
+        console.log("clicked");
+        var url = 'http://minidesk.laravel.coretekllc.com/admin/chartzone/submitZone';
+        var data = {
+            key1: 'value1',
+            key2: 'value2',
+            key3: ['elem1', 'elem2', 'elem3'],
+            key4: {
+                jkey1: 'value1',
+                jkey2: 'value2',
+                jkey3: 'value3',
+                jkey4: 'value4',
+                jkey5: ['a', 'b', 'c']
+            },
+            _token: $('[name=_token]').val()
+        };
+        $.post(url, data, function (data) {
+            console.log("success: " + data);
+        });
+    });
+
     // refresh button pressed
     $('#refreshButton').on('click', function (e) {
         var inputArg = processInputForm();
