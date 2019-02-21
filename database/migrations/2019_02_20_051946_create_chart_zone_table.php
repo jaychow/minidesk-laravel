@@ -19,7 +19,6 @@ class CreateChartZoneTable extends Migration
             $table->timestamps();
             $table->text('currency');
             $table->text('trade');
-            $table->text('color');
             $table->boolean('enable');
             $table->float('high',8,4);
             $table->float('low',8,4);

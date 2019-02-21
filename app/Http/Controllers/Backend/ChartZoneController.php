@@ -171,9 +171,6 @@ class ChartZoneController extends Controller
                 // Give frontend data with time calibration
                 $final = [];
 
-                // Calculate average volume
-                $average = $this->averageVolume($output,'API');
-
                 if($reverseFlag >= 1)
                 {
                     foreach ($output as $data)
@@ -285,8 +282,8 @@ class ChartZoneController extends Controller
             $toType = $to . '_' . $from;
             $time = $value[0];
             $volume = $value[6];
-            $priceChange = $value[8];
-            $priceRange = $value[9];
+            $priceChange = $value[7];
+            $priceRange = $value[8];
             $fromOpen = $value[2];
             $fromHigh = $value[3];
             $fromLow = $value[4];
@@ -341,14 +338,14 @@ class ChartZoneController extends Controller
         return number_format($high - $low,5);
     }
 
-    // Response backend request get currency data
+    // Response backend request -> Currency data
     public function getTable(Request $request)  //Request $request
     {
         // Common parameter (Default)
         $type = ($request->get('pair') == '') ? 'USD_CAD':$request->get('pair');
         $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
-        $fromTime = $request->get('fromTime');
+        $fromTime = $request->get('fromTime')? date("Y-m-d"):$request->get('fromTime');
         $chart_model = new ChartYear;
 
         if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '3M') || ($timeRange == '1W')))
@@ -392,9 +389,6 @@ class ChartZoneController extends Controller
             $result = $chart_model::where('type', $type)->whereBetween('time', array($fromTime,date("Y-m-d H:i:s")))->orderBy('time', 'desc')->get();
             $output = [];
 
-            // Calculate average volume
-            $average = $this->averageVolume($result,'DB');
-
             foreach ($result as $data)
             {
                 $output[] =
@@ -417,11 +411,66 @@ class ChartZoneController extends Controller
         }
     }
 
-    // Response backend request
+    // Response backend request -> Zone data
     public function getZone(Request $request)  //Request $request
     {
         // Common parameter (Default)
         $currency = ($request->get('pair') == '') ? 'USD_CAD' : $request->get('pair');
         $result = ChartZone::where('currency', $currency)->orderBy('high', 'desc')->get();
+        $output = [];
+
+        foreach ($result as $data)
+        {
+            $output[] =
+                [
+                    $data->currency,
+                    $data->trade,
+                    $data->high,
+                    $data->low,
+                    $data->date,
+                ];
+        }
+
+        return response()->json($output);
+    }
+
+    // Receive data from backend -> Zone data
+    public function submitZone(Request $request)  //Request $request
+    {
+        // Common parameter (Default)
+        $currency = $request->get('pair');
+        $fromTime = $request->get('fromTime');
+        $high = $request->get('high');
+        $low = $request->get('low');
+
+        $fromTimes = explode(',',$fromTime);
+        $highs = explode(',',$high);
+        $lows = explode(',',$low);
+        $query = [] ;
+        $i = 0;
+
+        foreach ($fromTimes as $value)
+        {
+            $query[] =
+                [
+                    'created_at' => now(),
+                    'currency' => $currency,
+                    'trade' => 'Buy',
+                    'enable'=> true,
+                    'date' => $fromTime,
+                    'high' => $highs[$i],
+                    'low' => $lows[$i]
+                ];
+            $i = $i + 1;
+        }
+
+        // Refresh data in DB
+        ChartZone::where('currency', $currency)->delete();
+
+        // Insert data into DB
+        $result = ChartZone::insert($query);
+
+        if(!$result) { return 'Fail to insert the data into DB'; }
+        else { return 'OK'; }
     }
 }
