@@ -21,7 +21,7 @@ class ChartZoneController extends Controller
 {
     public function index()
     {
-        return view('frontend.chart');
+        return view('backend.chartzone');
     }
 
     // Check API data is exist or not ?
