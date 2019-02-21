@@ -48,3 +48,7 @@
 
 
 @endsection
+
+@push('after-scripts')
+    {!! script(mix('js/chartzone.js')) !!}
+@endpush

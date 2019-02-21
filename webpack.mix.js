@@ -25,6 +25,9 @@ mix.
         'resources/js/backend/app.js',
         'resources/js/backend/after.js'
     ], 'js/backend.js')
+    .js([
+        'resources/js/backend/chartzone/bootstrap.js'
+    ], 'js/chartzone.js')
     .extract([
         'anychart',
         'jquery',
