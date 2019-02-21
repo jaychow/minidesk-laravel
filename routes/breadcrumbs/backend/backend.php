@@ -5,7 +5,7 @@ Breadcrumbs::for('admin.dashboard', function ($trail) {
 });
 
 Breadcrumbs::for('admin.chartzone', function ($trail) {
-    $trail->push('strings.backend.chartzone.title', route('admin.chartzone'));
+    $trail->push(__('strings.backend.chartzone.title'), route('admin.chartzone'));
 });
 
 require __DIR__.'/auth.php';
