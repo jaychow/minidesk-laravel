@@ -7,6 +7,7 @@ use App\Models\ChartMonth;
 use App\Models\ChartSixMonths;
 use App\Models\ChartYear;
 use App\Models\ChartFiveYears;
+use App\Models\ChartZone;
 use App\Models\TradeSettingRecord;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
@@ -459,6 +460,29 @@ class ChartController extends Controller
         {
             return $this->getAPI($type, $utc, $fromTime,$timeRange,$chart_model);
         }
+    }
+
+    // Response backend request -> Zone data
+    public function getZone(Request $request)  //Request $request
+    {
+        // Common parameter (Default)
+        $currency = $request->get('pair');
+        $result = ChartZone::where('currency', $currency)->orderBy('high', 'desc')->get();
+        $output = [];
+
+        foreach ($result as $data)
+        {
+            $output[] =
+                [
+                    $data->currency,
+                    $data->trade,
+                    $data->high,
+                    $data->low,
+                    $data->date,
+                ];
+        }
+
+        return response()->json($output);
     }
 
     // Receive data from frontend -> User's trade setting record
