@@ -17074,26 +17074,11 @@ body {
   height: 600px;
 }
 
-#chart-container {
-  float: left;
-  width: 65%;
-  height: 100%;
-}
-
 #panel-container {
-  float: right;
-  width: 35%;
-  height: 100%;
-  background: darkgrey;
-  border-radius: 5%;
-}
-
-#chart {
   width: 100%;
   height: 100%;
-  border: 0;
-  margin: 0;
-  padding: 0;
+  background: darkgrey;
+  border-radius: 1%;
 }
 
 .zoneRemoveButton,
@@ -17109,13 +17094,8 @@ body {
   float: left;
 }
 
-#form-container {
-  width: 100%;
-  height: 30%;
-}
-
 #zoneInfo {
   width: 100%;
-  height: 70%;
+  height: 90%;
 }
 
