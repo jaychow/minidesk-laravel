@@ -23,7 +23,7 @@ class ChartZoneController extends Controller
     public function getZone(Request $request)  //Request $request
     {
         // Common parameter (Default)
-        $currency = ($request->get('pair') == '') ? 'USD_CAD' : $request->get('pair');
+        $currency = $request->get('pair');
         $result = ChartZone::where('currency', $currency)->orderBy('high', 'desc')->get();
         $output = [];
 
