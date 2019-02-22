@@ -38,9 +38,30 @@
                 <button value="price">$</button>
             </div>
 
+        </form> </br> <hr>
+
+        <p id="pInfo"></p> </br>
+
+        <form id="tradingTicketForm">
+            <div class="chartButtons" id="buySellButton">
+                <button value="buy" id="buyButton">Buy</button>
+                <button value="sell" id="sellButton">Sell</button>
+            </div> </br>
+
+            <p><b>Amount: </b></p>
+            <input type="number" name="amountInput"> </br>
+
+            <p><b>Date: </b></p>
+            <input type="date" name="tradeDate" id="tradeDate"> </br>
+
         </form>
 
-        <p>You have </p>
+        <button class="chartButtons" id="submitButton">submit</button>
+
+
+
+
+
     </div>
 
 @endsection
