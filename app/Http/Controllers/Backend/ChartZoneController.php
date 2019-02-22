@@ -56,15 +56,17 @@ class ChartZoneController extends Controller
 
         foreach ($fromTimes as $value)
         {
+            // Detect the empty data in json array
+            if(($fromTimes[$i] == '') || ($highs[$i] == '') || ($lows[$i] == '')){break;}
             $query[] =
                 [
                     'created_at' => now(),
                     'currency' => $currency,
                     'trade' => 'Buy',
                     'enable'=> true,
-                    'date' => ($fromTimes[$i] =='')?'1994-10-16':$fromTimes[$i],
-                    'high' => ($highs[$i] =='')?'0':$highs[$i],
-                    'low' => ($lows[$i] =='')?'0':$lows[$i]
+                    'date' => $fromTimes[$i],
+                    'high' => $highs[$i],
+                    'low' => $lows[$i]
                 ];
             $i = $i + 1;
         }
