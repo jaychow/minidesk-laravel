@@ -439,13 +439,10 @@ class ChartZoneController extends Controller
     {
         // Common parameter (Default)
         $currency = $request->get('pair');
-        $fromTime = $request->get('fromTime');
-        $high = $request->get('high');
-        $low = $request->get('low');
+        $fromTimes = $request->get('fromTime');
+        $highs = $request->get('high');
+        $lows = $request->get('low');
 
-        $fromTimes = explode(',',$fromTime);
-        $highs = explode(',',$high);
-        $lows = explode(',',$low);
         $query = [] ;
         $i = 0;
 
