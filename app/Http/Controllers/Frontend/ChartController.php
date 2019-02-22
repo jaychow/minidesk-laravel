@@ -120,7 +120,7 @@ class ChartController extends Controller
     // Get API data from Oanda
     protected function getAPI($type, $utc, $fromTime,$timeRange,$chart_model)
     {
-        // Use to identify is the currenvy need to change ?
+        // Use to identify is the currency need to change ?
         $reverseFlag = 0;
 
         $token = env('OANDA_API_KEY');
@@ -242,6 +242,55 @@ class ChartController extends Controller
                     echo "Can not get this API data" . "<br>";
                     echo $fromTime . "<br>";
                     echo $timeRange . "<br>";
+                    echo $type . "<br>";
+                    exit;
+                }
+            }
+        }while ($reverseFlag >=1);
+    }
+
+    // Get current currency data from Oanda
+    protected function getCurrentData($type)
+    {
+        // Use to identify is the currency need to change ?
+        $reverseFlag = 0;
+
+        $token = env('OANDA_API_KEY');
+        $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'accountid' => env('OANDA_ACCOUNT_ID'),
+        ];
+
+        do
+        {
+            try
+            {
+                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?granularity=S5&count=1', [
+                            'headers' => $headers
+                        ]);
+
+                $result = $response->getBody();
+                $result = json_decode($result);
+                $output = $this->getCandles($result);
+                return $output[0][5];
+            }
+
+            catch (RequestException $e)
+            {
+                // Change type
+                if($reverseFlag == 0)
+                {
+                    $temp = explode('_', $type);
+                    $from = $temp[0];
+                    $to = $temp[1];
+                    $type = $to . '_' . $from;
+                    $reverseFlag = $reverseFlag + 1;
+                    continue;
+                }
+                else
+                {
+                    echo "Can not get this API data" . "<br>";
                     echo $type . "<br>";
                     exit;
                 }
@@ -390,9 +439,15 @@ class ChartController extends Controller
         $type = ($request->get('pair') == '') ? 'USD_CAD':$request->get('pair');
         $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
+        $currentCurrency = $request->get('currentCurrency');
         $fromTime = '';
         $chart_model = new ChartYear;
-        
+
+        if($currentCurrency == 'true')
+        {
+            return $this->getCurrentData($type);
+        }
+
         if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '3M') || ($timeRange == '1W')))
         {
             $timeRange = "1Y";
