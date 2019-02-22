@@ -7,6 +7,7 @@ use App\Models\ChartMonth;
 use App\Models\ChartSixMonths;
 use App\Models\ChartYear;
 use App\Models\ChartFiveYears;
+use App\Models\TradeSettingRecord;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use function GuzzleHttp\json_encode;
@@ -381,7 +382,7 @@ class ChartController extends Controller
         return number_format($high - $low,5);
     }
 
-    // Response frontend request
+    // Response frontend request -> Chart data
     public function getTable(Request $request)  //Request $request
     {
         // Common parameter (Default)
@@ -452,12 +453,102 @@ class ChartController extends Controller
                         $volumeChange = $this->volumeChange($data->volume,$average)
                     ];
             }
-
                 return response()->json($output);
             }
         else    // Call Oanda API
         {
             return $this->getAPI($type, $utc, $fromTime,$timeRange,$chart_model);
+        }
+    }
+
+    // Receive data from frontend -> User's trade setting record
+    public function saveTradeSetting(Request $request)  //Request $request
+    {
+        // Common parameter (Default)
+        $id = ($request->get('id') == '') ? '0':$request->get('id');
+        $account = $request->get('account');
+        $home_currency = $request->get('home_currency');
+        $trade_currency = $request->get('trade_currency');
+        $trade = $request->get('trade');
+        $amount = $request->get('amount');
+        $date = $request->get('date');
+
+        // Check is this trade setting record exist ?
+        $result = TradeSettingRecord::where('id', $id)->exists();
+        if(!$result)
+        {
+            $query[] =
+                [
+                    'account' => $account,
+                    'home_currency' => $home_currency,
+                    'trade_currency' => $trade_currency,
+                    'trade' => $trade,
+                    'amount' => $amount,
+                    'date' => $date
+                ];
+            try
+            {
+                // Insert data into DB
+                TradeSettingRecord::insert($query);
+            }
+            catch(\Illuminate\Database\QueryException $ex)
+            {
+                return 'Fail to insert the data into DB';
+            }
+            return 'OK';
+        }
+        else
+        {
+            $query = array(
+                    'home_currency' => $home_currency,
+                    'trade_currency' => $trade_currency,
+                    'trade' => $trade,
+                    'amount' => $amount,
+                    'date' => $date
+            );
+            try
+            {
+                // Update the trade setting record
+                TradeSettingRecord::where('id',$id)->update($query);
+            }
+            catch(\Illuminate\Database\QueryException $ex)
+            {
+                return 'Fail to insert the data into DB';
+            }
+            return 'OK';
+        }
+    }
+
+    // Response frontend request -> User's trade setting record
+    public function getTradeSetting(Request $request)  //Request $request
+    {
+        // Common parameter (Default)
+        $account = $request->get('account');
+
+        // Check is this account had trade setting record ?
+        $result = TradeSettingRecord::where('account', $account)->exists();
+        if(!$result)
+        {
+            return 'This account does not exist';
+        }
+        else
+        {
+            $result = TradeSettingRecord::where('account', $account)->get();
+            $output = [];
+            foreach ($result as $data)
+            {
+                $output[] =
+                    [
+                        $data->id,
+                        $data->account,
+                        $data->home_currency,
+                        $data->trade_currency,
+                        $data->trade,
+                        $data->amount,
+                        $data->date
+                    ];
+            }
+            return response()->json($output);
         }
     }
 }
