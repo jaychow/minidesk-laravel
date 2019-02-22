@@ -3175,9 +3175,9 @@ function requestData(argument) {
 }
 
 function getForm() {
-    var jsonForm = JSON.parse('{"fromDate":[], "high":[], "low": []}');
+    var jsonForm = JSON.parse('{"fromTime":[], "high":[], "low": []}');
     for (var i = 0; i < 6; i++) {
-        jsonForm['fromDate'].push(document.getElementById("date-" + i).value);
+        jsonForm['fromTime'].push(document.getElementById("date-" + i).value);
         jsonForm['high'].push(document.getElementById("high-" + i).value);
         jsonForm['low'].push(document.getElementById('low-' + i).value);
     }
@@ -3188,6 +3188,7 @@ function submitZone(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/chartzone/submitZone';
 
     $.post(url, data, function (data) {
+
         console.log("success: " + data);
     });
 }
