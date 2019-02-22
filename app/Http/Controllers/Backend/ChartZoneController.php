@@ -62,13 +62,12 @@ class ChartZoneController extends Controller
                     'currency' => $currency,
                     'trade' => 'Buy',
                     'enable'=> true,
-                    'date' => $fromTimes[$i],
-                    'high' => $highs[$i],
-                    'low' => $lows[$i]
+                    'date' => ($fromTimes[$i] =='')?'1994-10-16':$fromTimes[$i],
+                    'high' => ($highs[$i] =='')?'0':$highs[$i],
+                    'low' => ($lows[$i] =='')?'0':$lows[$i]
                 ];
             $i = $i + 1;
         }
-
         try
         {
             // Refresh data in DB
