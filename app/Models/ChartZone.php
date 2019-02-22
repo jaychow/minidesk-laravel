@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rocky
- * Date: 2/1/19
- * Time: 8:33 PM
- */
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
