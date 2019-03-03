@@ -517,7 +517,7 @@ class ChartController extends Controller
         }
     }
 
-    // Response backend request -> Zone data
+    // Response frontend request -> Zone data
     public function getZone(Request $request)  //Request $request
     {
         // Common parameter (Default)
