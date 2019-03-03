@@ -11633,17 +11633,22 @@ var candle_mapping, line_mapping;
 //---------------------------------------------------------------
 $(document).ready(function () {
     var inputArg;
+    var tradeType = '';
 
+    var today = new Date();
+    document.getElementById("tradeDate").min = today.toISOString().substr(0, 10);
     //===========================================================
     //                      CLICK EVENTS
     //===========================================================
     $('#pairOptions').on('change', function (e) {
-        inputArg = processInputForm();
+        inputArg = processForm('chartInput');
         inputArg['timescale'] = '1Y';
 
         // adding timezone info
-        var d = new Date();
-        inputArg['utc'] = -(d.getTimezoneOffset() / 60);
+        inputArg['utc'] = -(today.getTimezoneOffset() / 60);
+
+        // update paragraph
+        showInfo(inputArg['pair']);
 
         // request GET/POST to backend
         requestData(inputArg);
@@ -11685,11 +11690,33 @@ $(document).ready(function () {
     //===========================================================
     //                      CLICK EVENTS
     //===========================================================
+
+    $('#buySellButton').on('click', function (e) {
+        if (e.target != e.currentTarget) {
+            var clickedItem = e.target.value;
+            tradeType = clickedItem;
+
+            // disable button that was pressed
+            document.getElementById("buyButton").disabled = clickedItem == 'buy' ? true : false;
+            document.getElementById("sellButton").disabled = clickedItem == 'sell' ? true : false;
+        }
+    });
+
+    // submit trading ticket
+    $('#submitButton').on('click', function (e) {
+        var pair = document.getElementById("pairOptions").value.split("_");
+        outputArg = processForm('tradingTicketForm');
+        outputArg['tradeType'] = tradeType;
+        outputArg['tradeCurrency'] = pair[0];
+        outputArg['homeCurrency'] = pair[1];
+
+        submitTicket(outputArg);
+    });
 });
 
-function processInputForm() {
+function processForm(form) {
     var inputArg = [];
-    var form = document.getElementById("chartInput");
+    var form = document.getElementById(form);
 
     for (var i = 0; i < form.length; i++) {
         inputArg[form.elements[i].name] = form.elements[i].value;
@@ -11705,6 +11732,11 @@ function requestData(argument) {
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {});
+}
+
+function showInfo(pair) {
+    var pairStr = pair.split("_");
+    document.getElementById('pInfo').innerHTML = 'Your home currency: <b>' + pairStr[1] + '</b>and want to operate on <b>' + pairStr[0] + '</b>.';
 }
 
 function initiateChartSetting(data) {
@@ -11942,6 +11974,18 @@ function switchYaxisType(type) {
             crosshair.yLabel().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
             break;
     }
+}
+
+//---------------------------------------------------------------
+//                     Submit Trading Ticket
+//---------------------------------------------------------------
+
+function submitTicket(argument) {
+    $.get('http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting', { id: 0, account: 'bombobutt', home_currency: argument['homeCurrency'],
+        trade_currency: argument['tradeCurrency'], trade: argument['tradeType'],
+        amount: argument['amountInput'], date: argument['tradeDate'] }).always(function (data) {
+        alert(data);
+    });
 }
 
 /***/ }),
