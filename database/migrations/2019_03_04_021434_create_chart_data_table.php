@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateChartSixMonthsDataTable extends Migration
+class CreateChartDataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateChartSixMonthsDataTable extends Migration
      */
     public function up()
     {
-        Schema::create('chart_six_months_data', function (Blueprint $table)
+        Schema::create('chart_data', function (Blueprint $table)
         {
             $table->dateTime('time');
             $table->text('type');
@@ -24,6 +24,7 @@ class CreateChartSixMonthsDataTable extends Migration
             $table->bigInteger('volume');
             $table->float('price_change',8,3);
             $table->float('price_range',8,5);
+            $table->text('time_scale');
         });
     }
 
@@ -34,6 +35,6 @@ class CreateChartSixMonthsDataTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chart_six_months_data');
+        Schema::dropIfExists('chart_data');
     }
 }

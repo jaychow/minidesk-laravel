@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Models\ChartWeek;
-use App\Models\ChartMonth;
-use App\Models\ChartSixMonths;
-use App\Models\ChartYear;
-use App\Models\ChartFiveYears;
+use App\Models\ChartData;
 use App\Models\ChartZone;
 use App\Models\TradeSettingRecord;
 use App\Http\Controllers\Controller;
@@ -39,28 +35,28 @@ class ChartController extends Controller
         switch ($timeRange)
         {
             case "1W":
-                $from = ChartWeek::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartWeek::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "1M":
-                $from = ChartMonth::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartMonth::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "3M":
-                $from = ChartSixMonths::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartSixMonths::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "6M":
-                $from = ChartSixMonths::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartSixMonths::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "1Y":
-                $from = ChartYear::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartYear::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
             case "5Y":
-                $from = ChartFiveYears::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartFiveYears::where('type', $type)->whereBetween('time', array($fromTime, $toTime))->max('time');
+                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
+                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
                 break;
         }
 
@@ -118,7 +114,7 @@ class ChartController extends Controller
     }
 
     // Get API data from Oanda
-    protected function getAPI($type, $utc, $fromTime,$timeRange,$chart_model)
+    protected function getAPI($type, $utc, $fromTime,$timeRange)
     {
         // Use to identify is the currency need to change ?
         $reverseFlag = 0;
@@ -203,7 +199,6 @@ class ChartController extends Controller
                 {
                     foreach ($output as $data)
                     {
-                        $percentage = $this->priceRange($data[2],$data[5]);
                         $final[] =
                             [
                                 $time = date("Y-m-d H:i:s", strtotime($data[0] .' ' .$utc.' hour')),
@@ -220,9 +215,8 @@ class ChartController extends Controller
                             ];
                     }
                 }
-                $this->storeAPI($final,$chart_model);
+                $this->storeAPI($final,$timeRange);
                 return response()->json($final);
-                //echo json_encode($final);
             }
 
             catch (RequestException $e)
@@ -323,7 +317,7 @@ class ChartController extends Controller
     }
 
     // Store API data into the DB
-    protected function storeAPI($data,$chart_model)
+    protected function storeAPI($data,$timeRange)
     {
         $query = [];
         $fromType = "";
@@ -363,7 +357,8 @@ class ChartController extends Controller
                     'close' => $fromClose,
                     'volume' => $volume,
                     'price_change' => $priceChange,
-                    'price_range' => $priceRange
+                    'price_range' => $priceRange,
+                    'time_scale' => $timeRange
                 ];
             $query[] =
                 [
@@ -375,15 +370,16 @@ class ChartController extends Controller
                     'close' => $toClose,
                     'volume' => $volume,
                     'price_change' => $this->priceChange($toOpen,$toClose),
-                    'price_range' => $this->priceRange($toHigh,$toLow)
+                    'price_range' => $this->priceRange($toHigh,$toLow),
+                    'time_scale' => $timeRange
                 ];
         }
 
         // Filter duplicated data in DB
-        $chart_model::where('type', $fromType)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
+        ChartData::where('type', $fromType)->where('time_scale',$timeRange)->orwhere('type', $toType)->whereBetween('time', array($fromTime, $toTime))->delete();
 
         // Insert data into DB
-        $chart_model::insert($query);
+        ChartData ::insert($query);
     }
 
     // Calculate average volume
@@ -441,7 +437,6 @@ class ChartController extends Controller
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
         $currentCurrency = $request->get('currentCurrency');
         $fromTime = '';
-        $chart_model = new ChartYear;
 
         if($currentCurrency == 'true')
         {
@@ -457,27 +452,21 @@ class ChartController extends Controller
         {
             case "1W":
                 $fromTime = date("Y-m-d", strtotime('-1 week')).' 05:00:00';
-                $chart_model = new ChartWeek;
                 break;
             case "1M":
                 $fromTime = date("Y-m-d", strtotime('-1 month')).' 02:00:00';
-                $chart_model = new ChartMonth;
                 break;
             case "3M":
                 $fromTime = date("Y-m-d", strtotime('-3 month')).' 21:00:00';
-                $chart_model = new ChartSixMonths;
                 break;
             case "6M":
                 $fromTime = date("Y-m-d", strtotime('-6 month')).' 21:00:00';
-                $chart_model = new ChartSixMonths;
                 break;
             case "1Y":
                 $fromTime = date("Y-m-d", strtotime('-1 year')).' 21:00:00';
-                $chart_model = new ChartYear;
                 break;
             case "5Y":
                 $fromTime = date("Y-m-d", strtotime('-5 year')).' 21:00:00';
-                $chart_model = new ChartFiveYears;
                 break;
         }
 
@@ -486,7 +475,7 @@ class ChartController extends Controller
 
         if ($exist)     // Get data from Database
         {
-            $result = $chart_model::where('type', $type)->whereBetween('time', array($fromTime,date("Y-m-d H:i:s")))->orderBy('time', 'desc')->get();
+            $result = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime,date("Y-m-d H:i:s")))->orderBy('time', 'desc')->get();
             $output = [];
 
             // Calculate average volume
@@ -513,7 +502,7 @@ class ChartController extends Controller
             }
         else    // Call Oanda API
         {
-            return $this->getAPI($type, $utc, $fromTime,$timeRange,$chart_model);
+            return $this->getAPI($type, $utc, $fromTime,$timeRange);
         }
     }
 
