@@ -4,10 +4,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 
-class ChartZone extends Model
+class ZoneEditor extends Model
 {
     // Assign table from DB
-    protected $table = 'chart_zone';
+    protected $table = 'zone_editor';
 
     // Let created_at & updated_at columns exist
     public $timestamps = true;

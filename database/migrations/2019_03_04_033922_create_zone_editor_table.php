@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateChartZoneTable extends Migration
+class CreateZoneEditorTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateChartZoneTable extends Migration
      */
     public function up()
     {
-        Schema::create('chart_zone', function (Blueprint $table)
+        Schema::create('zone_editor', function (Blueprint $table)
         {
             $table->bigIncrements('id');
             $table->timestamps();
@@ -33,6 +33,6 @@ class CreateChartZoneTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chart_zone');
+        Schema::dropIfExists('zone_editor');
     }
 }

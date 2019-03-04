@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Models\ChartZone;
+use App\Models\ZoneEditor;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use function GuzzleHttp\json_encode;
@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 date_default_timezone_set('Europe/London'); // UTC + 0
 
-class ChartZoneController extends Controller
+class ZoneEditorController extends Controller
 {
     public function index()
     {
@@ -24,7 +24,7 @@ class ChartZoneController extends Controller
     {
         // Common parameter (Default)
         $currency = $request->get('pair');
-        $result = ChartZone::where('currency', $currency)->orderBy('high', 'desc')->get();
+        $result = ZoneEditor::where('currency', $currency)->orderBy('high', 'desc')->get();
         $output = [];
 
         foreach ($result as $data)
@@ -73,10 +73,10 @@ class ChartZoneController extends Controller
         try
         {
             // Refresh data in DB
-            ChartZone::where('currency', $currency)->delete();
+            ZoneEditor::where('currency', $currency)->delete();
 
             // Insert data into DB
-            ChartZone::insert($query);
+            ZoneEditor::insert($query);
         }
         catch(\Illuminate\Database\QueryException $ex)
         {

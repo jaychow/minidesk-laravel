@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Models\ChartData;
-use App\Models\ChartZone;
+use App\Models\ZoneEditor;
 use App\Models\TradeSettingRecord;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
@@ -511,7 +511,7 @@ class ChartController extends Controller
     {
         // Common parameter (Default)
         $currency = $request->get('pair');
-        $result = ChartZone::where('currency', $currency)->orderBy('high', 'desc')->get();
+        $result = ZoneEditor::where('currency', $currency)->orderBy('high', 'desc')->get();
         $output = [];
 
         foreach ($result as $data)
