@@ -48,6 +48,7 @@ class ZoneEditorController extends Controller
         // Common parameter (Default)
         $currency = $request->get('pair');
         $fromTimes = $request->get('fromTime');
+        $trades = $request->get('trade');
         $highs = $request->get('high');
         $lows = $request->get('low');
 
@@ -62,7 +63,7 @@ class ZoneEditorController extends Controller
                 [
                     'created_at' => now(),
                     'currency' => $currency,
-                    'trade' => 'Buy',
+                    'trade' => $trades[$i],
                     'enable'=> true,
                     'date' => $fromTimes[$i],
                     'high' => $highs[$i],
