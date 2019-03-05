@@ -16,7 +16,7 @@ class ZoneEditorController extends Controller
 {
     public function index()
     {
-        return view('backend.chartzone');
+        return view('backend.zoneeditor');
     }
 
     // Response backend request -> Zone data

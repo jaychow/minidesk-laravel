@@ -3162,7 +3162,7 @@ $(document).ready(function () {
 
 function requestData(argument) {
     // get zones info that are stored in db.
-    $.get('http://minidesk.laravel.coretekllc.com/admin/chartzone/getZone', { pair: argument['pair'] }).done(function (data) {
+    $.get('http://minidesk.laravel.coretekllc.com/admin/zoneeditor/getZone', { pair: argument['pair'] }).done(function (data) {
         var length = data.length > 5 ? 6 : data.length;
         for (var i = 0; i < length; i++) {
             document.getElementById("date-" + i).value = data[i][4].substr(0, 10);
@@ -3185,7 +3185,7 @@ function getForm() {
 }
 
 function submitZone(data) {
-    var url = 'http://minidesk.laravel.coretekllc.com/admin/chartzone/submitZone';
+    var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
     $.post(url, data, function (data) {
 

@@ -4,8 +4,8 @@ Breadcrumbs::for('admin.dashboard', function ($trail) {
     $trail->push(__('strings.backend.dashboard.title'), route('admin.dashboard'));
 });
 
-Breadcrumbs::for('admin.chartzone', function ($trail) {
-    $trail->push(__('strings.backend.chartzone.title'), route('admin.chartzone'));
+Breadcrumbs::for('admin.zoneeditor', function ($trail) {
+    $trail->push(__('strings.backend.zoneeditor.title'), route('admin.zoneeditor'));
 });
 
 require __DIR__.'/auth.php';

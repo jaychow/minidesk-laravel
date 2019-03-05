@@ -40,7 +40,7 @@ $(document).ready(function() {
 function requestData (argument) {
     // get zones info that are stored in db.
     $.get(
-        'http://minidesk.laravel.coretekllc.com/admin/chartzone/getZone',
+        'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/getZone',
         {pair: argument['pair']}
 
     ).done(function (data) {
@@ -71,7 +71,7 @@ function getForm () {
 }
 
 function submitZone(data) {
-    var url = 'http://minidesk.laravel.coretekllc.com/admin/chartzone/submitZone';
+    var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
     $.post(url, data,
         function(data){

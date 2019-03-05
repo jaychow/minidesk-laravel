@@ -29,8 +29,8 @@ return [
             'welcome' => 'Welcome',
         ],
 
-        'chartzone' => [
-            'title' => 'Chart Zone'
+        'zoneeditor' => [
+            'title' => 'Zone Editor'
         ],
 
         'general' => [
