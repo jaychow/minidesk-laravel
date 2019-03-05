@@ -17,8 +17,8 @@ class CreateZoneEditorTable extends Migration
         {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->text('currency');
-            $table->text('trade');
+            $table->string('currency');
+            $table->string('trade');
             $table->boolean('enable');
             $table->float('high',8,4);
             $table->float('low',8,4);

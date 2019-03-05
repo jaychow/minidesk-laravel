@@ -16,7 +16,7 @@ class CreateChartDataTable extends Migration
         Schema::create('chart_data', function (Blueprint $table)
         {
             $table->dateTime('time');
-            $table->text('type');
+            $table->string('type');
             $table->float('open',8,5);
             $table->float('high',8,5);
             $table->float('low',8,5);
@@ -24,7 +24,7 @@ class CreateChartDataTable extends Migration
             $table->bigInteger('volume');
             $table->float('price_change',8,3);
             $table->float('price_range',8,5);
-            $table->text('time_scale');
+            $table->string('time_scale');
         });
     }
 
