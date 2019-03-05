@@ -11613,8 +11613,6 @@ module.exports = Component.exports
 // Create chart variables
 // create stock chart
 var chart = anychart.stock();
-var chart_right = anychart.stock();
-// chart_right = anychart.line();
 
 // create data table on loaded data
 var historyDataTable = anychart.data.table();
@@ -11624,17 +11622,13 @@ var futureDataTable = anychart.data.table();
 var jsonHistoryData, jsonFutureData;
 
 // create plot for chart
-var historyPlot, futureTrendPlot;
+var historyPlot;
 
 // create mapping for candle and line;
 var candle_mapping, line_mapping;
-var futureline_mapping;
 
 // options of user input
 var chartSettings, ticketInputs;
-
-// flag
-var finish_update;
 
 //---------------------------------------------------------------
 //                      INITIAL CHART
@@ -11661,9 +11655,6 @@ $(document).ready(function () {
         // adding timezone info
         chartSettings['utc'] = -(today.getTimezoneOffset() / 60);
 
-        // update paragraph
-        showInfo(chartSettings['pair']);
-
         // request GET/POST to backend
         requestData(chartSettings);
 
@@ -11682,7 +11673,17 @@ $(document).ready(function () {
             var clickedItem = e.target.textContent;
             chartSettings['timescale'] = clickedItem;
             console.log(clickedItem);
+
+            // request data from
             requestData(chartSettings);
+
+            // render new data onto chart
+            renderHistoryDataToChart();
+
+            // update the empty space in chart if there is any
+            if (document.getElementById('tradeDate').value != "") {
+                updateEmptySpace();
+            }
         }
     });
 
@@ -11710,17 +11711,7 @@ $(document).ready(function () {
     //===========================================================
 
     $('#tradeDate').on('change', function (e) {
-        // update the second point of future trend (jsonFutureData)
-        setFutureSecondPoint(e.target.value);
-
-        // render data to chart
-        renderFutureDataToChart();
-
-        // change deployment of two plots in chart container
-        changeChartDeployment();
-
-        // render data in righthand side plot
-        showHidePlot();
+        updateEmptySpace();
     });
 
     $('#buySellButton').on('click', function (e) {
@@ -11775,28 +11766,9 @@ function requestData(argument) {
     }).done(function (historyData) {
         // update hitory data points
         jsonHistoryData = historyData;
-
-        // update the first point of future plot
-        setFutureFirstPoint();
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {});
-}
-
-function showInfo(pair) {
-    var pairStr = pair.split("_");
-    document.getElementById('pInfo').innerHTML = 'Your home currency: <b>' + pairStr[1] + '</b>and want to operate on <b>' + pairStr[0] + '</b>.';
-}
-
-function setFutureFirstPoint() {
-    jsonFutureData = [];
-    // var jsonLine = JSON.parse({JSON.stringify(jsonHistoryData[0]), JSON.stringify()
-    jsonFutureData.push(JSON.parse(JSON.stringify(jsonHistoryData[0])));
-    jsonFutureData.push(JSON.parse(JSON.stringify(jsonHistoryData[0])));
-}
-
-function setFutureSecondPoint(date) {
-    jsonFutureData[1][0] = date + jsonHistoryData[0][0].substr(10);
 }
 
 function initiateChartSetting() {
@@ -11825,14 +11797,8 @@ function initiateChartSetting() {
         'value': 5
     });
 
-    // Future Trend data (line)
-    futureline_mapping = futureDataTable.mapAs({
-        'value': 5
-    });
-
     // Put the data into data table
     historyDataTable.addData(jsonHistoryData);
-    futureDataTable.addData(jsonFutureData);
 
     //===========================================================
     //          Plot Postition, Height, and Width Settings
@@ -11840,51 +11806,34 @@ function initiateChartSetting() {
 
     // create first plot on the chart and set settings
     historyPlot = chart.plot(0);
-    futureTrendPlot = chart_right.plot(0);
 
     historyPlot.height('100%').width('100%').yGrid(false).xGrid(false).yMinorGrid(false).xMinorGrid(false);
 
-    futureTrendPlot.height('100%').width('100%').yGrid(false).xGrid(false).yMinorGrid(false).xMinorGrid(false);
-
     // chart position
-    // chart.bounds(0, 0, '95%', '80%');
+    chart.bounds(0, 0, '95%', '80%');
 
     // setting portion of plot in the same array (2/3, 1/3)
     // historyPlot.bounds(0, 0, '66%', '80%');
     // futureTrendPlot.bounds('66%', 0, '34%', '80%');// chart position
 
-    // chart position
-    chart.padding(0);
-    chart.bounds(0, 0, '60%', '100%');
-    chart_right.padding(0);
-    chart_right.bounds('60%', 0, '34%', '100%');
-
     // create candlestick and line series
     var candlestick_series = historyPlot.candlestick(candle_mapping);
     var line_series = historyPlot.line(line_mapping);
 
-    var futureLine_series = futureTrendPlot.line(futureline_mapping);
-
     // set id for each series
     candlestick_series.id("candle");
     line_series.id("line");
-    futureLine_series.id("futureLine");
 
     // hide line series
     line_series.enabled(false);
-    futureLine_series.enabled(true);
 
     //===========================================================
     //          X-axis and Y-axis (and labels)
     //===========================================================
 
     // x-axis(date-time) format settings for history plot
-    var xAxis_0 = historyPlot.xAxis();
-    xAxis_0.orientation("bottom");
-
-    // x-axis(date-time) format settings for future plot
-    var xAxis_1 = futureTrendPlot.xAxis();
-    xAxis_1.orientation("bottom");
+    var xAxis = historyPlot.xAxis();
+    xAxis.orientation("bottom");
 
     // setting y scale type as dateTime and adjusting minimum and maximum values
     // var dateScale = anychart.scales.dateTime();
@@ -11900,27 +11849,17 @@ function initiateChartSetting() {
     // minorTicks.interval(0, 0, 15);
 
     // y-scale for both history and future trend plot
-    var yScale_0 = historyPlot.yScale();
-    yScale_0.comparisonMode("none");
-
-    // y-scale for both history and future trend plot
-    var yScale_1 = futureTrendPlot.yScale();
-    yScale_1.comparisonMode("none");
+    var yScale = historyPlot.yScale();
+    yScale.comparisonMode("none");
 
     // adding synchronizeation of scalability
 
 
     // y-axis(price) format settings for history plot
-    var yAxis_0 = historyPlot.yAxis(false);
-    // yAxis_0.orientation("right");
-    // yAxis_0.scale(yScale_0);
-    // yAxis_0.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
-
-    // y-axis(price) format settings for future Trend plot
-    var yAxis_1 = futureTrendPlot.yAxis();
-    yAxis_1.orientation("left");
-    yAxis_1.labels().enabled(false);
-    yAxis_1.scale(yScale_0);
+    var yAxis = historyPlot.yAxis();
+    yAxis.orientation("right");
+    yAxis.scale(yScale);
+    yAxis.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
 
     //===========================================================
     //                      Legend
@@ -11928,7 +11867,6 @@ function initiateChartSetting() {
 
     // enable legend
     historyPlot.legend(true);
-    futureTrendPlot.legend(false);
 
     // set position and alignment of legend
     // change size in height
@@ -11964,7 +11902,6 @@ function initiateChartSetting() {
 
     // enable/disable the crosshair
     historyPlot.crosshair(true);
-    futureTrendPlot.crosshair(false);
 
     // configure the crosshair
     historyPlot.crosshair().xLabel().format(function (e) {
@@ -12007,19 +11944,12 @@ function initiateChartSetting() {
 
     // disable tooltip
     chart.tooltip(false);
-    chart_right.tooltip(false);
 
     // disable scroller
     chart.scroller().enabled(false);
-    chart_right.scroller().enabled(false);
-
-    // disable future trend plot
-    // chart_right.plot(0).enabled(false);
 
     chart.container(stage);
     chart.draw();
-    chart_right.container(stage);
-    chart_right.draw();
 }
 
 function renderHistoryDataToChart() {
@@ -12030,16 +11960,6 @@ function renderHistoryDataToChart() {
 
     // Update new data to data table (history)
     historyDataTable.addData(jsonHistoryData);
-}
-
-function renderFutureDataToChart() {
-    console.log('REFRESH FUTURE DATATABLE!');
-
-    // Clear historyDataTable;
-    futureDataTable.remove();
-
-    // Update new data to data table (future trend)
-    futureDataTable.addData(jsonFutureData);
 }
 
 function switchChartType(type) {
@@ -12123,32 +12043,35 @@ function switchYaxisType(type) {
 //                     Submit Trading Ticket
 //---------------------------------------------------------------
 
-function changeChartDeployment() {
-    // x scale of future trend plot
-    var dateScale = anychart.scales.dateTime();
-    // var xScale_1 = futureTrendPlot.xScale();
-    dateScale.maximum(jsonFutureData[0][0].substr(0, 10));
-    dateScale.minimum(jsonFutureData[1][0].substr(0, 10));
-    // futureTrendPlot.xScale(dateScale);
-
-}
-
-//---------------------------------------------------------------
-//                     Submit Trading Ticket
-//---------------------------------------------------------------
-
 function submitTicket(argument) {
     $.get('http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting', { id: 0, account: 'bombobutt', home_currency: argument['homeCurrency'],
         trade_currency: argument['tradeCurrency'], trade: argument['tradeType'],
         amount: argument['amountInput'], date: argument['tradeDate'] }).always(function (message) {
         if (message != 'OK') {
-            alert(data);
+            alert(message);
         }
     });
 }
 
-function showHidePlot() {
-    chart_right.plot(0).enabled(true);
+function countDifferenceOfDate(earlierDate, laterDate) {
+    return Math.floor((laterDate - earlierDate) / 1000 / 60 / 60 / 24);
+}
+
+function addEmptySpaceInChart(theChart, countOfTicksInIntervals, dateIntervals) {
+    var scale = theChart.xScale();
+    var unit = dateIntervals / countOfTicksInIntervals;
+    // Set maximum gap
+    scale.maximumGap({ intervalsCount: countOfTicksInIntervals, unitType: 'day', unitCount: unit });
+}
+
+function updateEmptySpace() {
+    var tradeDate = new Date(document.getElementById('tradeDate').value);
+
+    // check the difference of today and trade date
+    dd = countDifferenceOfDate(new Date(), tradeDate);
+
+    // adding empty space of 1/2 data at the right-side of chart
+    addEmptySpaceInChart(chart, historyDataTable.bc.b.length / 2, dd);
 }
 
 /***/ }),
