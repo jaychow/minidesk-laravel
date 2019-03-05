@@ -45,6 +45,7 @@ return [
 
         'sidebar' => [
             'dashboard' => 'Dashboard',
+            'zoneeditor' => 'Zone editor',
             'general'   => 'General',
             'history'   => 'History',
             'system'    => 'System',
