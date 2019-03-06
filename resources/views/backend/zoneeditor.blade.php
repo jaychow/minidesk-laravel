@@ -25,6 +25,7 @@
                     <thead>
                         <td>#</td>
                         <td>Start date</td>
+                        <td>Trade type</td>
                         <td>High price</td>
                         <td>Low price</td>
                         <td>Clear Column</td>

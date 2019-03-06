@@ -22,29 +22,26 @@ var candle_mapping, line_mapping;
 var chartSettings, ticketInputs;
 
 //---------------------------------------------------------------
-//                      INITIAL CHART
-//---------------------------------------------------------------
-
-
-//---------------------------------------------------------------
 //                      OTHER FUNCTION
 //---------------------------------------------------------------
 $(document).ready(function() {
     var tradeType = '';
 
+    // chartSettings = {};
+
     var today = new Date();
     document.getElementById("tradeDate").min = today.toISOString().substr(0,10);
+
+    initiateChartSettings(today);
 
     //===========================================================
     //                CLICK EVENTS (chartsettings)
     //===========================================================
 
     $('#pairOptions').on('change', function(e) {
-        chartSettings = processForm('chartInput');
-        chartSettings['timescale'] = '1Y';
-
-        // adding timezone info
-        chartSettings['utc'] = - (today.getTimezoneOffset() / 60);
+        //chartSettings = processForm('chartInput');
+        // update pair in chart settings
+        chartSettings['pair'] = e.target.value;
 
         // request GET/POST to backend
         requestData(chartSettings);
@@ -77,6 +74,7 @@ $(document).ready(function() {
             // update the empty space in chart if there is any
             if (document.getElementById('tradeDate').value != "") {
                 updateEmptySpace();
+                updateSegmentLine(chartSettings['ylabelType']);
             }
         }
     });
@@ -87,7 +85,7 @@ $(document).ready(function() {
             var clickedItem = e.target.value;
             chartSettings['type'] = clickedItem;
             console.log(clickedItem);
-            switchChartType(clickedItem)
+            switchChartType(clickedItem);
         }
     });
 
@@ -106,6 +104,8 @@ $(document).ready(function() {
 
     $('#tradeDate').on('change', function(e) {
         updateEmptySpace();
+        updateSegmentLine(chartSettings['ylabelType']);
+
     });
 
     $('#buySellButton').on('click', function(e) {
@@ -170,6 +170,17 @@ function requestData (argument) {
     });
 }
 
+function initiateChartSettings (today) {
+    var today = new Date()
+    chartSettings = {};
+    chartSettings['pair'] = "";
+    chartSettings['timeScale'] = "1Y";
+    chartSettings['ylabelType'] = "price";
+    chartSettings['type'] = "candle";
+
+    // adding timezone info
+    chartSettings['utc'] = - (today.getTimezoneOffset() / 60);
+}
 
 function initiateChartSetting () {
 
@@ -480,14 +491,15 @@ function submitTicket (argument) {
 }
 
 function countDifferenceOfDate (earlierDate, laterDate) {
-    return Math.floor((laterDate - earlierDate) / 1000 / 60 / 60 / 24);
+    return Math.ceil((laterDate - earlierDate) / 1000 / 60 / 60);
 }
 
-function addEmptySpaceInChart (theChart, countOfTicksInIntervals, dateIntervals) {
+function addEmptySpaceInChart (theChart, countOfTicksInIntervals, hourIntervals) {
     var scale = theChart.xScale();
-    var unit = dateIntervals/countOfTicksInIntervals;
+    var unit = hourIntervals/countOfTicksInIntervals;
+
     // Set maximum gap
-    scale.maximumGap({intervalsCount: countOfTicksInIntervals, unitType: 'day', unitCount: unit});
+    scale.maximumGap({intervalsCount: Math.ceil(countOfTicksInIntervals), unitType: 'hour', unitCount: Math.ceil(unit)});
 }
 
 function updateEmptySpace () {
@@ -499,4 +511,35 @@ function updateEmptySpace () {
     // adding empty space of 1/2 data at the right-side of chart
     addEmptySpaceInChart(chart, historyDataTable.bc.b.length / 2, dd);
 
+}
+
+function updateSegmentLine (pricePercentMode) {
+    // access the annotations() object of the plot to work with annotations
+    var controller = historyPlot.annotations();
+    var valueAnchor = 0;
+
+    // change the valueAnchor according to price / percentage (mode to display money).
+    switch (pricePercentMode) {
+        case 'percent':
+            valueAnchor = jsonHistoryData[0][5];
+            break;
+
+        case 'price':
+            valueAnchor = jsonHistoryData[0][5];
+            break;
+    }
+
+    // remove previous segment line
+   controller.removeAllAnnotations();
+
+    // create a Line annotation
+    var line = controller.line({
+        xAnchor: jsonHistoryData[0][0],
+        valueAnchor: valueAnchor,
+        secondXAnchor: document.getElementById('tradeDate').value,
+        secondValueAnchor: valueAnchor
+    });
+
+    // disable user to edit line
+    line.allowEdit(false);
 }

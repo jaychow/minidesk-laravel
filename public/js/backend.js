@@ -3127,14 +3127,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ "./resources/js/backend/zone.js":
 /***/ (function(module, exports) {
 
-//---------------------------------------------------------------
-//                      OTHER FUNCTION
-//---------------------------------------------------------------
+
 $(document).ready(function () {
     var pair = '';
     var today = new Date().toISOString().substr(0, 10);
     for (var i = 0; i < 6; i++) {
-        $('#zoneTableBody').append('<tr><td>' + (i + 1) + '</td>' + '<td><input type="date" id="date-' + i + '" max="' + today + '" class="fromDate" form="zoneForm"></td>' + '<td><input type="number" id="high-' + i + '" class="high" form="zoneForm"></td>' + '<td><input type="number" id="low-' + i + '" class="low" form="zoneForm"></td>' + '<td><button class="panelButton" id="zoneRmBtn_' + i + '">&#10005</button></td></tr><br/>');
+        $('#zoneTableBody').append('<tr><td>' + (i + 1) + '</td>' + '<td><input type="date" id="date-' + i + '" max="' + today + '" class="fromDate" form="zoneForm"></td>' + '<td><select name="tradeType" id="tradeType-' + i + '" form="zoneForm">' + '       <option disabled selected value> -- type -- </option>' + '       <option value="Buy">buy</option>' + '       <option value="Sell">sell</option>' + '   </select></td>' + '<td><input type="number" id="high-' + i + '" class="high" form="zoneForm"></td>' + '<td><input type="number" id="low-' + i + '" class="low" form="zoneForm"></td>' + '<td><button class="panelButton" id="zoneRmBtn_' + i + '">&#10005</button></td></tr><br/>');
     }
 
     //===========================================================
@@ -3166,6 +3164,7 @@ function requestData(argument) {
         var length = data.length > 5 ? 6 : data.length;
         for (var i = 0; i < length; i++) {
             document.getElementById("date-" + i).value = data[i][4].substr(0, 10);
+            document.getElementById("tradeType-" + i).value = data[i][1];
             document.getElementById("high-" + i).value = data[i][2];
             document.getElementById("low-" + i).value = data[i][3];
         }
@@ -3175,9 +3174,10 @@ function requestData(argument) {
 }
 
 function getForm() {
-    var jsonForm = JSON.parse('{"fromTime":[], "high":[], "low": []}');
+    var jsonForm = JSON.parse('{"fromTime":[], "trade":[], "high":[], "low": []}');
     for (var i = 0; i < 6; i++) {
         jsonForm['fromTime'].push(document.getElementById("date-" + i).value);
+        jsonForm['trade'].push(document.getElementById("tradeType-" + i).value);
         jsonForm['high'].push(document.getElementById("high-" + i).value);
         jsonForm['low'].push(document.getElementById('low-' + i).value);
     }
