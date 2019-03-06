@@ -24,7 +24,16 @@ class ZoneEditorController extends Controller
     {
         // Common parameter (Default)
         $currency = $request->get('pair');
-        $result = ZoneEditor::where('currency', $currency)->orderBy('high', 'desc')->get();
+        $trade = $request->get('trade');
+        if($trade == 'All')
+        {
+            $result = ZoneEditor::where('currency', $currency)->orderBy('high', 'desc')->get();
+        }
+        else
+        {
+            $result = ZoneEditor::where('currency', $currency)->where('trade',$trade)->orderBy('high', 'desc')->get();
+        }
+
         $output = [];
 
         foreach ($result as $data)
@@ -41,7 +50,6 @@ class ZoneEditorController extends Controller
 
         return response()->json($output);
     }
-
     // Receive data from backend -> Zone data
     public function submitZone(Request $request)  //Request $request
     {
