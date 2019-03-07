@@ -603,6 +603,9 @@ function updateZoneBlocks (zone) {
                 fill: color + ' 0.3'
         });
         // disable user to edit zone rectangles
+        thisZone.allowEdit(false);
+
+        // add zone into array
         rectangleArray.push(thisZone);
 
     }
