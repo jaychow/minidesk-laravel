@@ -44,7 +44,7 @@ function requestData (argument) {
     // get zones info that are stored in db.
     $.get(
         'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/getZone',
-        {pair: argument['pair']}
+        {pair: argument['pair'], trade: 'All'}
 
     ).done(function (data) {
         var length = (data.length > 5) ? 6 : data.length;

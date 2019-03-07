@@ -11619,7 +11619,7 @@ var historyDataTable = anychart.data.table();
 var futureDataTable = anychart.data.table();
 
 // raw data (NOTICE!!! format of jsonData should be an array that is accepted format for dataTable.)
-var jsonHistoryData, jsonFutureData;
+var jsonHistoryData, jsonZonesData;
 
 // create plot for chart
 var historyPlot;
@@ -11652,8 +11652,11 @@ $(document).ready(function () {
         // update pair in chart settings
         chartSettings['pair'] = e.target.value;
 
-        // request GET/POST to backend
-        requestData(chartSettings);
+        // send request of candles data
+        requestCandleData(chartSettings);
+
+        // send request of zones data
+        requestZoneData(chartSettings);
 
         //var data_json = $.parseJSON(data);
         if (historyDataTable.bc.b.length > 0) renderHistoryDataToChart();else initiateChartSetting();
@@ -11672,7 +11675,7 @@ $(document).ready(function () {
             console.log(clickedItem);
 
             // request data from
-            requestData(chartSettings);
+            requestCandleData(chartSettings);
 
             // render new data onto chart
             renderHistoryDataToChart();
@@ -11751,7 +11754,7 @@ function processForm(form) {
     }return inputArg;
 }
 
-function requestData(argument) {
+function requestCandleData(argument) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get({
         url: 'http://minidesk.laravel.coretekllc.com/chart/getTable',
@@ -12115,6 +12118,22 @@ function updateSegmentLine(pricePercentMode) {
 
     // disable user to edit line
     line.allowEdit(false);
+}
+
+function requestZoneData(argument) {
+    // get zones info that are stored in db.
+    $.get({
+        url: 'http://minidesk.laravel.coretekllc.com/chart/getZone',
+        data: {
+            pair: argument['pair'],
+            trade: 'All'
+        },
+        async: false
+    }).done(function (data) {
+        jsonZonesData = data;
+    }).fail(function (data) {
+        console.log("Error: " + data);
+    }).always(function (data) {});
 }
 
 /***/ }),
