@@ -11630,6 +11630,9 @@ var candle_mapping, line_mapping;
 // options of user input
 var chartSettings, ticketInputs;
 
+// drawing instances
+var zoneBlocks, horizontalLine;
+
 //---------------------------------------------------------------
 //                      OTHER FUNCTION
 //---------------------------------------------------------------
@@ -11641,7 +11644,9 @@ $(document).ready(function () {
     var today = new Date();
     document.getElementById("tradeDate").min = today.toISOString().substr(0, 10);
 
+    // initiate form and some settings for chart
     initiateChartSettings(today);
+    initiateTicketInputs();
 
     //===========================================================
     //                CLICK EVENTS (chartsettings)
@@ -11714,6 +11719,7 @@ $(document).ready(function () {
     $('#tradeDate').on('change', function (e) {
         updateEmptySpace();
         updateSegmentLine(chartSettings['ylabelType']);
+        zoneBlocks = updateZoneBlocks(jsonZonesData);
     });
 
     $('#buySellButton').on('click', function (e) {
@@ -11721,7 +11727,7 @@ $(document).ready(function () {
             var clickedItem = e.target.value;
 
             // save the trade type: but or sell
-            tradeType = clickedItem;
+            ticketInputs['tradeType'] = clickedItem;
 
             // disable button that was pressed
             document.getElementById("buyButton").disabled = clickedItem == 'buy' ? true : false;
@@ -11783,6 +11789,12 @@ function initiateChartSettings(today) {
 
     // adding timezone info
     chartSettings['utc'] = -(today.getTimezoneOffset() / 60);
+}
+
+function initiateTicketInputs() {
+    ticketInputs = {};
+    ticketInputs['tradeType'] = "";
+    ticketInputs['transactionAmount'] = 0;
 }
 
 function initiateChartSetting() {
@@ -12118,6 +12130,65 @@ function updateSegmentLine(pricePercentMode) {
 
     // disable user to edit line
     line.allowEdit(false);
+}
+
+function updateZoneBlocks(zone) {
+    // access the annotations() object of the plot to work with annotations
+    var controller = historyPlot.annotations();
+    var valueAnchor = 0;
+    var nutralColor = '#8b8ba7',
+        highlightColor = '#7476c2';
+    var sellColor, buyColor;
+
+    var superFuture = '3000-01-01';
+
+    // change the valueAnchor according to price / percentage (mode to display money).
+    switch (chartSettings['ylabelType']) {
+        case 'percent':
+            // valueAnchor = [0][5];
+            break;
+
+        case 'price':
+            // valueAnchor = jsonHistoryData[0][5];
+            break;
+    }
+
+    // decide color;
+    if (ticketInputs['tradeType'] == "") {
+        buyColor = nutralColor;
+        sellColor = nutralColor;
+    } else {
+        buyColor = ticketInputs['tradeType'] == 'Buy' ? highlightColor : nutralColor;
+        sellColor = ticketInputs['tradeType'] == 'Sell' ? highlightColor : nutralColor;
+    }
+
+    // create rectangle annotation
+    var rectangleArray = [];
+    for (var i = 0; i < zone.length; i++) {
+        // zone: [0: pair, 1: tradeType, 2: high, 3: low, 4: tradeDate]
+        var color = zone[i][1] == 'Buy' ? buyColor : sellColor;
+
+        var thisZone = controller.rectangle({
+            //type: 'rectangle',
+            xAnchor: zone[i][4],
+            valueAnchor: zone[i][3], // low
+            secondXAnchor: superFuture,
+            secondValueAnchor: zone[i][2], // high
+            fill: color + ' 0.3'
+        });
+        // disable user to edit zone rectangles
+        rectangleArray.push(thisZone);
+    }
+
+    // var rectangles = chart.annotations(rectangleArray);
+    //
+    // // disable user to edit line
+    // for (var i = 0; i < controller.getAnnotationsCount(); i++) {
+    //     var ann = controller.getAnnotationAt(i);
+    //     ann.allowEdit(false);
+    // }
+
+    return rectangleArray;
 }
 
 function requestZoneData(argument) {

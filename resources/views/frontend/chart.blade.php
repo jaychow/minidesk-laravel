@@ -49,7 +49,7 @@
             </div> </br>
 
             <p><b>Amount: </b></p>
-            <input type="number" name="amountInput"> </br>
+            <input type="number" name="transactionAmount"> </br>
 
             <p><b>Date: </b></p>
             <input type="date" name="tradeDate" id="tradeDate"> </br>
