@@ -18,7 +18,7 @@
                 <option value="EUR_USD">EUR_USD</option>
                 <option value="USD_EUR">USD_EUR</option>
             </select> <br/>
-
+            <!--
             <div class="chartButtons" id="timescaleButton">
                 <button value="1W">1W</button>
                 <button value="1M">1M</button>
@@ -27,7 +27,7 @@
                 <button value="1Y">1Y</button>
                 <button value="5Y">5Y</button>
             </div> <br/>
-
+            -->
             <div class="chartButtons" id="candleLineButton">
                 <button value="candle">Candle</button>
                 <button value="line">Line</button>

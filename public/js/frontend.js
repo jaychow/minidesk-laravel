@@ -11665,6 +11665,13 @@ $(document).ready(function () {
 
         //var data_json = $.parseJSON(data);
         if (historyDataTable.bc.b.length > 0) renderHistoryDataToChart();else initiateChartSetting();
+
+        // if trade date is determined update projection and zone data to plot
+        if (ticketInputs['tradeDate'] != "") {
+            updateEmptySpace();
+            updateSegmentLine(chartSettings['ylabelType']);
+            zoneBlocks = updateZoneBlocks(jsonZonesData);
+        }
     });
 
     // prevent from the button can only submit once
@@ -11673,25 +11680,25 @@ $(document).ready(function () {
     });
 
     // timescale buttons pressed (1D/1W/1M/3M/1Y/5Y)
-    $('#timescaleButton').on('click', function (e) {
-        if (e.target != e.currentTarget) {
-            var clickedItem = e.target.textContent;
-            chartSettings['timescale'] = clickedItem;
-            console.log(clickedItem);
-
-            // request data from
-            requestCandleData(chartSettings);
-
-            // render new data onto chart
-            renderHistoryDataToChart();
-
-            // update the empty space in chart if there is any
-            if (document.getElementById('tradeDate').value != "") {
-                updateEmptySpace();
-                updateSegmentLine(chartSettings['ylabelType']);
-            }
-        }
-    });
+    // $('#timescaleButton').on('click', function(e) {
+    //     if (e.target != e.currentTarget) {
+    //         var clickedItem = e.target.textContent;
+    //         chartSettings['timescale'] = clickedItem;
+    //         console.log(clickedItem);
+    //
+    //         // request data from
+    //         requestCandleData(chartSettings);
+    //
+    //         // render new data onto chart
+    //         renderHistoryDataToChart();
+    //
+    //         // update the empty space in chart if there is any
+    //         if (document.getElementById('tradeDate').value != "") {
+    //             updateEmptySpace();
+    //             updateSegmentLine(chartSettings['ylabelType']);
+    //         }
+    //     }
+    // });
 
     // type of graph (candle/line)
     $('#candleLineButton').on('click', function (e) {
@@ -11717,9 +11724,46 @@ $(document).ready(function () {
     //===========================================================
 
     $('#tradeDate').on('change', function (e) {
-        updateEmptySpace();
-        updateSegmentLine(chartSettings['ylabelType']);
-        zoneBlocks = updateZoneBlocks(jsonZonesData);
+
+        ticketInputs['tradeDate'] = document.getElementById('tradeDate').value;
+
+        var today = new Date();
+        var tradeDate = new Date(ticketInputs['tradeDate']);
+
+        // calculate differece of today and trade date
+        deltaTime = calculateDeltaTime(today, tradeDate); // today and tradeDate should be date object instead of string
+
+        // decide timescale of chart
+        if (deltaTime['year'] >= 1) {
+            chartSettings['timescale'] = "5Y";
+        } else if (deltaTime['month'] >= 6) {
+            chartSettings['timescale'] = "1Y";
+        } else if (deltaTime['month'] >= 3) {
+            chartSettings['timescale'] = "6M";
+        } else if (deltaTime['month'] >= 1) {
+            chartSettings['timescale'] = "3M";
+        } else if (deltaTime['week'] >= 1) {
+            chartSettings['timescale'] = "1M";
+        } else {
+            chartSettings['timescale'] = "1W";
+        }
+
+        // update candle plot only when user have choose pairs
+        if (historyDataTable.bc.b.length > 0) {
+            // send request of candles data
+            requestCandleData(chartSettings);
+
+            // send request of zones data
+            requestZoneData(chartSettings);
+
+            // render data to plot
+            renderHistoryDataToChart();
+
+            // update the projection on the future plot
+            updateEmptySpace();
+            updateSegmentLine(chartSettings['ylabelType']);
+            zoneBlocks = updateZoneBlocks(jsonZonesData);
+        }
     });
 
     $('#buySellButton').on('click', function (e) {
@@ -11794,6 +11838,7 @@ function initiateChartSettings(today) {
 function initiateTicketInputs() {
     ticketInputs = {};
     ticketInputs['tradeType'] = "";
+    ticketInputs['tradeDate'] = "";
     ticketInputs['transactionAmount'] = 0;
 }
 
@@ -12016,9 +12061,7 @@ function switchChartType(type) {
             break;
 
         case 'candle':
-            series.legnedItem().clear();
             series.legendItem().format(function (e) {
-
                 var length = jsonHistoryData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
                     return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> " + this.open + " <b>H</b> " + this.high + " <b>L</b> " + this.low + " <b>C</b> " + this.close + "<br/>" + "<b>Vol</b> " + jsonHistoryData[length - this.index - 1][6] + " <b>Avg Vol</b> " + jsonHistoryData[length - this.index - 1][7] + " <b>Delta O-C(%)</b> " + jsonHistoryData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonHistoryData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonHistoryData[length - this.index - 1][10] + "%";
@@ -12169,12 +12212,12 @@ function updateZoneBlocks(zone) {
         var color = zone[i][1] == 'Buy' ? buyColor : sellColor;
 
         var thisZone = controller.rectangle({
-            //type: 'rectangle',
             xAnchor: zone[i][4],
             valueAnchor: zone[i][3], // low
             secondXAnchor: superFuture,
             secondValueAnchor: zone[i][2], // high
-            fill: color + ' 0.3'
+            fill: color + ' 0.3',
+            stroke: '0'
         });
         // disable user to edit zone rectangles
         thisZone.allowEdit(false);
@@ -12182,15 +12225,6 @@ function updateZoneBlocks(zone) {
         // add zone into array
         rectangleArray.push(thisZone);
     }
-
-    // var rectangles = chart.annotations(rectangleArray);
-    //
-    // // disable user to edit line
-    // for (var i = 0; i < controller.getAnnotationsCount(); i++) {
-    //     var ann = controller.getAnnotationAt(i);
-    //     ann.allowEdit(false);
-    // }
-
     return rectangleArray;
 }
 
@@ -12208,6 +12242,20 @@ function requestZoneData(argument) {
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {});
+}
+
+function calculateDeltaTime(today, tradeDate) {
+    // calculate timeRange and save it into inputArg
+    var deltaTime = {};
+
+    var ymdToday = [];
+    var ymdFromDate = [];
+
+    deltaTime['year'] = tradeDate.getFullYear() - today.getFullYear();
+    deltaTime['month'] = tradeDate.getMonth() - today.getMonth();
+    deltaTime['day'] = tradeDate.getDate() - today.getDate();
+
+    return deltaTime;
 }
 
 /***/ }),
