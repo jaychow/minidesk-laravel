@@ -429,11 +429,17 @@ class ChartController extends Controller
     }
 
     // Mapping the zone's data to front end % axis
-    protected function zonePercentage($value,$currency)
+    protected function zonePercentage($value,$baseValue)
     {
-        $baseValue = $this->getCurrentData($currency);
-        $result = (($value - $baseValue) / $baseValue)*100;
-        return number_format($result,2);
+        if($baseValue == '')
+        {
+            return 'Empty';
+        }
+        else
+        {
+            $result = (($value - $baseValue) / $baseValue)*100;
+            return number_format($result,2);
+        }
     }
 
     // Response frontend request -> Chart data
@@ -521,6 +527,7 @@ class ChartController extends Controller
         $currency = $request->get('pair');
         $trade = $request->get('trade');
         $percentage = $request->get('percentage');
+        $latestData = $request->get('value');
 
         if($trade == 'All')
         {
@@ -541,8 +548,8 @@ class ChartController extends Controller
                     [
                         $data->currency,
                         $data->trade,
-                        $high = $this->zonePercentage($data->high,$currency),
-                        $low = $this->zonePercentage($data->low,$currency),
+                        $high = $this->zonePercentage($data->high,$latestData),
+                        $low = $this->zonePercentage($data->low,$latestData),
                         $data->date
                     ];
             }
