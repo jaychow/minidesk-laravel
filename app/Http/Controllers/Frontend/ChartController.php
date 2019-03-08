@@ -428,6 +428,14 @@ class ChartController extends Controller
         return number_format($high - $low,5);
     }
 
+    // Mapping the zone's data to front end % axis
+    protected function zonePercentage($value,$currency)
+    {
+        $baseValue = $this->getCurrentData($currency);
+        $result = (($value - $baseValue) / $baseValue)*100;
+        return number_format($result,2);
+    }
+
     // Response frontend request -> Chart data
     public function getTable(Request $request)  //Request $request
     {
@@ -512,6 +520,8 @@ class ChartController extends Controller
         // Common parameter (Default)
         $currency = $request->get('pair');
         $trade = $request->get('trade');
+        $percentage= $request->get('percentage');
+
         if($trade == 'All')
         {
             $result = ZoneEditor::where('currency', $currency)->orderBy('high', 'desc')->get();
@@ -522,19 +532,35 @@ class ChartController extends Controller
         }
 
         $output = [];
-
-        foreach ($result as $data)
+        // After mapping to percentage (Latest), response the data of zone editor
+        if($percentage == 'true')
         {
-            $output[] =
-                [
-                    $data->currency,
-                    $data->trade,
-                    $data->high,
-                    $data->low,
-                    $data->date,
-                ];
+            foreach ($result as $data)
+            {
+                $output[] =
+                    [
+                        $data->currency,
+                        $data->trade,
+                        $high = $this->zonePercentage($data->high,$currency),
+                        $low = $this->zonePercentage($data->low,$currency),
+                        $data->date
+                    ];
+            }
         }
-
+        else
+        {
+            foreach ($result as $data)
+            {
+                $output[] =
+                    [
+                        $data->currency,
+                        $data->trade,
+                        $data->high,
+                        $data->low,
+                        $data->date
+                    ];
+            }
+        }
         return response()->json($output);
     }
 

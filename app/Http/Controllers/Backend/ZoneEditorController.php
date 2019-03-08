@@ -18,7 +18,6 @@ class ZoneEditorController extends Controller
     {
         return view('backend.zoneeditor');
     }
-
     // Response backend request -> Zone data
     public function getZone(Request $request)  //Request $request
     {
