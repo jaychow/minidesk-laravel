@@ -11666,8 +11666,12 @@ $(document).ready(function () {
         //var data_json = $.parseJSON(data);
         if (historyDataTable.bc.b.length > 0) renderHistoryDataToChart();else initiateChartSetting();
 
-        // if trade date is determined update projection and zone data to plot
+        // if trade date is determined
         if (ticketInputs['tradeDate'] != "") {
+            // remove previous segment line
+            historyPlot.annotations().removeAllAnnotations();
+
+            // update projection and zone data to plot
             updateEmptySpace();
             updateSegmentLine(chartSettings['ylabelType']);
             zoneBlocks = updateZoneBlocks(jsonZonesData);
@@ -11759,6 +11763,9 @@ $(document).ready(function () {
             // render data to plot
             renderHistoryDataToChart();
 
+            // remove previous segment line
+            historyPlot.annotations().removeAllAnnotations();
+
             // update the projection on the future plot
             updateEmptySpace();
             updateSegmentLine(chartSettings['ylabelType']);
@@ -11777,8 +11784,12 @@ $(document).ready(function () {
             document.getElementById("buyButton").disabled = clickedItem == 'buy' ? true : false;
             document.getElementById("sellButton").disabled = clickedItem == 'sell' ? true : false;
 
+            // remove previous segment line
+            historyPlot.annotations().removeAllAnnotations();
+
             // zones recommendation (color depends on buy/sell)
-            /* TO BE FINISH */
+            updateSegmentLine(chartSettings['ylabelType']);
+            zoneBlocks = updateZoneBlocks(jsonZonesData);
         }
     });
 
@@ -12160,9 +12171,6 @@ function updateSegmentLine(pricePercentMode) {
             break;
     }
 
-    // remove previous segment line
-    controller.removeAllAnnotations();
-
     // create a Line annotation
     var line = controller.line({
         xAnchor: jsonHistoryData[0][0],
@@ -12179,30 +12187,31 @@ function updateZoneBlocks(zone) {
     // access the annotations() object of the plot to work with annotations
     var controller = historyPlot.annotations();
     var valueAnchor = 0;
-    var nutralColor = '#8b8ba7',
-        highlightColor = '#7476c2';
+    var nutralColor = '#e3e3f7',
+        highlightColor = '#bdbded';
     var sellColor, buyColor;
 
     var superFuture = '3000-01-01';
 
+    // TO-DO
     // change the valueAnchor according to price / percentage (mode to display money).
-    switch (chartSettings['ylabelType']) {
-        case 'percent':
-            // valueAnchor = [0][5];
-            break;
-
-        case 'price':
-            // valueAnchor = jsonHistoryData[0][5];
-            break;
-    }
+    // switch (chartSettings['ylabelType']) {
+    //     case 'percent':
+    //         // valueAnchor = [0][5];
+    //         break;
+    //
+    //     case 'price':
+    //         // valueAnchor = jsonHistoryData[0][5];
+    //         break;
+    // }
 
     // decide color;
     if (ticketInputs['tradeType'] == "") {
         buyColor = nutralColor;
         sellColor = nutralColor;
     } else {
-        buyColor = ticketInputs['tradeType'] == 'Buy' ? highlightColor : nutralColor;
-        sellColor = ticketInputs['tradeType'] == 'Sell' ? highlightColor : nutralColor;
+        buyColor = ticketInputs['tradeType'] == 'buy' ? highlightColor : nutralColor;
+        sellColor = ticketInputs['tradeType'] == 'sell' ? highlightColor : nutralColor;
     }
 
     // create rectangle annotation

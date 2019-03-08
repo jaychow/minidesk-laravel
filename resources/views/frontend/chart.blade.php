@@ -44,8 +44,8 @@
 
         <form id="tradingTicketForm">
             <div class="chartButtons" id="buySellButton">
-                <button value="buy" id="buyButton">Buy</button>
-                <button value="sell" id="sellButton">Sell</button>
+                <button value="buy" id="buyButton">I WILL NEED FOREIGN CURRENCY</button>
+                <button value="sell" id="sellButton">I WILL NEED HOME CURRENCY</button>
             </div> </br>
 
             <p><b>Amount: </b></p>
