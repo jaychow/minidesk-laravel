@@ -198,15 +198,18 @@ $(document).ready(function() {
             document.getElementById("buyButton").disabled = (clickedItem == 'buy') ? true : false;
             document.getElementById("sellButton").disabled = (clickedItem == 'sell') ? true : false;
 
-            // remove previous segment line
-            historyPlot.annotations().removeAllAnnotations();
+            if (chartSettings['pair'] != "" && ticketInputs['tradeDate'] != "") {
 
-            // zones recommendation (color depends on buy/sell)
-            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
-            zoneBlocks = updateZoneBlocks(jsonZonesData);
+                // remove previous segment line
+                historyPlot.annotations().removeAllAnnotations();
 
-            // update color of yLabel
-            updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+                // zones recommendation (color depends on buy/sell)
+                horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+                zoneBlocks = updateZoneBlocks(jsonZonesData);
+
+                // update color of yLabel
+                updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+            }
         }
     });
 
