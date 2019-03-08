@@ -11673,7 +11673,7 @@ $(document).ready(function () {
 
             // update projection and zone data to plot
             updateEmptySpace();
-            updateSegmentLine(chartSettings['ylabelType']);
+            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
             zoneBlocks = updateZoneBlocks(jsonZonesData);
         }
     });
@@ -11699,7 +11699,7 @@ $(document).ready(function () {
     //         // update the empty space in chart if there is any
     //         if (document.getElementById('tradeDate').value != "") {
     //             updateEmptySpace();
-    //             updateSegmentLine(chartSettings['ylabelType']);
+    //             horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
     //         }
     //     }
     // });
@@ -11720,6 +11720,17 @@ $(document).ready(function () {
             var clickedItem = e.target.value;
             chartSettings['ylabelType'] = clickedItem;
             switchYaxisType(clickedItem);
+
+            // remove previous segment line
+            historyPlot.annotations().removeAllAnnotations();
+
+            // update zone data
+            requestZoneData(chartSettings);
+
+            // refresh zone data and horizontal line
+            updateEmptySpace();
+            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+            zoneBlocks = updateZoneBlocks(jsonZonesData);
 
             // update color of yLabel
             updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
@@ -11771,7 +11782,7 @@ $(document).ready(function () {
 
             // update the projection on the future plot
             updateEmptySpace();
-            updateSegmentLine(chartSettings['ylabelType']);
+            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
             zoneBlocks = updateZoneBlocks(jsonZonesData);
         }
     });
@@ -11791,7 +11802,7 @@ $(document).ready(function () {
             historyPlot.annotations().removeAllAnnotations();
 
             // zones recommendation (color depends on buy/sell)
-            updateSegmentLine(chartSettings['ylabelType']);
+            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
             zoneBlocks = updateZoneBlocks(jsonZonesData);
 
             // update color of yLabel
@@ -12165,18 +12176,9 @@ function updateEmptySpace() {
 function updateSegmentLine(pricePercentMode) {
     // access the annotations() object of the plot to work with annotations
     var controller = historyPlot.annotations();
-    var valueAnchor = 0;
 
     // change the valueAnchor according to price / percentage (mode to display money).
-    switch (pricePercentMode) {
-        case 'percent':
-            valueAnchor = jsonHistoryData[0][5];
-            break;
-
-        case 'price':
-            valueAnchor = jsonHistoryData[0][5];
-            break;
-    }
+    var valueAnchor = pricePercentMode == "percent" ? 0 : jsonHistoryData[0][5];
 
     // create a Line annotation
     var line = controller.line({
@@ -12188,6 +12190,8 @@ function updateSegmentLine(pricePercentMode) {
 
     // disable user to edit line
     line.allowEdit(false);
+
+    return line;
 }
 
 function updateZoneBlocks(zone) {
@@ -12198,6 +12202,8 @@ function updateZoneBlocks(zone) {
         highlightColor = '#bdbded';
     var sellColor, buyColor;
 
+    // TO-DO
+    // set superfuture as 10 years after the tradeDate
     var superFuture = '3000-01-01';
 
     // TO-DO
@@ -12245,12 +12251,17 @@ function updateZoneBlocks(zone) {
 }
 
 function requestZoneData(argument) {
+    // % / $ type (ylabelType)
+    var percentage = argument['ylabelType'] == "percent" ? "true" : "false";
+
     // get zones info that are stored in db.
     $.get({
         url: 'http://minidesk.laravel.coretekllc.com/chart/getZone',
         data: {
             pair: argument['pair'],
-            trade: 'All'
+            trade: 'All',
+            percentage: percentage,
+            value: jsonHistoryData[0][5]
         },
         async: false
     }).done(function (data) {
