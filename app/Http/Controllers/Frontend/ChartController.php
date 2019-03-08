@@ -520,7 +520,7 @@ class ChartController extends Controller
         // Common parameter (Default)
         $currency = $request->get('pair');
         $trade = $request->get('trade');
-        $percentage= $request->get('percentage');
+        $percentage = $request->get('percentage');
 
         if($trade == 'All')
         {
