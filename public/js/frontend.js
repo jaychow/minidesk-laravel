@@ -11720,6 +11720,9 @@ $(document).ready(function () {
             var clickedItem = e.target.value;
             chartSettings['ylabelType'] = clickedItem;
             switchYaxisType(clickedItem);
+
+            // update color of yLabel
+            updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
         }
     });
 
@@ -11790,6 +11793,9 @@ $(document).ready(function () {
             // zones recommendation (color depends on buy/sell)
             updateSegmentLine(chartSettings['ylabelType']);
             zoneBlocks = updateZoneBlocks(jsonZonesData);
+
+            // update color of yLabel
+            updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
         }
     });
 
@@ -11943,6 +11949,7 @@ function initiateChartSetting() {
     yAxis.scale(yScale);
     yAxis.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
 
+    // yAxis.labels().fontColor("red");
     //===========================================================
     //                      Legend
     //===========================================================
@@ -12265,6 +12272,50 @@ function calculateDeltaTime(today, tradeDate) {
     deltaTime['day'] = tradeDate.getDate() - today.getDate();
 
     return deltaTime;
+}
+
+function updateYlabelsColor(yAxis, pricePercentageType, tradeType) {
+
+    // setting for colors
+    var safeColor = "#0b9ca8";
+    var warningColor = "#a80a47";
+    var defaultColor = "#717b83";
+
+    // get a number of labels on the Y axis
+    var count = yAxis.labels().getLabelsCount();
+
+    // setting the threshold of color
+    var standardValue = pricePercentageType == "percent" ? 0 : jsonHistoryData[0][5];
+
+    // setting the color of tradeType
+    var multiplier = tradeType == "sell" ? 1 : -1;
+
+    // go to through all labels
+    for (var i = 0; i < count; i++) {
+
+        // get label object
+        var label = yAxis.labels().getLabel(i);
+
+        // get value of the scale this label
+        value = yAxis.scale().ticks().get()[i];
+
+        // get chart average
+        // avg = chart.getSeries(0).getStat('average');
+
+        // if the value is greater
+        if (tradeType == "") {
+            label.fontColor(defaultColor);
+        } else if ((value - standardValue) * multiplier > 0) {
+            // safe(green)
+            label.fontColor(safeColor);
+        } else if ((value - standardValue) * multiplier < 0) {
+            // dangerous(red)
+            label.fontColor(warningColor);
+        } else {
+            label.fontColor(defaultColor);
+        }
+        label.draw();
+    }
 }
 
 /***/ }),
