@@ -11,5 +11,5 @@ class ChartTimeInterval extends Model
     // Let created_at & updated_at columns exist
     public $timestamps = true;
 
-    protected $fillable = ['id','created_at','updated_at','day','hour','minute'];
+    protected $fillable = ['id','created_at','updated_at','interval'];
 }

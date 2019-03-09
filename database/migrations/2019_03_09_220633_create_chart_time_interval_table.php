@@ -17,9 +17,7 @@ class CreateChartTimeIntervalTable extends Migration
         {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->string('day');
-            $table->string('hour');
-            $table->string('minute');
+            $table->string('interval');
         });
     }
 

@@ -245,7 +245,7 @@ class ChartController extends Controller
     }
 
     // Get current currency data from Oanda
-    protected function getCurrentData($type)
+    protected function getCurrentData($type,$interval)
     {
         // Use to identify is the currency need to change ?
         $reverseFlag = 0;
@@ -261,7 +261,7 @@ class ChartController extends Controller
         {
             try
             {
-                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?granularity=M5&count=1', [
+                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?granularity='.$interval.'&count=1', [
                             'headers' => $headers
                         ]);
 
@@ -463,11 +463,13 @@ class ChartController extends Controller
         $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
         $status = $request->get('status');
+        $interval = $request->get('interval');
+
         $fromTime = '';
 
         if($status == 'current')
         {
-            return $this->getCurrentData($type);
+            return $this->getCurrentData($type,$interval);
         }
 
         // Select time scale , each time scale start from open market time
@@ -545,16 +547,11 @@ class ChartController extends Controller
     public function getTimeInterval()  //Request $request
     {
         $result = ChartTimeInterval::get();
-        $output = [];
 
+        $output ='';
         foreach ($result as $data)
         {
-            $output[] =
-                [
-                    $data->day,
-                    $data->hour,
-                    $data->minute
-                ];
+            $output = $data->interval;
         }
         return $output;
     }
