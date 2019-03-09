@@ -16,10 +16,10 @@ class CreateTradeSettingRecordTable extends Migration
         Schema::create('trade_setting_record', function (Blueprint $table)
         {
             $table->bigIncrements('id');
-            $table->text('account');
-            $table->text('home_currency');
-            $table->text('trade_currency');
-            $table->text('trade');
+            $table->string('account');
+            $table->string('home_currency');
+            $table->string('trade_currency');
+            $table->string('trade');
             $table->float('amount',8,2);
             $table->dateTime('date');
         });

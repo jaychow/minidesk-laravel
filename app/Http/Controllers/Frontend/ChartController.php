@@ -260,13 +260,25 @@ class ChartController extends Controller
         {
             try
             {
-                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?granularity=S5&count=1', [
+                $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?granularity=M5&count=1', [
                             'headers' => $headers
                         ]);
 
                 $result = $response->getBody();
                 $result = json_decode($result);
-                $output = $this->getCandles($result);
+                $final_result = $this->getCandles($result);
+                $output =
+                    [
+                        $final_result[0],
+                        $type,
+                        $final_result[2],
+                        $final_result[3],
+                        $final_result[4],
+                        $final_result[5],
+                        $final_result[6],
+                        'NA',
+                        $percentage = $this->priceChange(1/$data[2],1/$data[5]),
+                    ];
                 return $output[0][5];
             }
 
@@ -457,10 +469,6 @@ class ChartController extends Controller
             return $this->getCurrentData($type);
         }
 
-        if (!(($timeRange == '5Y') || ($timeRange == '1Y') || ($timeRange == '6M') || ($timeRange == '1M') || ($timeRange == '3M') || ($timeRange == '1W')))
-        {
-            $timeRange = "1Y";
-        }
         // Select time scale , each time scale start from open market time
         switch ($timeRange)
         {
@@ -482,6 +490,8 @@ class ChartController extends Controller
             case "5Y":
                 $fromTime = date("Y-m-d", strtotime('-5 year')).' 21:00:00';
                 break;
+            default:
+                return 'Error time range';
         }
 
         // Check API data is exist or not ?
