@@ -12201,7 +12201,8 @@ function updateZoneBlocks(zone) {
     // access the annotations() object of the plot to work with annotations
     var controller = historyPlot.annotations();
     var valueAnchor = 0;
-    var nutralColor = '#e3e3f7',
+    //const nutralColor = '#e3e3f7', highlightColor = '#bdbded';
+    var nutralColor = '#54585b',
         highlightColor = '#bdbded';
     var sellColor, buyColor;
 

@@ -449,10 +449,10 @@ class ChartController extends Controller
         $type = ($request->get('pair') == '') ? 'USD_CAD':$request->get('pair');
         $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
-        $currentCurrency = $request->get('currentCurrency');
+        $status = $request->get('status');
         $fromTime = '';
 
-        if($currentCurrency == 'true')
+        if($status == 'current')
         {
             return $this->getCurrentData($type);
         }
@@ -512,10 +512,20 @@ class ChartController extends Controller
                         $volumeChange = $this->volumeChange($data->volume,$average)
                     ];
             }
+
+            if($status == 'latest_candle')
+            {
+                return response()->json($output[0])[5];
+            }
                 return response()->json($output);
             }
         else    // Call Oanda API
         {
+            if($status == 'latest_candle')
+            {
+                $result = $this->getAPI($type, $utc, $fromTime,$timeRange);
+                return response()->json($result[0][5]);
+            }
             return $this->getAPI($type, $utc, $fromTime,$timeRange);
         }
     }
