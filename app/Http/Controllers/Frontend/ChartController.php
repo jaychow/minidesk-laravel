@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Models\ChartData;
 use App\Models\ZoneEditor;
+use App\Models\ChartTimeInterval;
 use App\Models\TradeSettingRecord;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
@@ -538,6 +539,24 @@ class ChartController extends Controller
             }
             return response()->json($this->getAPI($type, $utc, $fromTime,$timeRange));
         }
+    }
+
+    // Response frontend request -> Time interval for updating the chart data
+    public function getTimeInterval()  //Request $request
+    {
+        $result = ChartTimeInterval::get();
+        $output = [];
+
+        foreach ($result as $data)
+        {
+            $output[] =
+                [
+                    $data->day,
+                    $data->hour,
+                    $data->minute
+                ];
+        }
+        return $output;
     }
 
     // Response frontend request -> Zone data

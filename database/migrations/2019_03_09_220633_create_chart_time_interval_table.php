@@ -15,9 +15,11 @@ class CreateChartTimeIntervalTable extends Migration
     {
         Schema::create('chart_time_interval', function (Blueprint $table)
         {
-            $table->string('account');
+            $table->bigIncrements('id');
             $table->timestamps();
-            $table->string('interval');
+            $table->string('day');
+            $table->string('hour');
+            $table->string('minute');
         });
     }
 
