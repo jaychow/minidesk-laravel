@@ -216,7 +216,7 @@ class ChartController extends Controller
                     }
                 }
                 $this->storeAPI($final,$timeRange);
-                return response()->json($final);
+                return $final;
             }
 
             catch (RequestException $e)
@@ -526,7 +526,7 @@ class ChartController extends Controller
                 $result = $this->getAPI($type, $utc, $fromTime,$timeRange);
                 return response()->json($result[0][5]);
             }
-            return $this->getAPI($type, $utc, $fromTime,$timeRange);
+            return response()->json($this->getAPI($type, $utc, $fromTime,$timeRange));
         }
     }
 
