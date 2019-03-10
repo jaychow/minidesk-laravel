@@ -12,7 +12,6 @@ use function GuzzleHttp\json_encode;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
-use Monolog\Handler\ElasticSearchHandler;
 
 date_default_timezone_set('Europe/London'); // UTC + 0
 
