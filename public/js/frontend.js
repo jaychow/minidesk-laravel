@@ -11633,6 +11633,15 @@ var chartSettings, ticketInputs;
 // drawing instances
 var zoneBlocks, horizontalLine;
 
+// time interval counter
+var updateCandleInterval = 5; // 5 minutes
+var updateIntervalCounts = {};
+var candleUpdateCounter = 0,
+    zoneUpdateCounter = 0;
+
+// timer
+var updateCandle, updateZone;
+
 //---------------------------------------------------------------
 //                      OTHER FUNCTION
 //---------------------------------------------------------------
@@ -11648,6 +11657,13 @@ $(document).ready(function () {
     initiateChartSettings(today);
     initiateTicketInputs();
 
+    // initiate time interval counts
+    updateIntervalCounts['1W'] = 60 / updateCandleInterval; // 1h/candle, increase 1 candle every intervals.
+    updateIntervalCounts['1M'] = 60 * 4 / updateCandleInterval; // 4h/candle, increase 1 candle every intervals.
+    updateIntervalCounts['3M'] = 60 * 24; // 1D/candle, increase 1 candle every intervals.
+    updateIntervalCounts['1Y'] = 60 * 24 * 7; // 1W/candle, increase 1 candle every intervals.
+    updateIntervalCounts['5Y'] = 60 * 24 * 31; // 1M/candle, increase 1 candle every intervals.
+
     //===========================================================
     //                CLICK EVENTS (chartsettings)
     //===========================================================
@@ -11658,7 +11674,7 @@ $(document).ready(function () {
         chartSettings['pair'] = e.target.value;
 
         // send request of candles data
-        requestCandleData(chartSettings);
+        requestCandleData(chartSettings, false);
 
         // send request of zones data
         requestZoneData(chartSettings);
@@ -11676,6 +11692,9 @@ $(document).ready(function () {
             horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
             zoneBlocks = updateZoneBlocks(jsonZonesData);
         }
+
+        // set Interval
+        // updateCandle = setInterval(updateSingleData, updateCandleInterval * 60 * 1000);
     });
 
     // prevent from the button can only submit once
@@ -11691,7 +11710,7 @@ $(document).ready(function () {
     //         console.log(clickedItem);
     //
     //         // request data from
-    //         requestCandleData(chartSettings);
+    //         requestCandleData(chartSettings, false);
     //
     //         // render new data onto chart
     //         renderHistoryDataToChart();
@@ -11769,7 +11788,7 @@ $(document).ready(function () {
         // update candle plot only when user have choose pairs
         if (historyDataTable.bc.b.length > 0) {
             // send request of candles data
-            requestCandleData(chartSettings);
+            requestCandleData(chartSettings, false);
 
             // send request of zones data
             requestZoneData(chartSettings);
@@ -11835,7 +11854,9 @@ function processForm(form) {
     }return inputArg;
 }
 
-function requestCandleData(argument) {
+function requestCandleData(argument, singleData) {
+    var requestSingleCurrentCurrency = singleData == true ? "true" : "false";
+
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get({
         url: 'http://minidesk.laravel.coretekllc.com/chart/getTable',
@@ -11843,7 +11864,7 @@ function requestCandleData(argument) {
             pair: argument['pair'],
             timeRange: argument['timescale'],
             utc: argument['utc'],
-            currentCurrency: 'false'
+            currentCurrency: requestSingleCurrentCurrency
         },
         async: false
     }).done(function (historyData) {
@@ -11858,7 +11879,7 @@ function initiateChartSettings(today) {
     var today = new Date();
     chartSettings = {};
     chartSettings['pair'] = "";
-    chartSettings['timeScale'] = "1Y";
+    chartSettings['timescale'] = "1Y";
     chartSettings['ylabelType'] = "price";
     chartSettings['type'] = "candle";
 
@@ -11886,12 +11907,6 @@ function initiateChartSetting() {
         'high': 3,
         'low': 4,
         'close': 5
-        // 'value': 6,
-        // 'average_volume': 7,        // further info (show in legend when hovering around)
-        // 'delta_volume_p': 8,       // further info (show in legend when hovering around)
-        // 'delta_volume': 9,          // further info (show in legend when hovering around)
-        // 'average_volume_p': 10     // further info (show in legend when hovering around)
-
     });
 
     // History data (line)
@@ -11950,20 +11965,35 @@ function initiateChartSetting() {
     // var minorTicks = historyPlot.xScale().minorTicks();
     // minorTicks.interval(0, 0, 15);
 
-    // y-scale for both history and future trend plot
+    // y-scale for both history and future trend plot (default: % mode)
     var yScale = historyPlot.yScale();
-    yScale.comparisonMode("none");
-
-    // adding synchronizeation of scalability
-
+    yScale.comparisonMode("percent");
+    yScale.compareWith("seriesEnd");
+    yScale.ticks().interval(1);
 
     // y-axis(price) format settings for history plot
     var yAxis = historyPlot.yAxis();
     yAxis.orientation("right");
     yAxis.scale(yScale);
-    yAxis.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+    yAxis.labels().format(function () {
+        return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+    });
 
-    // yAxis.labels().fontColor("red");
+    //===========================================================
+    //                      Crosshair
+    //===========================================================
+
+    // enable/disable the crosshair
+    historyPlot.crosshair(true);
+
+    // configure the crosshair
+    historyPlot.crosshair().xLabel().format(function (e) {
+        return anychart.format.dateTime(this.value, "MMM d, yyyy");
+    });
+    historyPlot.crosshair().yLabel().format(function () {
+        return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+    });
+
     //===========================================================
     //                      Legend
     //===========================================================
@@ -11998,19 +12028,6 @@ function initiateChartSetting() {
             return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" + "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
         }
     });
-
-    //===========================================================
-    //                      Crosshair
-    //===========================================================
-
-    // enable/disable the crosshair
-    historyPlot.crosshair(true);
-
-    // configure the crosshair
-    historyPlot.crosshair().xLabel().format(function (e) {
-        return anychart.format.dateTime(this.value, "MMM d, yyyy");
-    });
-    historyPlot.crosshair().yLabel().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
 
     // // set settings for event markers
     // var eventMarkers = historyPlot.eventMarkers();
@@ -12117,25 +12134,32 @@ function switchYaxisType(type) {
             // button: " % "
             yScale.comparisonMode("percent");
             yScale.compareWith("seriesEnd");
+            yScale.ticks().interval(1);
             yAxis.labels().format("{%value}{decimalsCount:2, zeroFillDecimals:true} %");
+
             break;
 
         case "price":
             // button: " $ "
-            yScale.comparisonMode("none");
-            yAxis.labels().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+            yScale.comparisonMode("percent");
+            yAxis.labels().format(function () {
+                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+            });
             break;
     }
     yAxis.scale(yScale);
 
     // crosshair
-    var crosshair = chart.crosshair();
+
+    var crosshair = historyPlot.crosshair();
     switch (type) {
         case "percent":
             crosshair.yLabel().format("{%value}{decimalsCount:2, zeroFillDecimals:true} %");
             break;
         case "price":
-            crosshair.yLabel().format("{%value}{decimalsCount:4, zeroFillDecimals:true}");
+            crosshair.yLabel().format(function () {
+                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+            });
             break;
     }
 }
@@ -12201,26 +12225,13 @@ function updateZoneBlocks(zone) {
     // access the annotations() object of the plot to work with annotations
     var controller = historyPlot.annotations();
     var valueAnchor = 0;
-    //const nutralColor = '#e3e3f7', highlightColor = '#bdbded';
-    var nutralColor = '#54585b',
+    var nutralColor = '#e3e3f7',
         highlightColor = '#bdbded';
     var sellColor, buyColor;
 
     // TO-DO
     // set superfuture as 10 years after the tradeDate
     var superFuture = '3000-01-01';
-
-    // TO-DO
-    // change the valueAnchor according to price / percentage (mode to display money).
-    // switch (chartSettings['ylabelType']) {
-    //     case 'percent':
-    //         // valueAnchor = [0][5];
-    //         break;
-    //
-    //     case 'price':
-    //         // valueAnchor = jsonHistoryData[0][5];
-    //         break;
-    // }
 
     // decide color;
     if (ticketInputs['tradeType'] == "") {
@@ -12330,6 +12341,30 @@ function updateYlabelsColor(yAxis, pricePercentageType, tradeType) {
             label.fontColor(defaultColor);
         }
         label.draw();
+    }
+}
+
+function updateSingleData(chartSettings, counter) {
+    requestCandleData(chartSettings, true);
+    if (candleUpdateCounter < updateIntervalCounts[chartSettings['timescale']]) {// update one point
+        // only update
+    }
+}
+
+function syncYlabelTicks(plot, type) {
+    // getting yaxis
+    var yAxis = plot.historyPlot.yAxis();
+
+    // declaring yscale
+    var yScale = yAxis.yScale();
+
+    yScale.comparisonMode("percent");
+    yScale.compareWith("seriesEnd");
+    switch (type) {
+        case "percent":
+            break;
+        case "price":
+            break;
     }
 }
 
