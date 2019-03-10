@@ -549,20 +549,10 @@ class ChartController extends Controller
                         $volumeChange = $this->volumeChange($data->volume,$average)
                     ];
             }
-
-            if($status == 'latest_candle')
-            {
-                return response()->json($output[0])[5];
-            }
                 return response()->json($output);
             }
         else    // Call Oanda API
         {
-            if($status == 'latest_candle')
-            {
-                $result = $this->getAPI($type, $utc, $fromTime,$timeRange);
-                return response()->json($result[0][5]);
-            }
             return response()->json($this->getAPI($type, $utc, $fromTime,$timeRange));
         }
     }
