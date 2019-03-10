@@ -12,6 +12,7 @@ use function GuzzleHttp\json_encode;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
+use Monolog\Handler\ElasticSearchHandler;
 
 date_default_timezone_set('Europe/London'); // UTC + 0
 
@@ -268,19 +269,42 @@ class ChartController extends Controller
                 $result = $response->getBody();
                 $result = json_decode($result);
                 $final_result = $this->getCandles($result);
-                $output =
-                    [
-                        $final_result[0],
-                        $type,
-                        $final_result[2],
-                        $final_result[3],
-                        $final_result[4],
-                        $final_result[5],
-                        $final_result[6],
-                        'NA',
-                        $percentage = $this->priceChange(1/$data[2],1/$data[5]),
-                    ];
-                return $output[0][5];
+                if($reverseFlag >= 1)
+                {
+                    $output =
+                        [
+                            $final_result[0][0],
+                            $type,
+                            number_format(1/$final_result[0][2],5),
+                            number_format(1/$final_result[0][4],5),
+                            number_format(1/$final_result[0][3],5),
+                            number_format(1/$final_result[0][5],5),
+                            $final_result[0][6],
+                            'NA',
+                            $percentage = $this->priceChange(1/$final_result[0][2],1/$final_result[0][5]),
+                            $range = $this->priceRange(1/$final_result[0][4],1/$final_result[0][3]),
+                            'NA'
+                        ];
+                    return $output;
+                }
+                else
+                {
+                    $output =
+                        [
+                            $final_result[0][0],
+                            $type,
+                            number_format($final_result[0][2],5),
+                            number_format($final_result[0][3],5),
+                            number_format($final_result[0][4],5),
+                            number_format($final_result[0][5],5),
+                            $final_result[0][6],
+                            'NA',
+                            $percentage = $this->priceChange($final_result[0][2],$final_result[0][5]),
+                            $range = $this->priceRange($final_result[0][3],$final_result[0][4]),
+                            'NA'
+                        ];
+                    return $output;
+                }
             }
 
             catch (RequestException $e)
@@ -463,7 +487,7 @@ class ChartController extends Controller
         $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
         $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
         $status = $request->get('status');
-        $interval = $request->get('interval');
+        $interval = ($request->get('interval') == '') ? 'M5':$request->get('interval');
 
         $fromTime = '';
 
