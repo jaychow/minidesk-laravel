@@ -34,7 +34,7 @@
                         <option value="D">1 day</option>
                     </select>
                 </div>
-                <br />@csrf <button id="submitButton">Submit</button>
+                <br/>@csrf <button id="submitInterval">Submit</button>
             </div>
         </div>
     </div>
