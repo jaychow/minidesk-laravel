@@ -4,6 +4,10 @@ Breadcrumbs::for('admin.dashboard', function ($trail) {
     $trail->push(__('strings.backend.dashboard.title'), route('admin.dashboard'));
 });
 
+Breadcrumbs::for('admin.chartrefreshinterval', function ($trail) {
+    $trail->push(__('strings.backend.chartrefreshinterval.title'), route('admin.chartrefreshinterval'));
+});
+
 Breadcrumbs::for('admin.zoneeditor', function ($trail) {
     $trail->push(__('strings.backend.zoneeditor.title'), route('admin.zoneeditor'));
 });

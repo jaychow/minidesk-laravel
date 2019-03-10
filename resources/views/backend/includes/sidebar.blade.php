@@ -11,6 +11,12 @@
             </li>
 
             <li class="nav-item">
+                <a class="nav-link {{ active_class(Active::checkUriPattern('admin/chartrefreshinterval')) }}" href="{{ route('admin.chartrefreshinterval') }}">
+                    <i class="nav-icon icon-reload"></i> @lang('menus.backend.sidebar.chartrefreshinterval')
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link {{ active_class(Active::checkUriPattern('admin/zoneeditor')) }}" href="{{ route('admin.zoneeditor') }}">
                     <i class="nav-icon icon-note"></i> @lang('menus.backend.sidebar.zoneeditor')
                 </a>
