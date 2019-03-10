@@ -12000,6 +12000,9 @@ function initiateChartSetting() {
     // enable legend
     historyPlot.legend(true);
 
+    // remove all the listener of legend (click and hover)
+    historyPlot.legend().removeAllListeners();
+
     // set position and alignment of legend
     // change size in height
     historyPlot.legend().height(50);
