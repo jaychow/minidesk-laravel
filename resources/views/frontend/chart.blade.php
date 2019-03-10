@@ -9,14 +9,22 @@
 
     <div id="user-panel">
         <form id="chartInput" action="http://minidesk.laravel.coretekllc.com/chart/getTable" type="get">
-            <select name="pair" id="pairOptions">
-                <option disabled selected value> -- pairs -- </option>
-                <option value="GBP_USD">GBP_USD</option>
-                <option value="USD_GBP">USD_GBP</option>
-                <option value="USD_CAD">USD_CAD</option>
-                <option value="CAD_USD">CAD_USD</option>
-                <option value="EUR_USD">EUR_USD</option>
-                <option value="USD_EUR">USD_EUR</option>
+            <h4> HOME CURRENCY</h4> <br/>
+
+            <select class="pairList" id="homeCurrency">
+                <option disabled selected value="">--select--</option>
+                <option value="GBP">GBP</option>
+                <option value="USD">USD</option>
+                <option value="CAD">CAD</option>
+            </select> <br/>
+
+            <h4> FOREIGN CURRENCY</h4> <br/>
+
+            <select class="pairList" id="foreignCurrency">
+                <option disabled selected value="">--select--</option>
+                <option value="GBP">GBP</option>
+                <option value="USD">USD</option>
+                <option value="CAD">CAD</option>
             </select> <br/>
 
             <div class="chartButtons" id="timescaleButton">
