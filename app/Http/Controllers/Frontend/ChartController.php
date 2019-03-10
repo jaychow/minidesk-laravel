@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Models\ChartData;
 use App\Models\ZoneEditor;
-use App\Models\ChartTimeInterval;
+use App\Models\ChartRefreshInterval;
 use App\Models\TradeSettingRecord;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
@@ -12,7 +12,6 @@ use function GuzzleHttp\json_encode;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
-use Monolog\Handler\ElasticSearchHandler;
 
 date_default_timezone_set('Europe/London'); // UTC + 0
 
@@ -560,7 +559,7 @@ class ChartController extends Controller
     // Response frontend request -> Time interval for updating the chart data
     public function getTimeInterval()  //Request $request
     {
-        $result = ChartTimeInterval::get();
+        $result = ChartRefreshInterval::get();
 
         $output ='';
         foreach ($result as $data)

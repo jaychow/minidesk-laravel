@@ -45,6 +45,7 @@ return [
 
         'sidebar' => [
             'dashboard' => 'Dashboard',
+            'chartrefreshinterval' => 'Chart refresh interval',
             'zoneeditor' => 'Zone editor',
             'general'   => 'General',
             'history'   => 'History',

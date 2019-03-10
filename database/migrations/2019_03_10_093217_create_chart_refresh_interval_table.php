@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateChartTimeIntervalTable extends Migration
+class CreateChartRefreshIntervalTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateChartTimeIntervalTable extends Migration
      */
     public function up()
     {
-        Schema::create('chart_time_interval', function (Blueprint $table)
+        Schema::create('chart_refresh_interval', function (Blueprint $table)
         {
             $table->bigIncrements('id');
             $table->timestamps();
@@ -28,6 +28,6 @@ class CreateChartTimeIntervalTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chart_time_interval');
+        Schema::dropIfExists('chart_refresh_interval');
     }
 }

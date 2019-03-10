@@ -28,6 +28,9 @@ return [
             'title'   => 'Dashboard',
             'welcome' => 'Welcome',
         ],
+        'chartrefreshinterval' => [
+            'title' => 'Chart refresh interval'
+        ],
 
         'zoneeditor' => [
             'title' => 'Zone Editor'

@@ -3,10 +3,10 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-class ChartTimeInterval extends Model
+class ChartRefreshInterval extends Model
 {
     // Assign table from DB
-    protected $table = 'chart_time_interval';
+    protected $table = 'chart_refresh_interval';
 
     // Let created_at & updated_at columns exist
     public $timestamps = true;
