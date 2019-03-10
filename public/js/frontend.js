@@ -11740,16 +11740,15 @@ $(document).ready(function () {
             chartSettings['ylabelType'] = clickedItem;
             switchYaxisType(clickedItem);
 
-            // remove previous segment line
-            historyPlot.annotations().removeAllAnnotations();
+            if (ticketInputs['tradeDate'] != "") {
+                // remove previous segment line
+                historyPlot.annotations().removeAllAnnotations();
 
-            // update zone data
-            requestZoneData(chartSettings);
-
-            // refresh zone data and horizontal line
-            updateEmptySpace();
-            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
-            zoneBlocks = updateZoneBlocks(jsonZonesData);
+                // update projection and zone data to plot
+                updateEmptySpace();
+                horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+                zoneBlocks = updateZoneBlocks(jsonZonesData);
+            }
 
             // update color of yLabel
             updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
@@ -12029,35 +12028,6 @@ function initiateChartSetting() {
         }
     });
 
-    // // set settings for event markers
-    // var eventMarkers = historyPlot.eventMarkers();
-    // // set markers data
-    // eventMarkers.data([{
-    //         date: '2001-09-11',
-    //         description: '9-11 attacks'
-    //     },
-    //     {
-    //         date: '2003-03-20',
-    //
-    //         description: 'Iraq War'
-    //     }
-    // ]);
-
-    // configure the format of legend items
-    // historyPlot.legend().itemsFormat(function() {
-    //     var series = this.series;
-    //     if (series.getType() == "line") {
-    //         return "<span style='color:#455a64;font-weight:600'>" +
-    //             series.name() + ":</span> " + this.value;
-    //     }
-    //     if (series.getType() == "ohlc") {
-    //         return "<span style='color:#455a64;font-weight:600'>" +
-    //             series.name() + ":</span> " +
-    //             this.open + " / " + this.high + " / " +
-    //             this.low + " / " + this.close;
-    //     }
-    // });
-
     //===========================================================
     //                   Disable
     //===========================================================
@@ -12205,7 +12175,8 @@ function updateSegmentLine(pricePercentMode) {
     var controller = historyPlot.annotations();
 
     // change the valueAnchor according to price / percentage (mode to display money).
-    var valueAnchor = pricePercentMode == "percent" ? 0 : jsonHistoryData[0][5];
+    // var valueAnchor = (pricePercentMode == "percent") ? 0 : jsonHistoryData[0][5];
+    var valueAnchor = 0;
 
     // create a Line annotation
     var line = controller.line({
@@ -12267,7 +12238,8 @@ function updateZoneBlocks(zone) {
 
 function requestZoneData(argument) {
     // % / $ type (ylabelType)
-    var percentage = argument['ylabelType'] == "percent" ? "true" : "false";
+    // var percentage = (argument['ylabelType'] == "percent") ? "true" : "false";
+    var percentage = "true";
 
     // get zones info that are stored in db.
     $.get({
@@ -12348,23 +12320,6 @@ function updateSingleData(chartSettings, counter) {
     requestCandleData(chartSettings, true);
     if (candleUpdateCounter < updateIntervalCounts[chartSettings['timescale']]) {// update one point
         // only update
-    }
-}
-
-function syncYlabelTicks(plot, type) {
-    // getting yaxis
-    var yAxis = plot.historyPlot.yAxis();
-
-    // declaring yscale
-    var yScale = yAxis.yScale();
-
-    yScale.comparisonMode("percent");
-    yScale.compareWith("seriesEnd");
-    switch (type) {
-        case "percent":
-            break;
-        case "price":
-            break;
     }
 }
 
