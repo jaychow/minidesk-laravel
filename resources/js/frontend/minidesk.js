@@ -49,6 +49,9 @@ $(document).ready(function() {
     initiateChartSettings(today);
     initiateTicketInputs();
 
+    // drop down list initialization
+    // document.getElementById("homeCurrency").selectedIndex = -1;
+
     // initiate time interval counts
     updateIntervalCounts['1W'] = 60 / updateCandleInterval; // 1h/candle, increase 1 candle every intervals.
     updateIntervalCounts['1M'] = 60 * 4 / updateCandleInterval; // 4h/candle, increase 1 candle every intervals.
@@ -60,33 +63,44 @@ $(document).ready(function() {
     //                CLICK EVENTS (chartsettings)
     //===========================================================
 
+
+    $('#homeCurrency').on('change', function(e) {
+        var homeCurrency = e.target.value;
+        var foreignCurrency = document.getElementById("foreignCurrency");
+
+        // disable the same option in foreignCurrency drop down list
+        var length = document.getElementById("foreignCurrency").length;
+        for (var i = 0; i < length; i++) {
+            if (foreignCurrency.options[i].value == homeCurrency) {
+                foreignCurrency.options[i].disabled = true;
+            } else {
+                foreignCurrency.options[i].disabled = false;
+            }
+        }
+
+        // every time when user select homeCurrency, he will need to select foreignCurrency again.
+        foreignCurrency.selectedIndex = "0";
+    });
+
+    $('#foreignCurrency').on('change', function(e) {
+        var foreignCurrency = e.target;
+        var homeCurrency = document.getElementById("homeCurrency");
+
+        // if user haven't yet choose home currency
+        if (homeCurrency.value == "") {
+            alert("Please select home currency first");
+            foreignCurrency.selectedIndex = "0";
+        } else {
+            chartSettings['pair'] = updatePair();
+            pairUpdatePlot();
+        }
+    });
+
     $('#pairOptions').on('change', function(e) {
         //chartSettings = processForm('chartInput');
         // update pair in chart settings
         chartSettings['pair'] = e.target.value;
 
-        // send request of candles data
-        requestCandleData(chartSettings, false);
-
-        // send request of zones data
-        requestZoneData(chartSettings);
-
-        //var data_json = $.parseJSON(data);
-        if (historyDataTable.bc.b.length > 0)
-            renderHistoryDataToChart();
-        else
-            initiateChartSetting();
-
-        // if trade date is determined
-        if (ticketInputs['tradeDate'] != "") {
-            // remove previous segment line
-            historyPlot.annotations().removeAllAnnotations();
-
-            // update projection and zone data to plot
-            updateEmptySpace();
-            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
-            zoneBlocks = updateZoneBlocks(jsonZonesData);
-        }
 
         // set Interval
         // updateCandle = setInterval(updateSingleData, updateCandleInterval * 60 * 1000);
@@ -759,4 +773,35 @@ function updateSingleData (chartSettings, counter) {
     if (candleUpdateCounter < updateIntervalCounts[chartSettings['timescale']]) { // update one point
         // only update
     }
+}
+
+function updatePair () {
+    var items = document.getElementsByClassName("pairList");
+    return items["foreignCurrency"].value + "_" + items["homeCurrency"].value;
+}
+
+function pairUpdatePlot () {
+    // send request of candles data
+    requestCandleData(chartSettings, false);
+
+    // send request of zones data
+    requestZoneData(chartSettings);
+
+    //var data_json = $.parseJSON(data);
+    if (historyDataTable.bc.b.length > 0)
+        renderHistoryDataToChart();
+    else
+        initiateChartSetting();
+
+    // if trade date is determined
+    if (ticketInputs['tradeDate'] != "") {
+        // remove previous segment line
+        historyPlot.annotations().removeAllAnnotations();
+
+        // update projection and zone data to plot
+        updateEmptySpace();
+        horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+        zoneBlocks = updateZoneBlocks(jsonZonesData);
+    }
+
 }
