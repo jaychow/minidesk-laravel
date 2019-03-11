@@ -11688,6 +11688,9 @@ $(document).ready(function () {
 
         // every time when user select homeCurrency, he will need to select foreignCurrency again.
         foreignCurrency.selectedIndex = "0";
+        chartSettings['pair'] = "";
+        ticketInputs['homeCurrency'] = homeCurrency;
+        ticketInputs['foreignCurrency'] = "";
     });
 
     $('#foreignCurrency').on('change', function (e) {
@@ -11700,6 +11703,7 @@ $(document).ready(function () {
             foreignCurrency.selectedIndex = "0";
         } else {
             chartSettings['pair'] = updatePair();
+            ticketInputs['foreignCurrency'] = foreignCurrency.value;
             pairUpdatePlot();
         }
     });
@@ -11775,6 +11779,7 @@ $(document).ready(function () {
     //                CLICK EVENTS (ticketInputs)
     //===========================================================
 
+
     $('#tradeDate').on('change', function (e) {
 
         ticketInputs['tradeDate'] = document.getElementById('tradeDate').value;
@@ -11849,14 +11854,32 @@ $(document).ready(function () {
 
     // submit trading ticket
     $('#submitButton').on('click', function (e) {
-        var pair = document.getElementById("pairOptions").value.split("_");
-        ticketInputs = processForm('tradingTicketForm');
-        ticketInputs['tradeType'] = tradeType;
-        ticketInputs['tradeCurrency'] = pair[0];
-        ticketInputs['homeCurrency'] = pair[1];
+        // update transaction amount
+        ticketInputs['transactionAmount'] = document.getElementById("transactionAmount").value;
 
-        // submit the ticket info to backend and save into database;
-        submitTicket(ticketInputs);
+        // switch ylabelType
+        chartSettings['ylabelType'] = "user";
+
+        // check whether all the input is determined
+        if (!formIsComplete()) {
+            var unfinishList = [];
+            var length = Object.keys(ticketInputs).length;
+            for (var i = 0; i < length; i++) {
+                if (ticketInputs[Object.keys(ticketInputs)[i]] == "") {
+                    unfinishList.push(Object.keys(ticketInputs)[i]);
+                }
+            }
+            alert("Please fill in: " + unfinishList.toString());
+        } else {
+            // change the yAxis type
+            switchYaxisType("user");
+
+            // submit the ticket info to backend and save into database;
+            submitTicket(ticketInputs);
+
+            // update color of yLabel
+            updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+        }
     });
 });
 
@@ -11904,6 +11927,8 @@ function initiateChartSettings(today) {
 
 function initiateTicketInputs() {
     ticketInputs = {};
+    ticketInputs['homeCurrency'] = "";
+    ticketInputs['foreignCurrency'] = "";
     ticketInputs['tradeType'] = "";
     ticketInputs['tradeDate'] = "";
     ticketInputs['transactionAmount'] = 0;
@@ -12116,6 +12141,9 @@ function switchYaxisType(type) {
     var yAxis = historyPlot.yAxis();
     yAxis.orientation("right");
 
+    // transaction amount (only use in "user" mode)
+    var amount = document.getElementById("transactionAmount").value;
+
     // yscale
     var yScale = historyPlot.yScale();
     switch (type) {
@@ -12135,6 +12163,13 @@ function switchYaxisType(type) {
                 return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
             });
             break;
+
+        case "user":
+            // submit button pressed
+            yAxis.labels().format(function () {
+                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4) * amount;
+            });
+            break;
     }
     yAxis.scale(yScale);
 
@@ -12150,6 +12185,12 @@ function switchYaxisType(type) {
                 return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
             });
             break;
+        case "user":
+            // submit button pressed
+            crosshair.yLabel().format(function () {
+                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4) * amount;
+            });
+            break;
     }
 }
 
@@ -12159,10 +12200,12 @@ function switchYaxisType(type) {
 
 function submitTicket(argument) {
     $.get('http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting', { id: 0, account: 'bombobutt', home_currency: argument['homeCurrency'],
-        trade_currency: argument['tradeCurrency'], trade: argument['tradeType'],
-        amount: argument['amountInput'], date: argument['tradeDate'] }).always(function (message) {
+        trade_currency: argument['foreignCurrency'], trade: argument['tradeType'],
+        amount: argument['transactionAmount'], date: argument['tradeDate'] }).always(function (message) {
         if (message != 'OK') {
             alert(message);
+        } else {
+            alert("Success submit");
         }
     });
 }
@@ -12302,8 +12345,19 @@ function updateYlabelsColor(yAxis, pricePercentageType, tradeType) {
     var count = yAxis.labels().getLabelsCount();
 
     // setting the threshold of color
-    var standardValue = pricePercentageType == "percent" ? 0 : jsonHistoryData[0][5];
-
+    // switch(pricePercentageType) {
+    //     case "percent":
+    //         standardValue = 0;
+    //         break;
+    //     case "price":
+    //         standardValue = jsonHistoryData[0][5];
+    //         break;
+    //     case "user":
+    //         standardValue = jsonHistoryData[0][5] * document.getElementById("transactionAmount").value;
+    //         break;
+    // }
+    // var standardValue = (pricePercentageType == "percent") ? 0 : jsonHistoryData[0][5];
+    var standardValue = 0;
     // setting the color of tradeType
     var multiplier = tradeType == "sell" ? 1 : -1;
 
@@ -12367,6 +12421,18 @@ function pairUpdatePlot() {
         horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
         zoneBlocks = updateZoneBlocks(jsonZonesData);
     }
+}
+
+function formIsComplete() {
+    var cnt = 0;
+    var length = Object.keys(ticketInputs).length;
+
+    for (var i = 0; i < length; i++) {
+        if (ticketInputs[Object.keys(ticketInputs)[i]] == "") {
+            return false;
+        }
+    }
+    return true;
 }
 
 /***/ }),

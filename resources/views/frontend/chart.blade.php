@@ -44,6 +44,7 @@
             <div class="chartButtons" id="pricePercentageButton">
                 <button value="percent">%</button>
                 <button value="price">$</button>
+                <button value="user"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
             </div>
 
         </form> </br> <hr>
@@ -57,7 +58,7 @@
             </div> </br>
 
             <p><b>Amount: </b></p>
-            <input type="number" name="transactionAmount"> </br>
+            <input type="number" id="transactionAmount"> </br>
 
             <p><b>Date: </b></p>
             <input type="date" name="tradeDate" id="tradeDate">
@@ -74,5 +75,5 @@
 
 
     </div>
-
+    <a href="https://icons8.com/icon/22396/user">User icon by Icons8</a>
 @endsection
