@@ -80,7 +80,7 @@ function submitZone(data) {
 
     $.post(url, data,
         function(data){
-
             console.log("success: "  + data);
+            alert("Successfully submit!");
     });
 }

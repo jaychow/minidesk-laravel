@@ -1,5 +1,6 @@
 
-$(document).ready(function() {
+$(document).ready(function()
+{
     var interval = '';
     requestData ();
 
@@ -8,7 +9,8 @@ $(document).ready(function() {
     //===========================================================
 
     // submit form
-    $('#submitInterval').on('click', function(e) {
+    $('#submitInterval').on('click', function(e)
+    {
         var dataToSubmit = {
             'interval': document.getElementById('intervalOptions').value,
             '_token' : $('[name=_token]').val()
@@ -18,7 +20,8 @@ $(document).ready(function() {
 
 });
 
-function requestData () {
+function requestData ()
+{
     // get chart refresh interval info that are stored in db.
     $.get(
         'http://minidesk.laravel.coretekllc.com/admin/chartrefreshinterval/getInterval',
@@ -29,15 +32,14 @@ function requestData () {
     }).always(function (data) {
 
     });
-
 }
 
-function submitInterval(data) {
+function submitInterval(data)
+{
     var url = 'http://minidesk.laravel.coretekllc.com/admin/chartrefreshinterval/submitInterval';
-
     $.post(url, data,
         function(data){
-
             console.log("success: "  + data);
+            alert("Successfully submit!");
         });
 }
