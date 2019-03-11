@@ -44,7 +44,7 @@
             <div class="chartButtons" id="pricePercentageButton">
                 <button value="percent">%</button>
                 <button value="price">$</button>
-                <button value="user"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
+                <button value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
             </div>
 
         </form> </br> <hr>

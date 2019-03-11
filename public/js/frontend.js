@@ -11874,6 +11874,9 @@ $(document).ready(function () {
             // change the yAxis type
             switchYaxisType("user");
 
+            // set user icon for yAxis label type is visible
+            document.getElementById("userIconButton").style.visibility = "visible";
+
             // submit the ticket info to backend and save into database;
             submitTicket(ticketInputs);
 
