@@ -44,6 +44,8 @@
             <div class="chartButtons" id="pricePercentageButton">
                 <button value="percent">%</button>
                 <button value="price">$</button>
+                <input value="user" type="image" id="userIconButton" alt="Your order" style="visibility:hidden;"
+                       src="https://img.icons8.com/windows/32/000000/user.png">
                 <button value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
             </div>
 

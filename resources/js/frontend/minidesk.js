@@ -423,6 +423,7 @@ function initiateChartSetting () {
     // var minorTicks = historyPlot.xScale().minorTicks();
     // minorTicks.interval(0, 0, 15);
 
+    // TO-DO use "switchYaxisType()" function
     // y-scale for both history and future trend plot (default: % mode)
     var yScale = historyPlot.yScale();
     yScale.comparisonMode("percent");
@@ -434,10 +435,13 @@ function initiateChartSetting () {
 
     // y-axis(price) format settings for history plot
     var yAxis = historyPlot.yAxis();
+
     yAxis.orientation("right");
     yAxis.scale(yScale);
     yAxis.labels().format(function() {
-        return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+        var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
+
+        return (Math.round(currency * 10000) / 10000).toFixed(4);
     });
 
     //===========================================================
@@ -452,7 +456,9 @@ function initiateChartSetting () {
         return anychart.format.dateTime(this.value, "MMM d, yyyy");
     });
     historyPlot.crosshair().yLabel().format(function() {
-        return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+        var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
+
+        return (Math.round(currency * 10000) / 10000).toFixed(4);
     });
 
     //===========================================================
@@ -593,13 +599,16 @@ function switchYaxisType(type) {
         case "price":           // button: " $ "
             yScale.comparisonMode("percent");
             yAxis.labels().format(function() {
-                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+                var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
+
+                // round to 0.0001 digit and if less add zero to 4 decimal point.
+                return (Math.round(currency * 10000) / 10000).toFixed(4);
             })
             break;
 
         case "user":            // submit button pressed
             yAxis.labels().format(function() {
-                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4) * amount;
+                return Math.round(((this.value + 100) / 100 * jsonHistoryData[0][5]) * amount);
             })
             break;
     }
@@ -614,12 +623,15 @@ function switchYaxisType(type) {
             break;
         case "price":
             crosshair.yLabel().format(function() {
-                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4);
+                var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
+                // round to 0.0001 digit and if less add zero to 4 decimal point.
+
+                return (Math.round(currency * 10000) / 10000).toFixed(4);
             });
             break;
         case "user":            // submit button pressed
             crosshair.yLabel().format(function() {
-                return ((this.value + 100) / 100 * jsonHistoryData[0][5]).toFixed(4) * amount;
+                return Math.round(((this.value + 100) / 100 * jsonHistoryData[0][5]) * amount);
             })
             break;
     }
@@ -630,10 +642,12 @@ function switchYaxisType(type) {
 //---------------------------------------------------------------
 
 function submitTicket (argument) {
+
+    // TO-DO: change id and account value as variable when user has his own account
     $.get(
         'http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting',
         {id: 0, account: 'bombobutt', home_currency:argument['homeCurrency'],
-         trade_currency: argument['foreignCurrency'], trade: argument['tradeType'],
+         foreign_currency: argument['foreignCurrency'], trade: argument['tradeType'],
          amount: argument['transactionAmount'], date: argument['tradeDate']}
     ).always(function (message) {
         if (message != 'OK') {
