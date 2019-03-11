@@ -18,5 +18,5 @@ class TradeSettingRecord extends Model
     // Do not let created_at & updated_at columns exist
     public $timestamps = false;
 
-    protected $fillable = ['id','account','home_currency','trade_currency','trade','amount','date'];
+    protected $fillable = ['id','account','home_currency','foreign_currency','trade','amount','date'];
 }

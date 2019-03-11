@@ -18,7 +18,7 @@ class CreateTradeSettingRecordTable extends Migration
             $table->bigIncrements('id');
             $table->string('account');
             $table->string('home_currency');
-            $table->string('trade_currency');
+            $table->string('foreign_currency');
             $table->string('trade');
             $table->float('amount',8,2);
             $table->dateTime('date');

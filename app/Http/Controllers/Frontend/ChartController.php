@@ -627,7 +627,7 @@ class ChartController extends Controller
         $id = ($request->get('id') == '') ? '0':$request->get('id');
         $account = $request->get('account');
         $home_currency = $request->get('home_currency');
-        $trade_currency = $request->get('trade_currency');
+        $foreign_currency= $request->get('foreign_currency');
         $trade = $request->get('trade');
         $amount = $request->get('amount');
         $date = $request->get('date');
@@ -640,7 +640,7 @@ class ChartController extends Controller
                 [
                     'account' => $account,
                     'home_currency' => $home_currency,
-                    'trade_currency' => $trade_currency,
+                    'foreign_currency' => $foreign_currency,
                     'trade' => $trade,
                     'amount' => $amount,
                     'date' => $date
@@ -660,7 +660,7 @@ class ChartController extends Controller
         {
             $query = array(
                     'home_currency' => $home_currency,
-                    'trade_currency' => $trade_currency,
+                    'foreign_currency' => $foreign_currency,
                     'trade' => $trade,
                     'amount' => $amount,
                     'date' => $date
