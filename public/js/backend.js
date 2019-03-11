@@ -3160,10 +3160,9 @@ function requestData() {
 
 function submitInterval(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/chartrefreshinterval/submitInterval';
-
     $.post(url, data, function (data) {
-
         console.log("success: " + data);
+        alert("Successfully submit!");
     });
 }
 
@@ -3233,8 +3232,8 @@ function submitZone(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
     $.post(url, data, function (data) {
-
         console.log("success: " + data);
+        alert("Successfully submit!");
     });
 }
 
