@@ -10,7 +10,7 @@ var historyDataTable = anychart.data.table();
 var futureDataTable = anychart.data.table();
 
 // raw data (NOTICE!!! format of jsonData should be an array that is accepted format for dataTable.)
-var jsonHistoryData, jsonZonesData;
+var jsonHistoryData, jsonZonesData, singleCandle;
 
 // create plot for chart
 var historyPlot;
@@ -30,7 +30,8 @@ var updateIntervalCounts = {};
 var candleUpdateCounter = 0, zoneUpdateCounter = 0;
 
 // timer
-var updateCandle, updateZone;
+var updateCandle = null, updateZone = null;
+var counter = 0;
 
 
 
@@ -38,9 +39,6 @@ var updateCandle, updateZone;
 //                      OTHER FUNCTION
 //---------------------------------------------------------------
 $(document).ready(function() {
-    var tradeType = '';
-
-    // chartSettings = {};
 
     var today = new Date();
     document.getElementById("tradeDate").min = today.toISOString().substr(0,10);
@@ -59,12 +57,53 @@ $(document).ready(function() {
     updateIntervalCounts['1Y'] = 60 * 24 * 7; // 1W/candle, increase 1 candle every intervals.
     updateIntervalCounts['5Y'] = 60 * 24 * 31; // 1M/candle, increase 1 candle every intervals.
 
+    // update candle refresh interval
+    chartSettings['refreshInterval'] = getRefreshInterval();
+    switch(chartSettings['refreshInterval']) {
+        case "S5":
+            updateCandleInterval = 5 / 60;
+            break;
+        case "S10":
+            updateCandleInterval = 10 / 60;
+            break;
+        case "S15":
+            updateCandleInterval = 15 / 60;
+            break;
+        case "S30":
+            updateCandleInterval = 30 / 60;
+            break;
+        case "M1":
+            updateCandleInterval = 1;
+            break;
+        case "M2":
+            updateCandleInterval = 2;
+            break;
+        case "M4":
+            updateCandleInterval = 4;
+            break;
+        case "M5":
+            updateCandleInterval = 5;
+            break;
+        case "M10":
+            updateCandleInterval = 10;
+            break;
+        case "M15":
+            updateCandleInterval = 15;
+            break;
+        case "M30":
+            updateCandleInterval = 30;
+            break;
+        case "H1":
+            updateCandleInterval = 60;
+            break;
+    }
     //===========================================================
     //                CLICK EVENTS (chartsettings)
     //===========================================================
 
 
     $('#homeCurrency').on('change', function(e) {
+
         var homeCurrency = e.target.value;
         var foreignCurrency = document.getElementById("foreignCurrency");
 
@@ -84,12 +123,15 @@ $(document).ready(function() {
         ticketInputs['homeCurrency'] = homeCurrency;
         ticketInputs['foreignCurrency'] = "";
 
+        // disable timer to request single candle
+        if (updateCandle != null) clearInterval(updateCandle);
+
     });
 
     $('#foreignCurrency').on('change', function(e) {
         var foreignCurrency = e.target;
         var homeCurrency = document.getElementById("homeCurrency");
-
+        var counter = 0;
         // if user haven't yet choose home currency
         if (homeCurrency.value == "") {
             alert("Please select home currency first");
@@ -108,7 +150,12 @@ $(document).ready(function() {
             if (ticketInputs['tradeType'] != "") {
                 updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
             }
+
+            // set Interval
+            // updateCandle = setInterval(updateSingleData, updateCandleInterval * 60 * 1000); // updateCandleInterval (unit: minute)
+            updateCandle = kickStartTimer();
         }
+
     });
 
     $('#pairOptions').on('change', function(e) {
@@ -332,7 +379,7 @@ function processForm (form) {
 }
 
 function requestCandleData (argument, singleData) {
-    var requestSingleCurrentCurrency = (singleData == true) ? "true" : "false";
+    var requestSingleCurrentCurrency = (singleData == true) ? "current" : "whole";
 
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get({
@@ -341,14 +388,21 @@ function requestCandleData (argument, singleData) {
                 pair: argument['pair'],
                 timeRange: argument['timescale'],
                 utc: argument['utc'],
-                currentCurrency: requestSingleCurrentCurrency
+                status: requestSingleCurrentCurrency,
+                interval: argument['refreshInterval']
             },
             async: false
         }
     ).done(function (historyData) {
+        if (singleData) {
+            singleCandle = historyData;
+        } else {
+            jsonHistoryData = historyData;
+        }
         // update hitory data points
-        jsonHistoryData = historyData;
-
+        // jsonHistoryData = historyData;
+        // TO-DO change to callback function
+        // return historyData;
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {
@@ -363,6 +417,7 @@ function initiateChartSettings (today) {
     chartSettings['timescale'] = "1Y";
     chartSettings['ylabelType'] = "price";
     chartSettings['type'] = "candle";
+    chartSettings['refreshInterval'] = "M10";
 
     // adding timezone info
     chartSettings['utc'] = - (today.getTimezoneOffset() / 60);
@@ -705,6 +760,7 @@ function addEmptySpaceInChart (theChart, countOfTicksInIntervals, hourIntervals)
 function updateEmptySpace () {
     var tradeDate = new Date(document.getElementById('tradeDate').value);
 
+    // TO-DO change variable dd to hh rename(hour) and countDifferenceOfDate
     // check the difference of today and trade date
     dd = countDifferenceOfDate(new Date, tradeDate);
 
@@ -874,13 +930,6 @@ function updateYlabelsColor (yAxis, pricePercentageType, tradeType) {
     }
 }
 
-function updateSingleData (chartSettings, counter) {
-    requestCandleData(chartSettings,true);
-    if (candleUpdateCounter < updateIntervalCounts[chartSettings['timescale']]) { // update one point
-        // only update
-    }
-}
-
 function updatePair () {
     var items = document.getElementsByClassName("pairList");
     return items["foreignCurrency"].value + "_" + items["homeCurrency"].value;
@@ -941,3 +990,60 @@ function updateTradeExplaination (homeCurrency, foreignCurrency, tradeType, tran
     return "If you transfer today,\n" + getMoney + " will cost you " + costMoney;
 
 }
+
+function getRefreshInterval() {
+    $.get({
+            url: 'http://minidesk.laravel.coretekllc.com/chart/getTimeInterval',
+            async: false
+        }
+    ).done(function (interval) {
+        if (interval == "") {
+            alert("Admin haven't yet set up refresh interval.");
+        } else {
+            return interval;
+        }
+
+    }).fail(function (message) {
+        alert("Error: " + message);
+    });
+}
+
+function kickStartTimer () {
+    var counter = 1;
+
+    var updateCandle = setInterval(updateSingleData, 5000);
+
+    function updateSingleData () {
+        // TO-DO: change to callback function to call "requestCandleData"
+        if (counter % 5 == 0) {
+            // update whole jsonHistoryData
+            // jsonHistoryData = requestCandleData(chartSettings, false);
+            requestCandleData(chartSettings, false);
+        } else if (counter % 5 == 1) {
+            // put the latest candle at the first of jsonHistroyData
+            // var singleCandle = requestCandleData(chartSettings, true);
+            requestCandleData(chartSettings, true);
+            jsonHistoryData.unshift(singleCandle);
+
+            // append the latest candle to dataTable
+            // historyDataTable.addData(singleCandle);
+        } else {
+            // var singleCandle = requestCandleData(chartSettings, true);
+            requestCandleData(chartSettings, true);
+
+            // update only the last candle
+            jsonHistoryData[0][5] = singleCandle[5];
+
+            // remove the last data in dataTable and append the newest data
+            //historyDataTable.remove(historyDataTable.bc.b.length - 1);
+            // historyDataTable.addData(jsonHistoryData);
+
+        }
+        renderHistoryDataToChart();
+
+        counter += 1;
+
+    }
+    return updateCandle;
+}
+
