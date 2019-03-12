@@ -12020,3 +12020,7 @@ body,
   color: white;
 }
 
+.error {
+  border: 1px solid red;
+}
+

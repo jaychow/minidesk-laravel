@@ -51,7 +51,7 @@
 
         </form> </br> <hr>
 
-        <p id="pInfo"></p> </br>
+
 
         <form id="tradingTicketForm">
             <div class="chartButtons" id="buySellButton">
@@ -69,6 +69,7 @@
 
         </form>
 
+        <p id="tradeExplaination"></p> </br>
         <button class="chartButtons" id="refreshButton">&#8634</button> <br />
         <button class="chartButtons" id="submitButton">submit</button>
 

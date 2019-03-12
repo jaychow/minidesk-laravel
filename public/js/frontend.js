@@ -11705,6 +11705,16 @@ $(document).ready(function () {
             chartSettings['pair'] = updatePair();
             ticketInputs['foreignCurrency'] = foreignCurrency.value;
             pairUpdatePlot();
+
+            // update trade explaination if ticket inputs are all determined
+            if (ticketInputs['tradeType'] != "" && chartSettings['pair'] != "" && ticketInputs['transactionAmount'] != 0) {
+                document.getElementById("tradeExplaination").innerHTML = updateTradeExplaination(ticketInputs['homeCurrency'], ticketInputs['foreignCurrency'], ticketInputs['tradeType'], ticketInputs['transactionAmount']);
+            }
+
+            // update yLabel color
+            if (ticketInputs['tradeType'] != "") {
+                updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+            }
         }
     });
 
@@ -11769,16 +11779,33 @@ $(document).ready(function () {
                 horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
                 zoneBlocks = updateZoneBlocks(jsonZonesData);
             }
-
-            // update color of yLabel
-            updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+            // update yLabel color
+            if (ticketInputs['tradeType'] != "") {
+                updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+            }
         }
     });
 
     //===========================================================
     //                CLICK EVENTS (ticketInputs)
     //===========================================================
+    $('#transactionAmount').on('change', function (e) {
+        if (e.target.value > 0) {
+            // change transactionAmount input borderColor as black;
+            $(this).removeClass('error');
 
+            // update ticketInputs
+            ticketInputs['transactionAmount'] = e.target.value;
+
+            // update trade explaination if ticket inputs are all determined
+            if (ticketInputs['tradeType'] != "" && chartSettings['pair'] != "" && ticketInputs['transactionAmount'] != 0) {
+                document.getElementById("tradeExplaination").innerHTML = updateTradeExplaination(ticketInputs['homeCurrency'], ticketInputs['foreignCurrency'], ticketInputs['tradeType'], ticketInputs['transactionAmount']);
+            }
+        } else {
+            alert("Please enter positive amount");
+            $(this).addClass('error');
+        }
+    });
 
     $('#tradeDate').on('change', function (e) {
 
@@ -11848,6 +11875,11 @@ $(document).ready(function () {
 
                 // update color of yLabel
                 updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+            }
+
+            // update trade explaination if ticket inputs are all determined
+            if (ticketInputs['tradeType'] != "" && chartSettings['pair'] != "" && ticketInputs['transactionAmount'] != 0) {
+                document.getElementById("tradeExplaination").innerHTML = updateTradeExplaination(ticketInputs['homeCurrency'], ticketInputs['foreignCurrency'], ticketInputs['tradeType'], ticketInputs['transactionAmount']);
             }
         }
     });
@@ -12450,6 +12482,24 @@ function formIsComplete() {
         }
     }
     return true;
+}
+
+function updateTradeExplaination(homeCurrency, foreignCurrency, tradeType, transactionAmount) {
+    var tmpMoney = transactionAmount * jsonHistoryData[0][5];
+    var getMoney = "",
+        costMoney = "";
+    switch (tradeType) {
+        case "buy":
+            getMoney = transactionAmount.toLocaleString() + " " + foreignCurrency;
+            costMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency + " (" + tmpMoney.toLocaleString() + " " + homeCurrency + ")";
+            break;
+        case "sell":
+            getMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency + " (" + tmpMoney.toLocaleString() + " " + homeCurrency + ")";
+            costMoney = transactionAmount.toLocaleString() + " " + foreignCurrency;
+            break;
+    }
+
+    return "If you transfer today,\n" + getMoney + " will cost you " + costMoney;
 }
 
 /***/ }),

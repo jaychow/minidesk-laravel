@@ -51,3 +51,7 @@ body,
     background-color: #717782;
     color: white;
 }
+
+.error {
+    border: 1px solid red; // Rose: this class should be kept for error message, but you can restyle it.
+}
