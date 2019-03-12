@@ -25,13 +25,6 @@
                         <option value="M15">15 minute</option>
                         <option value="M30">30 minute</option>
                         <option value="H1">1 hour</option>
-                        <option value="H2">2 hour</option>
-                        <option value="H3">3 hour</option>
-                        <option value="H4">4 hour</option>
-                        <option value="H6">6 hour</option>
-                        <option value="H8">8 hour</option>
-                        <option value="H12">12 hour</option>
-                        <option value="D">1 day</option>
                     </select>
                 </div>
                 <br/>@csrf <button id="submitInterval">Submit</button>
