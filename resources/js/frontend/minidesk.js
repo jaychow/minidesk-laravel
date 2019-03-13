@@ -6,11 +6,13 @@
 var chart = anychart.stock();
 
 // create data table on loaded data
-var historyDataTable = anychart.data.table();
+var historyDataTable = anychart.data.table(0, 'yyyy-MM-dd HH:mm:ss');
 var futureDataTable = anychart.data.table();
 
 // raw data (NOTICE!!! format of jsonData should be an array that is accepted format for dataTable.)
-var jsonHistoryData, jsonZonesData, singleCandle;
+var jsonHistoryData = [], jsonZonesData = [], singleCandle = [
+
+];
 
 // create plot for chart
 var historyPlot;
@@ -33,7 +35,7 @@ var candleUpdateCounter = 0, zoneUpdateCounter = 0;
 var updateCandle = null, updateZone = null;
 var counter = 0;
 
-
+var candleUnitTime = {"1W": 1, "1M": 4, "3M": 24, "6M": 24, "1Y": 24*7, "5Y": 24*31};
 
 //---------------------------------------------------------------
 //                      OTHER FUNCTION
@@ -58,7 +60,8 @@ $(document).ready(function() {
     updateIntervalCounts['5Y'] = 60 * 24 * 31; // 1M/candle, increase 1 candle every intervals.
 
     // update candle refresh interval
-    chartSettings['refreshInterval'] = getRefreshInterval();
+    // chartSettings['refreshInterval'] = getRefreshInterval();
+    getRefreshInterval();
     switch(chartSettings['refreshInterval']) {
         case "S5":
             updateCandleInterval = 5 / 60;
@@ -139,7 +142,17 @@ $(document).ready(function() {
         } else {
             chartSettings['pair'] = updatePair();
             ticketInputs['foreignCurrency'] = foreignCurrency.value;
+
+            // disable timer to request single candle
+            if (updateCandle != null) clearInterval(updateCandle);
+
+            // set Interval
+            updateCandle = kickStartTimer();
+
             pairUpdatePlot();
+
+            // adding space for one candle that show instant currency
+            // updateEmptySpace(false);
 
             // update trade explaination if ticket inputs are all determined
             if (ticketInputs['tradeType'] != "" && chartSettings['pair'] != "" && ticketInputs['transactionAmount'] != 0) {
@@ -153,7 +166,7 @@ $(document).ready(function() {
 
             // set Interval
             // updateCandle = setInterval(updateSingleData, updateCandleInterval * 60 * 1000); // updateCandleInterval (unit: minute)
-            updateCandle = kickStartTimer();
+            // updateCandle = kickStartTimer();
         }
 
     });
@@ -216,7 +229,7 @@ $(document).ready(function() {
                historyPlot.annotations().removeAllAnnotations();
 
                // update projection and zone data to plot
-               updateEmptySpace();
+               updateEmptySpace(true);
                horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
                zoneBlocks = updateZoneBlocks(jsonZonesData);
            }
@@ -254,7 +267,7 @@ $(document).ready(function() {
         ticketInputs['tradeDate'] = document.getElementById('tradeDate').value;
 
         var today = new Date();
-        var tradeDate = new Date(ticketInputs['tradeDate']);
+        var tradeDate = new Date(new Date(ticketInputs['tradeDate']).getTime() + today.getTimezoneOffset() * 60000);
 
 
         // calculate differece of today and trade date
@@ -269,7 +282,7 @@ $(document).ready(function() {
             chartSettings['timescale'] = "6M";
         } else if (deltaTime['month'] >= 1) {
             chartSettings['timescale'] = "3M";
-        } else if (deltaTime['week'] >= 1) {
+        } else if (deltaTime['day'] >= 7) {
             chartSettings['timescale'] = "1M";
         } else {
             chartSettings['timescale'] = "1W";
@@ -277,23 +290,13 @@ $(document).ready(function() {
 
         // update candle plot only when user have choose pairs
         if (historyDataTable.bc.b.length > 0) {
-            // send request of candles data
-            requestCandleData(chartSettings,false);
+            // disable timer to request single candle
+            if (updateCandle != null) clearInterval(updateCandle);
 
-            // send request of zones data
-            requestZoneData(chartSettings);
+            // set Interval
+            updateCandle = kickStartTimer();
 
-            // render data to plot
-            renderHistoryDataToChart();
-
-            // remove previous segment line
-            historyPlot.annotations().removeAllAnnotations();
-
-            // update the projection on the future plot
-            updateEmptySpace();
-            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
-            zoneBlocks = updateZoneBlocks(jsonZonesData);
-
+            pairUpdatePlot();
         }
 
 
@@ -395,14 +398,19 @@ function requestCandleData (argument, singleData) {
         }
     ).done(function (historyData) {
         if (singleData) {
-            singleCandle = historyData;
+            // clear single candle
+            singleCandle.splice(0, singleCandle.legnth);
+
+            // copy history data to singleCandle
+            singleCandle = historyData.slice();
+
         } else {
-            jsonHistoryData = historyData;
+            // clear jsonHistoryData
+            jsonHistoryData.splice(0, jsonHistoryData.length);
+
+            // copy history data to jsonHistoryData
+            jsonHistoryData = historyData.slice();
         }
-        // update hitory data points
-        // jsonHistoryData = historyData;
-        // TO-DO change to callback function
-        // return historyData;
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {
@@ -421,6 +429,7 @@ function initiateChartSettings (today) {
 
     // adding timezone info
     chartSettings['utc'] = - (today.getTimezoneOffset() / 60);
+
 }
 
 function initiateTicketInputs () {
@@ -540,7 +549,10 @@ function initiateChartSetting () {
 
     // configure the crosshair
     historyPlot.crosshair().xLabel().format(function(e) {
-        return anychart.format.dateTime(this.value, "MMM d, yyyy");
+        // TO-DO reformat dateTime
+        return this.value;
+
+        // return anychart.format.dateTime(this.value, "MMM d, yyyy");
     });
     historyPlot.crosshair().yLabel().format(function() {
         var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
@@ -757,15 +769,21 @@ function addEmptySpaceInChart (theChart, countOfTicksInIntervals, hourIntervals)
     scale.maximumGap({intervalsCount: Math.ceil(countOfTicksInIntervals), unitType: 'hour', unitCount: Math.ceil(unit)});
 }
 
-function updateEmptySpace () {
+function updateEmptySpace (tradeDateIsSelected) {
     var tradeDate = new Date(document.getElementById('tradeDate').value);
 
     // TO-DO change variable dd to hh rename(hour) and countDifferenceOfDate
-    // check the difference of today and trade date
-    dd = countDifferenceOfDate(new Date, tradeDate);
 
-    // adding empty space of 1/2 data at the right-side of chart
-    addEmptySpaceInChart(chart, historyDataTable.bc.b.length / 2, dd);
+    if (tradeDateIsSelected) {
+        // check the difference of today and trade date
+        var dd = countDifferenceOfDate(new Date, tradeDate);
+
+        // adding empty space of 1/2 data at the right-side of chart
+        addEmptySpaceInChart(chart, historyDataTable.bc.b.length / 2, dd);
+
+    } else {
+        addEmptySpaceInChart(chart, 1, candleUnitTime[chartSettings['timescale']]);
+    }
 
 }
 
@@ -777,6 +795,9 @@ function updateSegmentLine (pricePercentMode) {
     // var valueAnchor = (pricePercentMode == "percent") ? 0 : jsonHistoryData[0][5];
     var valueAnchor = 0;
 
+    controller.verticalLine({
+        xAnchor: jsonHistoryData[0][0]
+    });
     // create a Line annotation
     var line = controller.line({
         xAnchor: jsonHistoryData[0][0],
@@ -937,7 +958,9 @@ function updatePair () {
 
 function pairUpdatePlot () {
     // send request of candles data
+    requestCandleData(chartSettings, true);
     requestCandleData(chartSettings, false);
+    jsonHistoryData.unshift(singleCandle);
 
     // send request of zones data
     requestZoneData(chartSettings);
@@ -954,7 +977,7 @@ function pairUpdatePlot () {
         historyPlot.annotations().removeAllAnnotations();
 
         // update projection and zone data to plot
-        updateEmptySpace();
+        updateEmptySpace(true);
         horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
         zoneBlocks = updateZoneBlocks(jsonZonesData);
     }
@@ -976,18 +999,24 @@ function formIsComplete() {
 function updateTradeExplaination (homeCurrency, foreignCurrency, tradeType, transactionAmount) {
     var tmpMoney = transactionAmount * jsonHistoryData[0][5];
     var getMoney = "", costMoney = "";
+    var msg = "";
     switch(tradeType) {
         case "buy":
             getMoney = transactionAmount.toLocaleString() + " " + foreignCurrency;
             costMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency + " (" + tmpMoney.toLocaleString() + " " + homeCurrency + ")";
+
+            msg = "If you transfer today, <br/>" + getMoney + " will cost you " + costMoney;
+
             break;
         case "sell":
             getMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency + " (" + tmpMoney.toLocaleString() + " " + homeCurrency + ")";
             costMoney = transactionAmount.toLocaleString() + " " + foreignCurrency;
+
+            msg = "If you transfer today, <br/>" + costMoney + " will get you " + getMoney;
+
             break;
     }
-
-    return "If you transfer today,\n" + getMoney + " will cost you " + costMoney;
+    return msg;
 
 }
 
@@ -1000,7 +1029,7 @@ function getRefreshInterval() {
         if (interval == "") {
             alert("Admin haven't yet set up refresh interval.");
         } else {
-            return interval;
+            chartSettings['refreshInterval'];
         }
 
     }).fail(function (message) {
@@ -1017,33 +1046,40 @@ function kickStartTimer () {
         // TO-DO: change to callback function to call "requestCandleData"
         if (counter % 5 == 0) {
             // update whole jsonHistoryData
-            // jsonHistoryData = requestCandleData(chartSettings, false);
-            requestCandleData(chartSettings, false);
-        } else if (counter % 5 == 1) {
-            // put the latest candle at the first of jsonHistroyData
-            // var singleCandle = requestCandleData(chartSettings, true);
+            // send request of candles data
             requestCandleData(chartSettings, true);
+            requestCandleData(chartSettings, false);
+            if (chartSettings['timescale'] == "1W" || chartSettings['timescale'] == "1M") {
+                var lastTime = new Date(jsonHistoryData[0][0]);
+                var latestTime = new Date(singleCandle[0]);
+
+                // append data when t
+                if ()
+            }
             jsonHistoryData.unshift(singleCandle);
 
-            // append the latest candle to dataTable
-            // historyDataTable.addData(singleCandle);
         } else {
-            // var singleCandle = requestCandleData(chartSettings, true);
+            // put the latest candle at the first of jsonHistroyData
             requestCandleData(chartSettings, true);
-
-            // update only the last candle
-            jsonHistoryData[0][5] = singleCandle[5];
-
-            // remove the last data in dataTable and append the newest data
-            //historyDataTable.remove(historyDataTable.bc.b.length - 1);
-            // historyDataTable.addData(jsonHistoryData);
-
+            jsonHistoryData[0][3] = (singleCandle[3] > jsonHistoryData[0][3]) ? singleCandle[3] : jsonHistoryData[0][3]; // update H
+            jsonHistoryData[0][4] = (singleCandle[4] < jsonHistoryData[0][4]) ? singleCandle[4] : jsonHistoryData[0][4]; // update L
+            jsonHistoryData[0][5] = singleCandle[5]; // update C
+            jsonHistoryData[0][6] += singleCandle[6];
         }
         renderHistoryDataToChart();
 
+        // if trade date is determined
+        if (ticketInputs['tradeDate'] != "") {
+            // remove previous segment line
+            // historyPlot.annotations().removeAllAnnotations();
+            historyPlot.annotations().removeAnnotation(horizontalLine);
+            // update projection and zone data to plot
+            // updateEmptySpace(true);
+            horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+            // zoneBlocks = updateZoneBlocks(jsonZonesData);
+        }
         counter += 1;
 
     }
     return updateCandle;
 }
-
