@@ -725,14 +725,13 @@ function switchYaxisType(type) {
 
                 // round to 0.0001 digit and if less add zero to 4 decimal point.
                 return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4);
-            })
+            });
             break;
 
         case "user":            // submit button pressed
             yAxis.labels().format(function() {
                 return Math.round(((this.value + 100) / 100 * jsonHistoryData[0][5]) * amount);
-            })
-            yAxis.labels().groupsSeparator()
+            });
             break;
     }
     yAxis.scale(yScale);

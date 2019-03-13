@@ -12306,7 +12306,6 @@ function switchYaxisType(type) {
             yAxis.labels().format(function () {
                 return Math.round((this.value + 100) / 100 * jsonHistoryData[0][5] * amount);
             });
-            yAxis.labels().groupsSeparator();
             break;
     }
     yAxis.scale(yScale);
