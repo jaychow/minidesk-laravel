@@ -245,7 +245,7 @@ class ChartController extends Controller
     }
 
     // Get current currency data from Oanda
-    protected function getCurrentData($type,$interval)
+    protected function getCurrentData($type,$interval,$utc)
     {
         // Use to identify is the currency need to change ?
         $reverseFlag = 0;
@@ -272,7 +272,7 @@ class ChartController extends Controller
                 {
                     $output =
                         [
-                            $final_result[0][0],
+                            $time = date("Y-m-d H:i:s", strtotime($final_result[0][0] .' ' .$utc.' hour')),
                             $type,
                             number_format(1/$final_result[0][2],5),
                             number_format(1/$final_result[0][4],5),
@@ -290,7 +290,7 @@ class ChartController extends Controller
                 {
                     $output =
                         [
-                            $final_result[0][0],
+                            $time = date("Y-m-d H:i:s", strtotime($final_result[0][0] .' ' .$utc.' hour')),
                             $type,
                             number_format($final_result[0][2],5),
                             number_format($final_result[0][3],5),
@@ -492,7 +492,7 @@ class ChartController extends Controller
 
         if($status == 'current')
         {
-            return $this->getCurrentData($type,$interval);
+            return $this->getCurrentData($type,$interval,$utc);
         }
 
         // Select time scale , each time scale start from open market time
