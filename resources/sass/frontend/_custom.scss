@@ -4,45 +4,167 @@ body,
 #app,
 #page-container{
     width: 100%;
-    height: 100%;
+    height: 95%;
+    background-color: #8b8dbb;
+    font-family: "Varela Round", sans-serif;
 }
 
 #chart-container {
-    width: 85%;
+    width: 75%;
     height: 100%;
     float: left;
+    background-color: white;
+    border-radius: 10px;
+    margin: 1px;
+    .top-area {
+        width: 100%;
+        height: 6%;
+        .currency-title {
+            width: 70%;
+            font-size: 25px;
+            display: inline-block;
+            //float: left;
+            text-align: left;
+        }
+        .pricePercentage-area {
+            width: 29%;
+            display: inline-block;
+            text-align: right;
+            .pricePercentageButton {
+                height: 38px;
+                width: 48px;
+                background-color: white;
+                color: black;
+                border: 2px solid #8b8dbb;
+                border-radius: 10px;
+                text-align: center;
+                font-size: 20px;
+                cursor: pointer;
+            }
+        }
+    }
+    .chart {
+        width: 100%;
+        height: 89%;
+    }
+    .bottom-area {
+        width: 100%;
+        height: 5%;
+        .timescale-area {
+            width: 70%;
+            display: inline-block;
+            text-align: left;
+            .chartButtons {
+                .timescaleButton{
+                    height: 100%;
+                    width: 10%;
+                    color: #8b8dbb;
+                    background-color: white;
+                    font-size: 20px;
+                    border: none;
+                    text-align: center;
+                    cursor: pointer;
+                }
+                .timescaleButton:hover{
+                    color: #4a475f;
+                }
+            }
+        }
+        .candleLine-area {
+            width: 29%;
+            display: inline-block;
+            text-align: right;
+            .chartButtons {
+                .candleLineButton {
+                    //height: 10%;
+                    //height: 38px;
+                    //width: 48px;
+                    background-color: white;
+                    color: black;
+                    border: 2px solid #8b8dbb;
+                    border-radius: 10px;
+                    text-align: center;
+                    font-size: 15px;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
 }
-
+#userIconButton {
+    background-color: white;
+    color: black;
+    border: 2px solid #8b8dbb;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 20px;
+    cursor: pointer;
+}
 #user-panel {
-    width: 15%;
+    width: 24%;
     height: 100%;
     float: right;
-    background: darkgrey;
-}
-
-#chart{
-    width: 100%;
-    height: 100%;
-    border: 0;
-    margin: 0;
-    padding: 0;
+    text-align: center;
+    //background: darkgrey;
+    .chartInput {
+        height: 100%;
+        .buySellButton-area {
+            height: 10%;
+            .buySellButton {
+                width: 100%;
+                .buyButton {
+                    font-size: 100%;
+                    width: 50%;
+                    float: left;
+                    background-color: white;
+                    color: black;
+                    border-radius: 10px 0px 0px 0px;
+                    //margin: 1px;
+                }
+                .sellButton {
+                    font-size: 100%;
+                    width: 50%;
+                    float: right;
+                    background-color: white;
+                    color: black;
+                    border-radius: 0px 10px 0px 0px;
+                    //margin: 1px;
+                }
+            }
+        }
+        .amount-area {
+            width: 100%;
+            height: 90%;
+            background-color: white;
+            border-radius: 0px 0px 10px 10px;
+            text-align: center;
+        }
+    }
 }
 
 // Anychart - timescale button
 #submitButton,
 .chartButtons button {
-    //background-color: #4CAF50; /* Green */
-
-    border: 1px solid slategrey; /* Green border */
-    //color: white;
+    background-color: white;
+    color: #8b8dbb;
+    border: 2px solid #8b8dbb;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 10px;
-    //margin: 2px 2px;
+    font-size: 20px;
     cursor: pointer;
-    border-radius: 10%;
-    float: left;
+    border-radius: 0.5rem;
+}
+.refreshButton {
+    background-color: white;
+    color: #8b8dbb;
+    border: 2px solid #8b8dbb;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 0.5rem;
 }
 
 .chartButtons button:disabled,
@@ -51,7 +173,23 @@ body,
     background-color: #717782;
     color: white;
 }
-
+.input-group,
+.homeCurrency,
+.foreignCurrency {
+    width: 65%;
+    height: 6%;
+    text-align:center;
+    margin: auto;
+    border: 2px solid #8b8dbb;
+    background-color: white;
+    border-radius: 0.25rem;
+}
+.card-footer {
+    width: 100%;
+}
+.choice {
+    color: #4a475f;
+}
 .error {
     border: 1px solid red; // Rose: this class should be kept for error message, but you can restyle it.
 }
