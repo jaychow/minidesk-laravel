@@ -6,7 +6,8 @@
 var chart = anychart.stock();
 
 // create data table on loaded data
-var historyDataTable = anychart.data.table(0, 'yyyy-MM-dd HH:mm:ss');
+// var historyDataTable = anychart.data.table(0, 'yyyy-MM-dd HH:mm:ss');
+var historyDataTable = anychart.data.table();
 var futureDataTable = anychart.data.table();
 
 // raw data (NOTICE!!! format of jsonData should be an array that is accepted format for dataTable.)
@@ -36,6 +37,9 @@ var updateCandle = null, updateZone = null;
 var counter = 0;
 
 var candleUnitTime = {"1W": 1, "1M": 4, "3M": 24, "6M": 24, "1Y": 24*7, "5Y": 24*31};
+
+// utc timezone offset;
+var utcOffset = new Date().getTimezoneOffset();
 
 //---------------------------------------------------------------
 //                      OTHER FUNCTION
@@ -384,13 +388,14 @@ function processForm (form) {
 function requestCandleData (argument, singleData) {
     var requestSingleCurrentCurrency = (singleData == true) ? "current" : "whole";
 
+    // utc: argument['utc'],
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     $.get({
             url: 'http://minidesk.laravel.coretekllc.com/chart/getTable',
             data: {
                 pair: argument['pair'],
                 timeRange: argument['timescale'],
-                utc: argument['utc'],
+                utc: 0,
                 status: requestSingleCurrentCurrency,
                 interval: argument['refreshInterval']
             },
@@ -505,6 +510,12 @@ function initiateChartSetting () {
     var xAxis = historyPlot.xAxis();
     xAxis.orientation("bottom");
 
+    // setting label on x-axis
+    xAxis.labels().format(function() {
+        return anychart.format.dateTime(this.value, "MMM d, yyyy", utcOffset);
+    });
+    // xLabels.fontFamily("Assistant");
+    xAxis.labels().fontColor("#8b8dbb");
 
     // setting y scale type as dateTime and adjusting minimum and maximum values
     // var dateScale = anychart.scales.dateTime();
@@ -537,8 +548,9 @@ function initiateChartSetting () {
     yAxis.labels().format(function() {
         var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
 
-        return (Math.round(currency * 10000) / 10000).toFixed(4);
+        return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4);
     });
+    yAxis.labels().fontColor("#8b8dbb");
 
     //===========================================================
     //                      Crosshair
@@ -548,16 +560,27 @@ function initiateChartSetting () {
     historyPlot.crosshair(true);
 
     // configure the crosshair
-    historyPlot.crosshair().xLabel().format(function(e) {
+    historyPlot.crosshair().xLabel().format(function() {
         // TO-DO reformat dateTime
-        return this.value;
+        // return this.value;
 
-        // return anychart.format.dateTime(this.value, "MMM d, yyyy");
+        return anychart.format.dateTime(this.value, "MMM d, yyyy hh:mm", utcOffset);
     });
     historyPlot.crosshair().yLabel().format(function() {
         var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
 
         return (Math.round(currency * 10000) / 10000).toFixed(4);
+    });
+    historyPlot.crosshair().xLabel().fontColor("white");
+    historyPlot.crosshair().xLabel().background({
+        fill: "#4a475f",
+        stroke: "#4a475f"
+    });
+
+    historyPlot.crosshair().xLabel().fontColor("white");
+    historyPlot.crosshair().yLabel().background({
+        fill: "#4a475f",
+        stroke: "#4a475f"
     });
 
     //===========================================================
@@ -701,7 +724,7 @@ function switchYaxisType(type) {
                 var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
 
                 // round to 0.0001 digit and if less add zero to 4 decimal point.
-                return (Math.round(currency * 10000) / 10000).toFixed(4);
+                return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4);
             })
             break;
 
@@ -709,6 +732,7 @@ function switchYaxisType(type) {
             yAxis.labels().format(function() {
                 return Math.round(((this.value + 100) / 100 * jsonHistoryData[0][5]) * amount);
             })
+            yAxis.labels().groupsSeparator()
             break;
     }
     yAxis.scale(yScale);
@@ -795,9 +819,6 @@ function updateSegmentLine (pricePercentMode) {
     // var valueAnchor = (pricePercentMode == "percent") ? 0 : jsonHistoryData[0][5];
     var valueAnchor = 0;
 
-    controller.verticalLine({
-        xAnchor: jsonHistoryData[0][0]
-    });
     // create a Line annotation
     var line = controller.line({
         xAnchor: jsonHistoryData[0][0],
@@ -958,10 +979,11 @@ function updatePair () {
 
 function pairUpdatePlot () {
     // send request of candles data
-    requestCandleData(chartSettings, true);
+    // requestCandleData(chartSettings, true);
     requestCandleData(chartSettings, false);
-    jsonHistoryData.unshift(singleCandle);
+    // jsonHistoryData.unshift(singleCandle);
 
+    console.log(singleCandle, jsonHistoryData[0]);
     // send request of zones data
     requestZoneData(chartSettings);
 
@@ -1048,16 +1070,6 @@ function kickStartTimer () {
             // update whole jsonHistoryData
             // send request of candles data
             requestCandleData(chartSettings, true);
-            requestCandleData(chartSettings, false);
-            if (chartSettings['timescale'] == "1W" || chartSettings['timescale'] == "1M") {
-                var lastTime = new Date(jsonHistoryData[0][0]);
-                var latestTime = new Date(singleCandle[0]);
-
-                // append data when t
-                if ()
-            }
-            jsonHistoryData.unshift(singleCandle);
-
         } else {
             // put the latest candle at the first of jsonHistroyData
             requestCandleData(chartSettings, true);
