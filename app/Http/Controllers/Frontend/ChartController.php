@@ -119,7 +119,7 @@ class ChartController extends Controller
     {
         // Use to identify is the currency need to change ?
         $reverseFlag = 0;
-
+        $sourceCurrency = $type;
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
         $headers = [
@@ -182,7 +182,7 @@ class ChartController extends Controller
                         $final[] =
                             [
                                 $time = date("Y-m-d H:i:s", strtotime($data[0] .' ' .$utc.' hour')),
-                                $type,
+                                $sourceCurrency,
                                 number_format(1/$data[2],5),
                                 number_format(1/$data[4],5),
                                 number_format(1/$data[3],5),
@@ -248,7 +248,7 @@ class ChartController extends Controller
     {
         // Use to identify is the currency need to change ?
         $reverseFlag = 0;
-
+        $sourceCurrency = $type;
         $token = env('OANDA_API_KEY');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
         $headers = [
@@ -272,7 +272,7 @@ class ChartController extends Controller
                     $output =
                         [
                             $time = date("Y-m-d H:i:s", strtotime($final_result[0][0] .' ' .$utc.' hour')),
-                            $type,
+                            $sourceCurrency,
                             number_format(1/$final_result[0][2],5),
                             number_format(1/$final_result[0][4],5),
                             number_format(1/$final_result[0][3],5),
