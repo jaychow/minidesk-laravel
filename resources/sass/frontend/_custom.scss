@@ -140,6 +140,9 @@ body,
                     //margin: 1px;
                 }
             }
+            .buySellButton:disabled {
+                background-color: #4a475f;
+            }
         }
         .amount-area {
             width: 100%;
@@ -184,12 +187,6 @@ body,
     }
 }
 
-.chartButtons button:disabled,
-.chartButtons button[disabled]{
-    border: 1px solid #999999;
-    background-color: #717782;
-    color: white;
-}
 .input-group,
 .homeCurrency,
 .foreignCurrency {

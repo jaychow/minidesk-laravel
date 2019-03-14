@@ -7,44 +7,38 @@
             <div class="currency-title">
                 <p id="currencyTitle"></p>
             </div>
-            <div class="pricePercentage-area">
-                <div class="chartButtons" id="pricePercentageButton">
-                    <button class="pricePercentageButton" value="percent">%</button>
-                    <button class="pricePercentageButton" value="price">$</button>
-                    <button class="pricePercentageButton" value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
-                </div>
+            <div class="pricePercentage-area" id="pricePercentageButton">
+                <button class="pricePercentageButton" value="percent">%</button>
+                <button class="pricePercentageButton" value="price">$</button>
+                <button class="pricePercentageButton" value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
+            </div>
                 {{--<button class="pricePercentageButton" value="percent">%</button>--}}
                 {{--<button class="pricePercentageButton" value="price">$</button>--}}
                 {{--<input class="pricePercentageButton" value="user" type="image" id="userIconButton" alt="Your order" style="visibility:hidden;"--}}
                 {{--src="https://img.icons8.com/windows/32/000000/user.png">--}}
                 {{--<button class="pricePercentageButton" value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>--}}
 
-            </div>
         </div>
         <div class="chart" id="chart"></div>
         <div class="bottom-area">
-            <div class="timescale-area">
-                <div class="chartButtons" id="timescaleButton">
-                    <button class="timescaleButton choice" value="1W">1W</button>
-                    <button class="timescaleButton" value="1M">1M</button>
-                    <button class="timescaleButton" value="3M">3M</button>
-                    <button class="timescaleButton" value="6M">6M</button>
-                    <button class="timescaleButton" value="1Y">1Y</button>
-                    <button class="timescaleButton" value="5Y">5Y</button>
-                </div>
+            <div class="timescale-area" id="timescaleButton">
+                <button class="timescaleButton choice" value="1W">1W</button>
+                <button class="timescaleButton" value="1M">1M</button>
+                <button class="timescaleButton" value="3M">3M</button>
+                <button class="timescaleButton" value="6M">6M</button>
+                <button class="timescaleButton" value="1Y">1Y</button>
+                <button class="timescaleButton" value="5Y">5Y</button>
             </div>
-            <div class="candleLine-area">
-                <div class="chartButtons" id="candleLineButton">
-                    <button class="candleLineButton" value="candle">Candle</button>
-                    <button class="candleLineButton" value="line">Line</button>
-                </div>
+            <div class="candleLine-area" id="candleLineButton">
+                <button class="candleLineButton" value="candle">Candle</button>
+                <button class="candleLineButton" value="line">Line</button>
             </div>
         </div>
     </div>
 
     <div id="user-panel">
         {{--<form id="chartInput" action="http://minidesk.laravel.coretekllc.com/chart/getTable" type="get">--}}
-        <div class="chartInput" id="chartInput" action="http://minidesk.laravel.coretekllc.com/chart/getTable" type="get">
+        <div class="chartInput" id="chartInput">
             <div class="buySellButton-area">
                 <div class="buySellButton" id="buySellButton">
                     <button value="buy" id="buyButton" class="buyButton">I WILL NEED</br>FOREIGN CURRENCY</button>
@@ -99,8 +93,8 @@
                 </form>
 
                 <p id="tradeExplaination"></p> </br>
-                <button class="chartButtons refreshButton" id="refreshButton">&#8634</button>
-                <button class="chartButtons submitButton" id="submitButton">submit</button>
+                <button class="refreshButton" id="refreshButton">&#8634</button>
+                <button class="submitButton" id="submitButton">submit</button>
                 <br>
                 <br>
                 <br>

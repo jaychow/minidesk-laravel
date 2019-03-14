@@ -255,7 +255,7 @@ $(document).ready(function() {
             // change transactionAmount input borderColor as black;
             $(this).removeClass('error');
 
-            // update ticketInputs
+            // update ticketInputsƒ
             ticketInputs['transactionAmount'] = e.target.value;
 
             // update trade explaination if ticket inputs are all determined
