@@ -11837,6 +11837,9 @@ $(document).ready(function () {
                     updateEmptySpace();
                     horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
                 }
+            } else {
+                // clear timescale settings
+                chartSettings['timescale'];
             }
         }
     });
@@ -11941,13 +11944,6 @@ $(document).ready(function () {
 
         // refresh button status
         var buttonGroup = document.getElementsByClassName("timescaleButton");
-        // buttonGroup.forEach(function(button) {
-        //    if (button.value == chartSettings['timescale']) {
-        //        button.disabled = true;
-        //    } else {
-        //        button.disabled = false;
-        //    }
-        // });
         $('.timescaleButton').each(function (i, button) {
             if (button.value == chartSettings['timescale']) {
                 button.disabled = true;
@@ -12050,6 +12046,7 @@ function requestCandleData(argument, singleData) {
 
     // utc: argument['utc'],
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
+    console.log('Request ' + requestSingleCurrentCurrency + ": P# " + argument['pair'] + " / I# " + argument['refreshInterval']);
     $.get({
         url: 'http://minidesk.laravel.coretekllc.com/chart/getTable',
         data: {
@@ -12558,7 +12555,7 @@ function updateYlabelsColor(yAxis, pricePercentageType, tradeType) {
     // setting for colors
     var safeColor = "#0b9ca8";
     var warningColor = "#a80a47";
-    var defaultColor = "#717b83";
+    var defaultColor = "#8b8dbb";
 
     // get a number of labels on the Y axis
     var count = yAxis.labels().getLabelsCount();
@@ -12681,6 +12678,7 @@ function getRefreshInterval() {
         url: 'http://minidesk.laravel.coretekllc.com/chart/getTimeInterval',
         async: false
     }).done(function (interval) {
+        // TODO: update the chartsettings
         if (interval == "") {
             alert("Admin haven't yet set up refresh interval.");
         } else {
@@ -12694,10 +12692,12 @@ function getRefreshInterval() {
 function kickStartTimer() {
     var counter = 1;
 
-    var updateCandle = setInterval(updateSingleData, 90000);
+    // TODO: use the parameter that is set in dashboard
+    var updateCandle = setInterval(updateSingleData, 5000);
 
     function updateSingleData() {
         // TODO: change to callback function to call "requestCandleData"
+
         if (counter % 5 == 0) {
             // update whole jsonHistoryData
             // send request of candles data
@@ -12731,6 +12731,11 @@ function kickStartTimer() {
             // updateEmptySpace(true);
             horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
             // zoneBlocks = updateZoneBlocks(jsonZonesData);
+        }
+
+        // update yLabel color
+        if (ticketInputs['tradeType'] != "") {
+            updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
         }
         counter += 1;
     }

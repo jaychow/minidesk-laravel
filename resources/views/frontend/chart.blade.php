@@ -52,7 +52,6 @@
                 <br>
                 <br>
                 <h4> HOME CURRENCY</h4>
-                <br/>
 
                 <select class="pairList homeCurrency" id="homeCurrency">
                     <option disabled selected value="">--select--</option>
@@ -60,18 +59,18 @@
                     <option value="USD">USD</option>
                     <option value="CAD">CAD</option>
                 </select>
-                 <br/>
+                <br>
+                <br>
                 <br>
 
                 <h4> FOREIGN CURRENCY</h4>
-                <br/>
 
                 <select class="pairList foreignCurrency" id="foreignCurrency">
                     <option disabled selected value="">--select--</option>
                     <option value="GBP">GBP</option>
                     <option value="USD">USD</option>
                     <option value="CAD">CAD</option>
-                </select> <br/>
+                </select>
                 <br>
                 <br>
 
@@ -94,8 +93,7 @@
 
                 </form>
 
-                <p id="tradeExplaination"></p> </br>
-                <button class="refreshButton" id="refreshButton">&#8634</button>
+                <p id="tradeExplaination"></p>
                 <button class="submitButton" id="submitButton">submit</button>
                 <br>
                 <br>
