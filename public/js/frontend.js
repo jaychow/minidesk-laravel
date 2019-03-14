@@ -11920,6 +11920,8 @@ $(document).ready(function () {
         var tradeDate = new Date(new Date(ticketInputs['tradeDate']).getTime() + today.getTimezoneOffset() * 60000);
 
         // calculate differece of today and trade date
+        console.log('Today: ' + today);
+        console.log('Trade Date: ' + tradeDate);
         deltaTime = calculateDeltaTime(today, tradeDate); // today and tradeDate should be date object instead of string
 
         // decide timescale of chart
@@ -11936,6 +11938,23 @@ $(document).ready(function () {
         } else {
             chartSettings['timescale'] = "1W";
         }
+
+        // refresh button status
+        var buttonGroup = document.getElementsByClassName("timescaleButton");
+        // buttonGroup.forEach(function(button) {
+        //    if (button.value == chartSettings['timescale']) {
+        //        button.disabled = true;
+        //    } else {
+        //        button.disabled = false;
+        //    }
+        // });
+        $('.timescaleButton').each(function (i, button) {
+            if (button.value == chartSettings['timescale']) {
+                button.disabled = true;
+            } else {
+                button.disabled = false;
+            }
+        });
 
         // update candle plot only when user have choose pairs
         if (historyDataTable.bc.b.length > 0) {
@@ -12044,7 +12063,7 @@ function requestCandleData(argument, singleData) {
     }).done(function (historyData) {
         if (singleData) {
             // clear single candle
-            singleCandle.splice(0, singleCandle.legnth);
+            singleCandle.splice(0, singleCandle.length);
 
             // copy history data to singleCandle
             singleCandle = historyData.slice();
@@ -12054,6 +12073,10 @@ function requestCandleData(argument, singleData) {
 
             // copy history data to jsonHistoryData
             jsonHistoryData = historyData.slice();
+
+            // jsonHistoryData.forEach(function(element) {
+            //
+            // });
         }
     }).fail(function (data) {
         console.log("Error: " + data);
@@ -12419,7 +12442,7 @@ function updateEmptySpace(tradeDateIsSelected) {
 
     if (tradeDateIsSelected) {
         // check the difference of today and trade date
-        var dd = countDifferenceOfDate(new Date(), tradeDate);
+        var dd = countDifferenceOfDate(new Date(), tradeDate) + 12;
 
         // adding empty space of 1/2 data at the right-side of chart
         addEmptySpaceInChart(chart, historyDataTable.bc.b.length / 2, dd);
@@ -12671,23 +12694,33 @@ function getRefreshInterval() {
 function kickStartTimer() {
     var counter = 1;
 
-    var updateCandle = setInterval(updateSingleData, 5000);
+    var updateCandle = setInterval(updateSingleData, 90000);
 
     function updateSingleData() {
         // TODO: change to callback function to call "requestCandleData"
         if (counter % 5 == 0) {
             // update whole jsonHistoryData
             // send request of candles data
-            requestCandleData(chartSettings, true);
+
+            console.log('#' + counter + 'W (before)\t\t' + jsonHistoryData[0]);
+            requestCandleData(chartSettings, false);
+            console.log('#' + counter + 'W (after)\t\t\t' + jsonHistoryData[0] + '\n');
+
+            renderHistoryDataToChart();
         } else {
             // put the latest candle at the first of jsonHistroyData
             requestCandleData(chartSettings, true);
-            jsonHistoryData[0][3] = singleCandle[3] > jsonHistoryData[0][3] ? singleCandle[3] : jsonHistoryData[0][3]; // update H
-            jsonHistoryData[0][4] = singleCandle[4] < jsonHistoryData[0][4] ? singleCandle[4] : jsonHistoryData[0][4]; // update L
+
+            console.log('#' + counter + 'S (before)\t\t' + jsonHistoryData[0]);
+            console.log('#' + counter + 'S (a candle)\t\t' + jsonHistoryData[0]);
+            jsonHistoryData[0][3] = Number(singleCandle[3]) > Number(jsonHistoryData[0][3]) ? singleCandle[3] : jsonHistoryData[0][3]; // update H
+            jsonHistoryData[0][4] = Number(singleCandle[4]) < Number(jsonHistoryData[0][4]) ? singleCandle[4] : jsonHistoryData[0][4]; // update L
             jsonHistoryData[0][5] = singleCandle[5]; // update C
-            jsonHistoryData[0][6] += singleCandle[6];
+            jsonHistoryData[0][6] += Number(singleCandle[6]);
+            console.log('#' + counter + 'S (after)\t\t\t' + jsonHistoryData[0] + '\n');
+
+            renderHistoryDataToChart();
         }
-        renderHistoryDataToChart();
 
         // if trade date is determined
         if (ticketInputs['tradeDate'] != "") {

@@ -169,7 +169,6 @@ class ChartController extends Controller
                 $result = $response->getBody();
                 $result = json_decode($result);
                 $output = $this->getCandles($result);
-
                 // Give frontend data with time calibration
                 $final = [];
 
