@@ -162,6 +162,12 @@ $(document).ready(function() {
             updateCandle = kickStartTimer();
 
             pairUpdatePlot();
+            console.log("---------------------------------");
+            console.log("            Initiate             ");
+            console.log("---------------------------------");
+            console.log("#0\t\tW (json[0])\t\t" + jsonHistoryData[0]);
+            console.log("---------------------------------");
+
 
             // adding space for one candle that show instant currency
             // updateEmptySpace(false);
@@ -202,20 +208,21 @@ $(document).ready(function() {
     $('#timescaleButton').on('click', function(e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.textContent;
+            console.log(clickedItem);
 
             // update settings only when no trade date is determined
             if (ticketInputs['tradeDate'] == "") {
                 // save timescale setting
                 chartSettings['timescale'] = clickedItem;
-                console.log(clickedItem);
 
                 // disable button that was pressed
-                document.getElementById("1wButton").disabled = (clickedItem == '1W') ? true : false;
-                document.getElementById("1mButton").disabled = (clickedItem == '1M') ? true : false;
-                document.getElementById("3mButton").disabled = (clickedItem == '3M') ? true : false;
-                document.getElementById("6mButton").disabled = (clickedItem == '6M') ? true : false;
-                document.getElementById("1yButton").disabled = (clickedItem == '1Y') ? true : false;
-                document.getElementById("5yButton").disabled = (clickedItem == '5Y') ? true : false;
+                $('.timescaleButton').each(function(i, button) {
+                    if (button.value == chartSettings['timescale']) {
+                        button.disabled = true;
+                    } else {
+                        button.disabled = false;
+                    }
+                });
 
                 // request data from
                 requestCandleData(chartSettings, false);
@@ -223,14 +230,60 @@ $(document).ready(function() {
                 // render new data onto chart
                 renderHistoryDataToChart();
 
-                // update the empty space in chart if there is any
-                if (document.getElementById('tradeDate').value != "") {
-                    updateEmptySpace();
+            } else {
+
+                if (clickedItem != ticketInputs['timescale']) {
+
+                    // save timescale setting
+                    chartSettings['timescale'] = clickedItem;
+
+                    // disable button that was pressed
+                    $('.timescaleButton').each(function(i, button) {
+                        if (button.value == chartSettings['timescale']) {
+                            button.disabled = true;
+                        } else {
+                            button.disabled = false;
+                        }
+                    });
+
+                    // request data from
+                    requestCandleData(chartSettings, false);
+
+                    // render new data onto chart
+                    renderHistoryDataToChart();
+
+                    // cancel empty space
+                    updateEmptySpace(false);
+
+                    // remove horizontal projection line (if it exist)
+                    historyPlot.annotations().removeAnnotation(horizontalLine);
+
+                } else {
+
+
+                    // save timescale setting
+                    chartSettings['timescale'] = clickedItem;
+                    // disable button that was pressed
+                    $('.timescaleButton').each(function(i, button) {
+                        if (button.value == chartSettings['timescale']) {
+                            button.disabled = true;
+                        } else {
+                            button.disabled = false;
+                        }
+                    });
+
+                    // request data from
+                    requestCandleData(chartSettings, false);
+
+                    // render new data onto chart
+                    renderHistoryDataToChart();
+
+                    // increase empty space
+                    updateEmptySpace(true);
+
+                    // update horizontal projection line
                     horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
                 }
-            } else {
-                // clear timescale settings
-                chartSettings['timescale']
             }
 
         }
@@ -257,7 +310,7 @@ $(document).ready(function() {
 
     // axes labels (% or $)
     $('#pricePercentageButton').on('click', function(e) {
-       if (e.target != e.currentTarget) {
+        if (e.target != e.currentTarget) {
            var clickedItem = e.target.value;
 
            // save the ylabel type
@@ -284,7 +337,7 @@ $(document).ready(function() {
            if (ticketInputs['tradeType'] != "") {
                updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
            }
-       }
+        }
     });
 
     //===========================================================
@@ -310,7 +363,13 @@ $(document).ready(function() {
 
     $('#tradeDate').on('change', function(e) {
 
+        // remove the previous ticket indicator class from that button
+        if (ticketInputs['tradeDate'] != "") {
+            $('#' + ticketInputs['timescale'] + "Button").removeClass('ticketTimescaleIndicator');
+        }
 
+
+        // save the input of trade date
         ticketInputs['tradeDate'] = document.getElementById('tradeDate').value;
 
         var today = new Date();
@@ -336,8 +395,11 @@ $(document).ready(function() {
         } else {
             chartSettings['timescale'] = "1W";
         }
+        ticketInputs['timescale'] = chartSettings['timescale'];
 
-        // refresh button status
+
+
+        // refresh button status: disabled
         var buttonGroup = document.getElementsByClassName("timescaleButton");
         $('.timescaleButton').each(function(i, button) {
             if (button.value == chartSettings['timescale']) {
@@ -346,6 +408,8 @@ $(document).ready(function() {
                 button.disabled = false;
             }
         });
+
+        $('#' + ticketInputs['timescale'] + "Button").addClass('ticketTimescaleIndicator');
 
         // update candle plot only when user have choose pairs
         if (historyDataTable.bc.b.length > 0) {
@@ -509,6 +573,7 @@ function initiateTicketInputs () {
     ticketInputs['tradeType'] = "";
     ticketInputs['tradeDate'] = "";
     ticketInputs['transactionAmount'] = 0;
+    ticketInputs['timescale'] = "1Y";
 }
 
 function initiateChartSetting () {
@@ -713,8 +778,6 @@ function renderHistoryDataToChart () {
 
     // Update new data to data table (history)
     historyDataTable.addData(jsonHistoryData);
-
-
 }
 
 function switchChartType(type) {
@@ -1169,7 +1232,7 @@ function kickStartTimer () {
         }
 
         // if trade date is determined
-        if (ticketInputs['tradeDate'] != "") {
+        if (ticketInputs['tradeDate'] != "" && ticketInputs['timescale'] == chartSettings['timescale']) {
             // remove previous segment line
             // historyPlot.annotations().removeAllAnnotations();
             historyPlot.annotations().removeAnnotation(horizontalLine);

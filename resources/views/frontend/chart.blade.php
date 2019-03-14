@@ -24,12 +24,12 @@
         <div class="chart" id="chart"></div>
         <div class="bottom-area">
             <div class="timescale-area" id="timescaleButton" style="visibility:hidden;">
-                <button class="timescaleButton" id="1wButton" value="1W">1W</button>
-                <button class="timescaleButton" id="1mButton" value="1M">1M</button>
-                <button class="timescaleButton" id="3mButton" value="3M">3M</button>
-                <button class="timescaleButton" id="6mButton" value="6M">6M</button>
-                <button class="timescaleButton" id="1yButton" value="1Y" disabled>1Y</button>
-                <button class="timescaleButton" id="5yButton" value="5Y">5Y</button>
+                <button class="timescaleButton" id="1WButton" value="1W">1W</button>
+                <button class="timescaleButton" id="1MButton" value="1M">1M</button>
+                <button class="timescaleButton" id="3MButton" value="3M">3M</button>
+                <button class="timescaleButton" id="6MButton" value="6M">6M</button>
+                <button class="timescaleButton" id="1YButton" value="1Y" disabled>1Y</button>
+                <button class="timescaleButton" id="5YButton" value="5Y">5Y</button>
             </div>
             <div class="candleLine-area" id="candleLineButton" style="visibility:hidden;">
                 <button class="chartAreaButton candleLineButton" id="candleButton" value="candle" disabled>Candle</button>
