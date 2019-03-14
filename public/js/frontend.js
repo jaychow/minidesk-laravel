@@ -11757,6 +11757,9 @@ $(document).ready(function () {
             chartSettings['pair'] = updatePair();
             ticketInputs['foreignCurrency'] = foreignCurrency.value;
 
+            // update title of plot
+            document.getElementById("currencyTitle").innerHTML = foreignCurrency.value;
+
             // disable timer to request single candle
             if (updateCandle != null) clearInterval(updateCandle);
 
@@ -12253,7 +12256,11 @@ function switchChartType(type) {
         case 'line':
             series.legendItem().format(function (e) {
                 var length = jsonHistoryData.length;
-                return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> " + this.value + " <b>Delta O-C(%)</b> " + jsonHistoryData[length - this.index - 1][8];
+                if (length > 0 && this.index < length && this.index > 0) {
+                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> " + this.value + " <b>Delta O-C(%)</b> " + jsonHistoryData[length - this.index - 1][8];
+                } else {
+                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
+                }
             });
             break;
 

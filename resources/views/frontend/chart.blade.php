@@ -5,7 +5,7 @@
     <div class="chart-container" id="chart-container">
         <div class="top-area">
             <div class="currency-title">
-                <p> GBP-USD</p>
+                <p id="currencyTitle"></p>
             </div>
             <div class="pricePercentage-area">
                 <div class="chartButtons" id="pricePercentageButton">
@@ -46,7 +46,7 @@
         {{--<form id="chartInput" action="http://minidesk.laravel.coretekllc.com/chart/getTable" type="get">--}}
         <div class="chartInput" id="chartInput" action="http://minidesk.laravel.coretekllc.com/chart/getTable" type="get">
             <div class="buySellButton-area">
-                <div class="chartButtons buySellButton" id="buySellButton">
+                <div class="buySellButton" id="buySellButton">
                     <button value="buy" id="buyButton" class="buyButton">I WILL NEED</br>FOREIGN CURRENCY</button>
                     <button value="sell" id="sellButton" class="sellButton">I WILL NEED</br>HOME CURRENCY</button>
                 </div> </br>

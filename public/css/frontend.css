@@ -12008,7 +12008,7 @@ body,
   text-align: right;
 }
 
-#chart-container .top-area .pricePercentage-area .pricePercentageButton {
+#chart-container .top-area .pricePercentage-area .chartButtons .pricePercentageButton {
   height: 38px;
   width: 48px;
   background-color: white;
@@ -12018,6 +12018,11 @@ body,
   text-align: center;
   font-size: 20px;
   cursor: pointer;
+  outline: none;
+}
+
+#chart-container .top-area .pricePercentage-area .chartButtons .pricePercentageButton:focus {
+  background-color: #4a475f;
 }
 
 #chart-container .chart {
@@ -12047,7 +12052,7 @@ body,
   cursor: pointer;
 }
 
-#chart-container .bottom-area .timescale-area .chartButtons .timescaleButton:hover {
+#chart-container .bottom-area .timescale-area .chartButtons .timescaleButton:focus {
   color: #4a475f;
 }
 
@@ -12065,6 +12070,10 @@ body,
   text-align: center;
   font-size: 15px;
   cursor: pointer;
+}
+
+#chart-container .bottom-area .candleLine-area .chartButtons .candleLineButton:focus {
+  background-color: #4a475f;
 }
 
 #userIconButton {
@@ -12133,6 +12142,12 @@ body,
   font-size: 20px;
   cursor: pointer;
   border-radius: 0.5rem;
+  outline: none;
+}
+
+#submitButton .submitButton:focus,
+.chartButtons button .submitButton:focus {
+  background-color: #4a475f;
 }
 
 .refreshButton {
@@ -12145,6 +12160,11 @@ body,
   font-size: 20px;
   cursor: pointer;
   border-radius: 0.5rem;
+  outline: none;
+}
+
+.refreshButton .refreshButton:focus {
+  background-color: #4a475f;
 }
 
 .chartButtons button:disabled,
