@@ -7,10 +7,12 @@
             <div class="currency-title">
                 <p id="currencyTitle"></p>
             </div>
-            <div class="pricePercentage-area" id="pricePercentageButton">
-                <button class="chartAreaButton pricePercentageButton" value="percent">%</button>
-                <button class="chartAreaButton pricePercentageButton" value="price">$</button>
-                <button class="chartAreaButton pricePercentageButton" value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
+            <div class="pricePercentage-area" id="pricePercentageButton" style="visibility:hidden;">
+                <button class="chartAreaButton pricePercentageButton" id="userButton" value="user" style="visibility:hidden;">
+                    <i class="fa fa-user"></i>
+                </button>
+                <button class="chartAreaButton pricePercentageButton" id="priceButton" value="price" disabled>$</button>
+                <button class="chartAreaButton pricePercentageButton" id="percentButton" value="percent">%</button>
             </div>
                 {{--<button class="pricePercentageButton" value="percent">%</button>--}}
                 {{--<button class="pricePercentageButton" value="price">$</button>--}}
@@ -21,17 +23,17 @@
         </div>
         <div class="chart" id="chart"></div>
         <div class="bottom-area">
-            <div class="timescale-area" id="timescaleButton">
-                <button class="timescaleButton choice" value="1W">1W</button>
-                <button class="timescaleButton" value="1M">1M</button>
-                <button class="timescaleButton" value="3M">3M</button>
-                <button class="timescaleButton" value="6M">6M</button>
-                <button class="timescaleButton" value="1Y">1Y</button>
-                <button class="timescaleButton" value="5Y">5Y</button>
+            <div class="timescale-area" id="timescaleButton" style="visibility:hidden;">
+                <button class="timescaleButton" id="1wButton" value="1W">1W</button>
+                <button class="timescaleButton" id="1mButton" value="1M">1M</button>
+                <button class="timescaleButton" id="3mButton" value="3M">3M</button>
+                <button class="timescaleButton" id="6mButton" value="6M">6M</button>
+                <button class="timescaleButton" id="1yButton" value="1Y" disabled>1Y</button>
+                <button class="timescaleButton" id="5yButton" value="5Y">5Y</button>
             </div>
-            <div class="candleLine-area" id="candleLineButton">
-                <button class="chartAreaButton candleLineButton" value="candle">Candle</button>
-                <button class="chartAreaButton candleLineButton" value="line">Line</button>
+            <div class="candleLine-area" id="candleLineButton" style="visibility:hidden;">
+                <button class="chartAreaButton candleLineButton" id="candleButton" value="candle" disabled>Candle</button>
+                <button class="chartAreaButton candleLineButton" id="lineButton" value="line">Line</button>
             </div>
         </div>
     </div>
@@ -107,7 +109,7 @@
 
     </div>
     <div class="card-footer">
-        <a href="https://icons8.com/icon/22396/user">User icon by Icons8</a> <br>
+        <a href="https://fontawesome.com/v4.7.0/icon/user">User icon by fontawesome</a> <br>
         <a href="https://fonts.googleapis.com/css?family=Varela+Round">User font by Varela Round</a>
         <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
     </div>

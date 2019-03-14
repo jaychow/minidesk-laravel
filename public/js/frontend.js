@@ -11754,11 +11754,17 @@ $(document).ready(function () {
             alert("Please select home currency first");
             foreignCurrency.selectedIndex = "0";
         } else {
+            // save input
             chartSettings['pair'] = updatePair();
             ticketInputs['foreignCurrency'] = foreignCurrency.value;
 
             // update title of plot
             document.getElementById("currencyTitle").innerHTML = foreignCurrency.value;
+
+            // make button of choice for chart visible
+            document.getElementById("pricePercentageButton").style.visibility = "visible";
+            document.getElementById("timescaleButton").style.visibility = "visible";
+            document.getElementById("candleLineButton").style.visibility = "visible";
 
             // disable timer to request single candle
             if (updateCandle != null) clearInterval(updateCandle);
@@ -11802,32 +11808,53 @@ $(document).ready(function () {
     });
 
     // timescale buttons pressed (1D/1W/1M/3M/1Y/5Y)
-    // $('#timescaleButton').on('click', function(e) {
-    //     if (e.target != e.currentTarget) {
-    //         var clickedItem = e.target.textContent;
-    //         chartSettings['timescale'] = clickedItem;
-    //         console.log(clickedItem);
-    //
-    //         // request data from
-    //         requestCandleData(chartSettings, false);
-    //
-    //         // render new data onto chart
-    //         renderHistoryDataToChart();
-    //
-    //         // update the empty space in chart if there is any
-    //         if (document.getElementById('tradeDate').value != "") {
-    //             updateEmptySpace();
-    //             horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
-    //         }
-    //     }
-    // });
+    $('#timescaleButton').on('click', function (e) {
+        if (e.target != e.currentTarget) {
+            var clickedItem = e.target.textContent;
+
+            // update settings only when no trade date is determined
+            if (ticketInputs['tradeDate'] == "") {
+                // save timescale setting
+                chartSettings['timescale'] = clickedItem;
+                console.log(clickedItem);
+
+                // disable button that was pressed
+                document.getElementById("1wButton").disabled = clickedItem == '1W' ? true : false;
+                document.getElementById("1mButton").disabled = clickedItem == '1M' ? true : false;
+                document.getElementById("3mButton").disabled = clickedItem == '3M' ? true : false;
+                document.getElementById("6mButton").disabled = clickedItem == '6M' ? true : false;
+                document.getElementById("1yButton").disabled = clickedItem == '1Y' ? true : false;
+                document.getElementById("5yButton").disabled = clickedItem == '5Y' ? true : false;
+
+                // request data from
+                requestCandleData(chartSettings, false);
+
+                // render new data onto chart
+                renderHistoryDataToChart();
+
+                // update the empty space in chart if there is any
+                if (document.getElementById('tradeDate').value != "") {
+                    updateEmptySpace();
+                    horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+                }
+            }
+        }
+    });
 
     // type of graph (candle/line)
     $('#candleLineButton').on('click', function (e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.value;
+
+            // save the chart type(candle/line)
             chartSettings['type'] = clickedItem;
             console.log(clickedItem);
+
+            // disable button that was pressed
+            document.getElementById("candleButton").disabled = clickedItem == 'candle' ? true : false;
+            document.getElementById("lineButton").disabled = clickedItem == 'line' ? true : false;
+
+            // update chart
             switchChartType(clickedItem);
         }
     });
@@ -11836,7 +11863,16 @@ $(document).ready(function () {
     $('#pricePercentageButton').on('click', function (e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.value;
+
+            // save the ylabel type
             chartSettings['ylabelType'] = clickedItem;
+
+            // disable button that was pressed
+            document.getElementById("percentButton").disabled = clickedItem == 'percent' ? true : false;
+            document.getElementById("priceButton").disabled = clickedItem == 'price' ? true : false;
+            document.getElementById("userButton").disabled = clickedItem == 'user' ? true : false;
+
+            // switch yaxis type
             switchYaxisType(clickedItem);
 
             if (ticketInputs['tradeDate'] != "") {
@@ -11967,7 +12003,10 @@ $(document).ready(function () {
             switchYaxisType("user");
 
             // set user icon for yAxis label type is visible
-            document.getElementById("userIconButton").style.visibility = "visible";
+            document.getElementById("userButton").style.visibility = "visible";
+            document.getElementById("userButton").disabled = true;
+            document.getElementById("priceButton").disabled = false;
+            document.getElementById("percentButton").disabled = false;
 
             // submit the ticket info to backend and save into database;
             submitTicket(ticketInputs);
@@ -12076,7 +12115,7 @@ function initiateChartSetting() {
     historyPlot.height('100%').width('100%').yGrid(false).xGrid(false).yMinorGrid(false).xMinorGrid(false);
 
     // chart position
-    chart.bounds(0, 0, '95%', '80%');
+    chart.bounds(0, 0, '90%', '100%');
 
     // setting portion of plot in the same array (2/3, 1/3)
     // historyPlot.bounds(0, 0, '66%', '80%');
@@ -12121,7 +12160,7 @@ function initiateChartSetting() {
     // var minorTicks = historyPlot.xScale().minorTicks();
     // minorTicks.interval(0, 0, 15);
 
-    // TO-DO use "switchYaxisType()" function
+    // TODO use "switchYaxisType()" function
     // y-scale for both history and future trend plot (default: % mode)
     var yScale = historyPlot.yScale();
     yScale.comparisonMode("percent");
@@ -12149,7 +12188,7 @@ function initiateChartSetting() {
 
     // configure the crosshair
     historyPlot.crosshair().xLabel().format(function () {
-        // TO-DO reformat dateTime
+        // TODO reformat dateTime
         // return this.value;
 
         return anychart.format.dateTime(this.value, "MMM d, yyyy hh:mm", utcOffset);
@@ -12311,7 +12350,7 @@ function switchYaxisType(type) {
         case "user":
             // submit button pressed
             yAxis.labels().format(function () {
-                return Math.round((this.value + 100) / 100 * jsonHistoryData[0][5] * amount);
+                return "$ " + Math.round((this.value + 100) / 100 * jsonHistoryData[0][5] * amount).toLocaleString();
             });
             break;
     }
@@ -12347,16 +12386,18 @@ function switchYaxisType(type) {
 
 function submitTicket(argument) {
 
-    // TO-DO: change id and account value as variable when user has his own account
-    $.get('http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting', { id: 0, account: 'bombobutt', home_currency: argument['homeCurrency'],
-        foreign_currency: argument['foreignCurrency'], trade: argument['tradeType'],
-        amount: argument['transactionAmount'], date: argument['tradeDate'] }).always(function (message) {
-        if (message != 'OK') {
-            alert(message);
-        } else {
-            alert("Success submit");
-        }
-    });
+    var x = confirm("Success submit");
+
+    // TODO: change id and account value as variable when user has his own account
+    if (x) {
+        $.get('http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting', { id: 0, account: 'bombobutt', home_currency: argument['homeCurrency'],
+            foreign_currency: argument['foreignCurrency'], trade: argument['tradeType'],
+            amount: argument['transactionAmount'], date: argument['tradeDate'] }).always(function (message) {
+            if (message != 'OK') {
+                alert(message);
+            }
+        });
+    }
 }
 
 function countDifferenceOfDate(earlierDate, laterDate) {
@@ -12374,7 +12415,7 @@ function addEmptySpaceInChart(theChart, countOfTicksInIntervals, hourIntervals) 
 function updateEmptySpace(tradeDateIsSelected) {
     var tradeDate = new Date(document.getElementById('tradeDate').value);
 
-    // TO-DO change variable dd to hh rename(hour) and countDifferenceOfDate
+    // TODO change variable dd to hh rename(hour) and countDifferenceOfDate
 
     if (tradeDateIsSelected) {
         // check the difference of today and trade date
@@ -12417,7 +12458,7 @@ function updateZoneBlocks(zone) {
         highlightColor = '#bdbded';
     var sellColor, buyColor;
 
-    // TO-DO
+    // TODO
     // set superfuture as 10 years after the tradeDate
     var superFuture = '3000-01-01';
 
@@ -12529,7 +12570,9 @@ function updateYlabelsColor(yAxis, pricePercentageType, tradeType) {
         // avg = chart.getSeries(0).getStat('average');
 
         // if the value is greater
-        if (tradeType == "") {
+        if (label == null) {
+            continue;
+        } else if (tradeType == "") {
             label.fontColor(defaultColor);
         } else if ((value - standardValue) * multiplier > 0) {
             // safe(green)
@@ -12593,17 +12636,17 @@ function updateTradeExplaination(homeCurrency, foreignCurrency, tradeType, trans
     var msg = "";
     switch (tradeType) {
         case "buy":
-            getMoney = transactionAmount.toLocaleString() + " " + foreignCurrency;
-            costMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency + " (" + tmpMoney.toLocaleString() + " " + homeCurrency + ")";
+            getMoney = Number(transactionAmount).toLocaleString() + " " + foreignCurrency;
+            costMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency;
 
-            msg = "If you transfer today, <br/>" + getMoney + " will cost you " + costMoney;
+            msg = "If you transfer today, <br/>" + getMoney + " will cost you " + costMoney + ".";
 
             break;
         case "sell":
-            getMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency + " (" + tmpMoney.toLocaleString() + " " + homeCurrency + ")";
-            costMoney = transactionAmount.toLocaleString() + " " + foreignCurrency;
+            getMoney = Math.round(tmpMoney).toLocaleString() + " " + homeCurrency;
+            costMoney = Number(transactionAmount).toLocaleString() + " " + foreignCurrency;
 
-            msg = "If you transfer today, <br/>" + costMoney + " will get you " + getMoney;
+            msg = "If you transfer today, <br/>" + costMoney + " will get you " + getMoney + ".";
 
             break;
     }
@@ -12631,7 +12674,7 @@ function kickStartTimer() {
     var updateCandle = setInterval(updateSingleData, 5000);
 
     function updateSingleData() {
-        // TO-DO: change to callback function to call "requestCandleData"
+        // TODO: change to callback function to call "requestCandleData"
         if (counter % 5 == 0) {
             // update whole jsonHistoryData
             // send request of candles data
