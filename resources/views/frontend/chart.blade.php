@@ -102,7 +102,7 @@
 
                 <p id="tradeExplaination"></p> </br>
                 <button class="chartButtons refreshButton" id="refreshButton">&#8634</button>
-                <button class="chartButtons" id="submitButton">submit</button>
+                <button class="chartButtons submitButton" id="submitButton">submit</button>
                 <br>
                 <br>
                 <br>

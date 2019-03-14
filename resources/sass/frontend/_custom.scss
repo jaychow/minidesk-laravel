@@ -40,6 +40,10 @@ body,
                 text-align: center;
                 font-size: 20px;
                 cursor: pointer;
+                outline: none;
+            }
+            .pricePercentageButton:focus{
+                background-color: #4a475f;
             }
         }
     }
@@ -65,7 +69,7 @@ body,
                     text-align: center;
                     cursor: pointer;
                 }
-                .timescaleButton:hover{
+                .timescaleButton:focus{
                     color: #4a475f;
                 }
             }
@@ -86,6 +90,9 @@ body,
                     text-align: center;
                     font-size: 15px;
                     cursor: pointer;
+                }
+                .candleLineButton:focus {
+                    background-color: #4a475f;
                 }
             }
         }
@@ -154,6 +161,10 @@ body,
     font-size: 20px;
     cursor: pointer;
     border-radius: 0.5rem;
+    outline: none;
+    .submitButton:focus{
+        background-color: #4a475f;
+    }
 }
 .refreshButton {
     background-color: white;
@@ -165,6 +176,10 @@ body,
     font-size: 20px;
     cursor: pointer;
     border-radius: 0.5rem;
+    outline: none;
+    .refreshButton:focus{
+        background-color: #4a475f;
+    }
 }
 
 .chartButtons button:disabled,
