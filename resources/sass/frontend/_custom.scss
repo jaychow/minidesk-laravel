@@ -11,8 +11,11 @@ body,
 .chartAreaButton {
     height: 38px;
     width: 68px;
+    //background-color: white;
+    //color: black;
     background-color: white;
-    color: black;
+    color: #c7c9fc;
+    //filter: invert(71%) sepia(3%) saturate(4149%) hue-rotate(200deg) brightness(115%) contrast(98%);
     border: 2px solid #c7c9fc;
     border-radius: 10px;
     text-align: center;
