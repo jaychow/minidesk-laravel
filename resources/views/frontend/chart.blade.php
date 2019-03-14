@@ -10,7 +10,10 @@
             <div class="pricePercentage-area" id="pricePercentageButton">
                 <button class="chartAreaButton pricePercentageButton" value="percent">%</button>
                 <button class="chartAreaButton pricePercentageButton" value="price">$</button>
-                <button class="chartAreaButton pricePercentageButton" value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>
+                <button class="chartAreaButton pricePercentageButton" value="user" id="userIconButton" style="visibility:hidden;">
+                    <i class="fa fa-user"></i>
+                </button>
+                {{--<button class="chartAreaButton pricePercentageButton" value="user" id="userIconButton" style="visibility:hidden;"><img src="https://img.icons8.com/windows/32/000000/user.png"></button>--}}
             </div>
                 {{--<button class="pricePercentageButton" value="percent">%</button>--}}
                 {{--<button class="pricePercentageButton" value="price">$</button>--}}
@@ -110,6 +113,7 @@
         <a href="https://icons8.com/icon/22396/user">User icon by Icons8</a> <br>
         <a href="https://fonts.googleapis.com/css?family=Varela+Round">User font by Varela Round</a>
         <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
     </div>
 
 @endsection
