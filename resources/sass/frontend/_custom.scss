@@ -8,6 +8,23 @@ body,
     background-color: #8b8dbb;
     font-family: "Varela Round", sans-serif;
 }
+.chartAreaButton {
+    height: 38px;
+    width: 68px;
+    background-color: white;
+    color: black;
+    border: 2px solid #c7c9fc;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 15px;
+    cursor: pointer;
+    outline: none;
+}
+.chartAreaButton:disabled {
+    background-color: #c7c9fc;
+    color: #4a475f;
+    outline: none;
+}
 
 #chart-container {
     width: 75%;
@@ -30,85 +47,42 @@ body,
             width: 29%;
             display: inline-block;
             text-align: right;
-            .chartButtons{
-              .pricePercentageButton {
-                height: 38px;
-                width: 48px;
-                background-color: white;
-                color: black;
-                border: 2px solid #8b8dbb;
-                border-radius: 10px;
-                text-align: center;
-                font-size: 20px;
-                cursor: pointer;
-                outline: none;
-              }
-              .pricePercentageButton:focus{
-                background-color: #4a475f;
-              }
-            }
         }
     }
     .chart {
         width: 100%;
-        height: 89%;
+        height: 88%;
     }
     .bottom-area {
         width: 100%;
-        height: 5%;
+        height: 6%;
         .timescale-area {
-            width: 70%;
+            width: 50%;
             display: inline-block;
             text-align: left;
-            .chartButtons {
-                .timescaleButton{
-                    height: 100%;
-                    width: 10%;
-                    color: #8b8dbb;
-                    background-color: white;
-                    font-size: 20px;
-                    border: none;
-                    text-align: center;
-                    cursor: pointer;
-                }
-                .timescaleButton:focus{
-                    color: #4a475f;
-                }
+            .timescaleButton{
+                height: 100%;
+                width: 10%;
+                color: #c7c9fc;
+                background-color: white;
+                font-size: 20px;
+                border: none;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+            }
+            .timescaleButton:disabled{
+                color: #c7c9fc;
             }
         }
         .candleLine-area {
-            width: 29%;
+            width: 49%;
             display: inline-block;
             text-align: right;
-            .chartButtons {
-                .candleLineButton {
-                    //height: 10%;
-                    //height: 38px;
-                    //width: 48px;
-                    background-color: white;
-                    color: black;
-                    border: 2px solid #8b8dbb;
-                    border-radius: 10px;
-                    text-align: center;
-                    font-size: 15px;
-                    cursor: pointer;
-                }
-                .candleLineButton:focus {
-                    background-color: #4a475f;
-                }
-            }
         }
     }
 }
-#userIconButton {
-    background-color: white;
-    color: black;
-    border: 2px solid #8b8dbb;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 20px;
-    cursor: pointer;
-}
+
 #user-panel {
     width: 24%;
     height: 100%;
@@ -121,28 +95,35 @@ body,
             height: 10%;
             .buySellButton {
                 width: 100%;
+                font-size: 120%;
+                //background-color: white;
+                color: black;
                 .buyButton {
-                    font-size: 100%;
                     width: 50%;
                     float: left;
-                    background-color: white;
-                    color: black;
                     border-radius: 10px 0px 0px 0px;
-                    //margin: 1px;
+                    background-color: white;
+                }
+                .buyButton:disabled{
+                    background-color: #4a475f;
+                    outline: none;
+                    color: white;
                 }
                 .sellButton {
-                    font-size: 100%;
                     width: 50%;
                     float: right;
-                    background-color: white;
-                    color: black;
                     border-radius: 0px 10px 0px 0px;
-                    //margin: 1px;
+                    background-color: white;
+                }
+                .sellButton:disabled{
+                    background-color: #4a475f;
+                    outline: none;
+                    color: white;
                 }
             }
-            .buySellButton:disabled {
-                background-color: #4a475f;
-            }
+            //.buySellButton:disabled {
+            //    background-color: #4a475f;
+            //}
         }
         .amount-area {
             width: 100%;
@@ -155,22 +136,7 @@ body,
 }
 
 // Anychart - timescale button
-#submitButton,
-.chartButtons button {
-    background-color: white;
-    color: #8b8dbb;
-    border: 2px solid #8b8dbb;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 20px;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    outline: none;
-    .submitButton:focus{
-        background-color: #4a475f;
-    }
-}
+.submitButton,
 .refreshButton {
     background-color: white;
     color: #8b8dbb;
@@ -182,9 +148,11 @@ body,
     cursor: pointer;
     border-radius: 0.5rem;
     outline: none;
-    .refreshButton:focus{
-        background-color: #4a475f;
-    }
+}
+.submitButton:focus,
+.refreshButton:focus{
+    background-color: #c7c9fc;
+    outline: none;
 }
 
 .input-group,
@@ -196,14 +164,13 @@ body,
     margin: auto;
     border: 2px solid #8b8dbb;
     background-color: white;
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
+    outline: none;
 }
 .card-footer {
     width: 100%;
 }
-.choice {
-    color: #4a475f;
-}
+
 .error {
     border: 1px solid red; // Rose: this class should be kept for error message, but you can restyle it.
 }
