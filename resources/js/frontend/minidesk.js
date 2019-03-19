@@ -8,7 +8,6 @@ var chart = anychart.stock();
 // create data table on loaded data
 // var historyDataTable = anychart.data.table(0, 'yyyy-MM-dd HH:mm:ss');
 var historyDataTable = anychart.data.table();
-var futureDataTable = anychart.data.table();
 
 // raw data (NOTICE!!! format of jsonData should be an array that is accepted format for dataTable.)
 var jsonHistoryData = [], jsonZonesData = [], singleCandle = [];
@@ -26,15 +25,16 @@ var chartSettings, ticketInputs;
 var zoneBlocks, horizontalLine;
 
 // time interval counter
-var updateCandleInterval = 5; // 5 minutes
+var updateCandleInterval = 1; // (default: 1 minutes refresh one time)
 var updateIntervalCounts = {};
-var candleUpdateCounter = 0, zoneUpdateCounter = 0;
+const intervalMapToMinutes = {"S5": 5/60, "S10": 10/60, "S15": 15/60, "S30": 30/60, "M1": 1, "M2": 2, "M4": 4, "M10": 10, "M15": 15, "M30": 30, "H1": 60};
+
 
 // timer
 var updateCandle = null, updateZone = null;
 var counter = 0;
 
-var candleUnitTime = {"1W": 1, "1M": 4, "3M": 24, "6M": 24, "1Y": 24*7, "5Y": 24*31};
+const hourPerCandle = {"1W": 1, "1M": 4, "3M": 24, "6M": 24, "1Y": 24*7, "5Y": 24*31};
 
 // utc timezone offset;
 var utcOffset = new Date().getTimezoneOffset();
@@ -51,57 +51,19 @@ $(document).ready(function() {
     initiateChartSettings(today);
     initiateTicketInputs();
 
-    // drop down list initialization
-    // document.getElementById("homeCurrency").selectedIndex = -1;
+    // get candle update interval from database(can set this in Dashboard)
+    getRefreshInterval();
+
+    // map chartSettings['refreshInterval'] to minutes;
+    updateCandleInterval = intervalMapToMinutes[chartSettings['refreshInterval']];
 
     // initiate time interval counts
-    updateIntervalCounts['1W'] = 60 / updateCandleInterval; // 1h/candle, increase 1 candle every intervals.
-    updateIntervalCounts['1M'] = 60 * 4 / updateCandleInterval; // 4h/candle, increase 1 candle every intervals.
-    updateIntervalCounts['3M'] = 60 * 24; // 1D/candle, increase 1 candle every intervals.
-    updateIntervalCounts['1Y'] = 60 * 24 * 7; // 1W/candle, increase 1 candle every intervals.
-    updateIntervalCounts['5Y'] = 60 * 24 * 31; // 1M/candle, increase 1 candle every intervals.
+    updateIntervalCounts['1W'] = 60 / updateCandleInterval; // 60m/candle, need updateIntervalCounts['1W'] time to update 1 candle until it is set.
+    updateIntervalCounts['1M'] = 60 * 4 / updateCandleInterval; // 240m/candle, increase 1 candle every intervals.
+    updateIntervalCounts['3M'] = 60 * 24 / updateCandleInterval; // 60m*24/candle, increase 1 candle every intervals.
+    updateIntervalCounts['1Y'] = 60 * 24 * 7 / updateCandleInterval; // 1W/candle, increase 1 candle every intervals.
+    updateIntervalCounts['5Y'] = 60 * 24 * 31 / updateCandleInterval; // 1M/candle, increase 1 candle every intervals.
 
-    // update candle refresh interval
-    // chartSettings['refreshInterval'] = getRefreshInterval();
-    getRefreshInterval();
-    switch(chartSettings['refreshInterval']) {
-        case "S5":
-            updateCandleInterval = 5 / 60;
-            break;
-        case "S10":
-            updateCandleInterval = 10 / 60;
-            break;
-        case "S15":
-            updateCandleInterval = 15 / 60;
-            break;
-        case "S30":
-            updateCandleInterval = 30 / 60;
-            break;
-        case "M1":
-            updateCandleInterval = 1;
-            break;
-        case "M2":
-            updateCandleInterval = 2;
-            break;
-        case "M4":
-            updateCandleInterval = 4;
-            break;
-        case "M5":
-            updateCandleInterval = 5;
-            break;
-        case "M10":
-            updateCandleInterval = 10;
-            break;
-        case "M15":
-            updateCandleInterval = 15;
-            break;
-        case "M30":
-            updateCandleInterval = 30;
-            break;
-        case "H1":
-            updateCandleInterval = 60;
-            break;
-    }
     //===========================================================
     //                CLICK EVENTS (chartsettings)
     //===========================================================
@@ -159,7 +121,7 @@ $(document).ready(function() {
             if (updateCandle != null) clearInterval(updateCandle);
 
             // set Interval
-            updateCandle = kickStartTimer();
+            updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
 
             pairUpdatePlot();
             console.log("---------------------------------");
@@ -311,32 +273,32 @@ $(document).ready(function() {
     // axes labels (% or $)
     $('#pricePercentageButton').on('click', function(e) {
         if (e.target != e.currentTarget) {
-           var clickedItem = e.target.value;
+            var clickedItem = e.target.value;
 
-           // save the ylabel type
-           chartSettings['ylabelType'] = clickedItem;
+            // save the ylabel type
+            chartSettings['ylabelType'] = clickedItem;
 
-           // disable button that was pressed
-           document.getElementById("percentButton").disabled = (clickedItem == 'percent') ? true : false;
-           document.getElementById("priceButton").disabled = (clickedItem == 'price') ? true : false;
-           document.getElementById("userButton").disabled = (clickedItem == 'user') ? true : false;
+            // disable button that was pressed
+            document.getElementById("percentButton").disabled = (clickedItem == 'percent') ? true : false;
+            document.getElementById("priceButton").disabled = (clickedItem == 'price') ? true : false;
+            document.getElementById("userButton").disabled = (clickedItem == 'user') ? true : false;
 
-           // switch yaxis type
-           switchYaxisType(clickedItem);
+            // switch yaxis type
+            switchYaxisType(clickedItem);
 
-           if (ticketInputs['tradeDate'] != "") {
-               // remove previous segment line
-               historyPlot.annotations().removeAllAnnotations();
+            if (ticketInputs['tradeDate'] != "") {
+                // remove previous segment line
+                historyPlot.annotations().removeAllAnnotations();
 
-               // update projection and zone data to plot
-               updateEmptySpace(true);
-               horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
-               zoneBlocks = updateZoneBlocks(jsonZonesData);
-           }
-           // update yLabel color
-           if (ticketInputs['tradeType'] != "") {
-               updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
-           }
+                // update projection and zone data to plot
+                updateEmptySpace(true);
+                horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+                zoneBlocks = updateZoneBlocks(jsonZonesData);
+            }
+            // update yLabel color
+            if (ticketInputs['tradeType'] != "") {
+                updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+            }
         }
     });
 
@@ -417,7 +379,7 @@ $(document).ready(function() {
             if (updateCandle != null) clearInterval(updateCandle);
 
             // set Interval
-            updateCandle = kickStartTimer();
+            updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
 
             pairUpdatePlot();
         }
@@ -942,7 +904,7 @@ function updateEmptySpace (tradeDateIsSelected) {
         addEmptySpaceInChart(chart, historyDataTable.bc.b.length / 2, dd);
 
     } else {
-        addEmptySpaceInChart(chart, 1, candleUnitTime[chartSettings['timescale']]);
+        addEmptySpaceInChart(chart, 1, hourPerCandle[chartSettings['timescale']]);
     }
 
 }
@@ -1186,11 +1148,10 @@ function getRefreshInterval() {
             async: false
         }
     ).done(function (interval) {
-        // TODO: update the chartsettings
         if (interval == "") {
-            alert("Admin haven't yet set up refresh interval.");
+            chartSettings['refreshInterval'] = "M1";
         } else {
-            chartSettings['refreshInterval'];
+            chartSettings['refreshInterval'] = interval;
         }
 
     }).fail(function (message) {
@@ -1198,16 +1159,17 @@ function getRefreshInterval() {
     });
 }
 
-function kickStartTimer () {
+function kickStartTimer (frequency) {
     var counter = 1;
+    const requestWholeSetDataFrequency = frequency;
 
     // TODO: use the parameter that is set in dashboard
-    var updateCandle = setInterval(updateSingleData, 5000);
+    var updateCandle = setInterval(updateSingleData, updateCandleInterval * 60000); // unit of updateCandleInterval: minutes
 
     function updateSingleData () {
         // TODO: change to callback function to call "requestCandleData"
 
-        if (counter % 5 == 0) {
+        if (counter % requestWholeSetDataFrequency == 0) {
             // update whole jsonHistoryData
             // send request of candles data
 
