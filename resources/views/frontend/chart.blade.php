@@ -106,10 +106,10 @@
 
 
     </div>
-    <div class="card-footer">
-        <a href="https://fontawesome.com/v4.7.0/icon/user">User icon by fontawesome</a> <br>
-        <a href="https://fonts.googleapis.com/css?family=Varela+Round">User font by Varela Round</a>
-        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
-    </div>
+    {{--<div class="card-footer">--}}
+        {{--<a href="https://fontawesome.com/v4.7.0/icon/user">User icon by fontawesome</a> <br>--}}
+        {{--<a href="https://fonts.googleapis.com/css?family=Varela+Round">User font by Varela Round</a>--}}
+        {{--<link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">--}}
+    {{--</div>--}}
 
 @endsection
