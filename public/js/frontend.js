@@ -11733,11 +11733,12 @@ $(document).ready(function () {
             updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
 
             pairUpdatePlot();
-            console.log("---------------------------------");
-            console.log("            Initiate             ");
-            console.log("---------------------------------");
-            console.log("#0\t\tW (json[0])\t\t" + jsonHistoryData[0]);
-            console.log("---------------------------------");
+            // console.log("---------------------------------");
+            // console.log("            Initiate             ");
+            // console.log("---------------------------------");
+            // console.log("#0\t\tW (json[0])\t\t" + jsonHistoryData[0]);
+            // console.log("---------------------------------");
+
 
             // adding space for one candle that show instant currency
             // updateEmptySpace(false);
@@ -11776,7 +11777,7 @@ $(document).ready(function () {
     $('#timescaleButton').on('click', function (e) {
         if (e.target != e.currentTarget) {
             var clickedItem = e.target.textContent;
-            console.log(clickedItem);
+            // console.log(clickedItem);
 
             // update settings only when no trade date is determined
             if (ticketInputs['tradeDate'] == "") {
@@ -11860,7 +11861,7 @@ $(document).ready(function () {
 
             // save the chart type(candle/line)
             chartSettings['type'] = clickedItem;
-            console.log(clickedItem);
+            // console.log(clickedItem);
 
             // disable button that was pressed
             document.getElementById("candleButton").disabled = clickedItem == 'candle' ? true : false;
@@ -11938,8 +11939,8 @@ $(document).ready(function () {
         var tradeDate = new Date(new Date(ticketInputs['tradeDate']).getTime() + today.getTimezoneOffset() * 60000);
 
         // calculate differece of today and trade date
-        console.log('Today: ' + today);
-        console.log('Trade Date: ' + tradeDate);
+        // console.log('Today: ' + today);
+        // console.log('Trade Date: ' + tradeDate);
         deltaTime = calculateDeltaTime(today, tradeDate); // today and tradeDate should be date object instead of string
 
         // decide timescale of chart
@@ -12064,7 +12065,7 @@ function requestCandleData(argument, singleData) {
 
     // utc: argument['utc'],
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
-    console.log('Request ' + requestSingleCurrentCurrency + ": P# " + argument['pair'] + " / I# " + argument['refreshInterval']);
+    // console.log('Request ' + requestSingleCurrentCurrency + ": P# " + argument['pair'] + " / I# " + argument['refreshInterval'])
     $.get({
         url: 'http://minidesk.laravel.coretekllc.com/chart/getTable',
         data: {
@@ -12281,7 +12282,7 @@ function initiateChartSetting() {
     candlestick_series.legendItem().format(function (e) {
         var length = jsonHistoryData.length;
         if (length > 0 && this.index < length && this.index > 0) {
-            return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> " + this.open + " <b>H</b> " + this.high + " <b>L</b> " + this.low + " <b>C</b> " + this.close + "<br/>" + "<b>Vol</b> " + jsonHistoryData[length - this.index - 1][6] + " <b>Avg Vol</b> " + jsonHistoryData[length - this.index - 1][7] + " <b>Delta O-C(%)</b> " + jsonHistoryData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonHistoryData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonHistoryData[length - this.index - 1][10] + "%";
+            return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> " + Number(this.open).toFixed(4) + " <b>H</b> " + Number(this.high).toFixed(4) + " <b>L</b> " + Number(this.low).toFixed(4) + " <b>C</b> " + Number(this.close).toFixed(4) + "<br/>" + "<b>Vol</b> " + jsonHistoryData[length - this.index - 1][6].toLocaleString() + " <b>Avg Vol</b> " + jsonHistoryData[length - this.index - 1][7].toLocaleString() + " <b>Delta O-C(%)</b> " + Number(jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "% <b>Range(L-H)</b> " + Number(jsonHistoryData[length - this.index - 1][9]).toFixed(4) + " <b>Avg Vol(%)</b> " + Number(jsonHistoryData[length - this.index - 1][10]).toFixed(2) + "%";
         } else {
             return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" + "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
         }
@@ -12302,7 +12303,7 @@ function initiateChartSetting() {
 }
 
 function renderHistoryDataToChart() {
-    console.log('REFRESH HISTORY DATATABLE!');
+    // console.log('REFRESH HISTORY DATATABLE!');
 
     // Clear historyDataTable;
     historyDataTable.remove();
@@ -12335,7 +12336,7 @@ function switchChartType(type) {
             series.legendItem().format(function (e) {
                 var length = jsonHistoryData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> " + this.value + " <b>Delta O-C(%)</b> " + jsonHistoryData[length - this.index - 1][8];
+                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> " + Number(this.value).toFixed(4) + " <b>Delta O-C(%)</b> " + Number(jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "%";
                 } else {
                     return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
                 }
@@ -12346,7 +12347,7 @@ function switchChartType(type) {
             series.legendItem().format(function (e) {
                 var length = jsonHistoryData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> " + this.open + " <b>H</b> " + this.high + " <b>L</b> " + this.low + " <b>C</b> " + this.close + "<br/>" + "<b>Vol</b> " + jsonHistoryData[length - this.index - 1][6] + " <b>Avg Vol</b> " + jsonHistoryData[length - this.index - 1][7] + " <b>Delta O-C(%)</b> " + jsonHistoryData[length - this.index - 1][8] + "% <b>Range(L-H)</b> " + jsonHistoryData[length - this.index - 1][9] + " <b>Avg Vol(%)</b> " + jsonHistoryData[length - this.index - 1][10] + "%";
+                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> " + Number(this.open).toFixed(4) + " <b>H</b> " + Number(this.high).toFixed(4) + " <b>L</b> " + Number(this.low).toFixed(4) + " <b>C</b> " + Number(this.close).toFixed(4) + "<br/>" + "<b>Vol</b> " + jsonHistoryData[length - this.index - 1][6].toLocaleString() + " <b>Avg Vol</b> " + jsonHistoryData[length - this.index - 1][7].toLocaleString() + " <b>Delta O-C(%)</b> " + Number(jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "% <b>Range(L-H)</b> " + Number(jsonHistoryData[length - this.index - 1][9]).toFixed(4) + " <b>Avg Vol(%)</b> " + Number(jsonHistoryData[length - this.index - 1][10]).toFixed(2) + "%";
                 } else {
                     return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" + "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
                 }
@@ -12637,7 +12638,7 @@ function pairUpdatePlot() {
     requestCandleData(chartSettings, false);
     // jsonHistoryData.unshift(singleCandle);
 
-    console.log(singleCandle, jsonHistoryData[0]);
+    // console.log(singleCandle, jsonHistoryData[0]);
     // send request of zones data
     requestZoneData(chartSettings);
 
@@ -12721,22 +12722,22 @@ function kickStartTimer(frequency) {
             // update whole jsonHistoryData
             // send request of candles data
 
-            console.log('#' + counter + 'W (before)\t\t' + jsonHistoryData[0]);
+            // console.log('#' + counter + 'W (before)\t\t' + jsonHistoryData[0]);
             requestCandleData(chartSettings, false);
-            console.log('#' + counter + 'W (after)\t\t\t' + jsonHistoryData[0] + '\n');
+            // console.log('#' + counter + 'W (after)\t\t\t' + jsonHistoryData[0] +'\n');
 
             renderHistoryDataToChart();
         } else {
             // put the latest candle at the first of jsonHistroyData
             requestCandleData(chartSettings, true);
 
-            console.log('#' + counter + 'S (before)\t\t' + jsonHistoryData[0]);
-            console.log('#' + counter + 'S (a candle)\t\t' + jsonHistoryData[0]);
+            // console.log('#' + counter + 'S (before)\t\t' + jsonHistoryData[0]);
+            // console.log('#' + counter + 'S (a candle)\t\t' + singleCandle);
             jsonHistoryData[0][3] = Number(singleCandle[3]) > Number(jsonHistoryData[0][3]) ? singleCandle[3] : jsonHistoryData[0][3]; // update H
             jsonHistoryData[0][4] = Number(singleCandle[4]) < Number(jsonHistoryData[0][4]) ? singleCandle[4] : jsonHistoryData[0][4]; // update L
             jsonHistoryData[0][5] = singleCandle[5]; // update C
             jsonHistoryData[0][6] += Number(singleCandle[6]);
-            console.log('#' + counter + 'S (after)\t\t\t' + jsonHistoryData[0] + '\n');
+            // console.log('#' + counter + 'S (after)\t\t\t' + jsonHistoryData[0] +'\n');
 
             renderHistoryDataToChart();
         }
@@ -12755,6 +12756,11 @@ function kickStartTimer(frequency) {
         // update yLabel color
         if (ticketInputs['tradeType'] != "") {
             updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+        }
+
+        // update trade explaination if ticket inputs are all determined
+        if (ticketInputs['tradeType'] != "" && chartSettings['pair'] != "" && ticketInputs['transactionAmount'] != 0) {
+            document.getElementById("tradeExplaination").innerHTML = updateTradeExplaination(ticketInputs['homeCurrency'], ticketInputs['foreignCurrency'], ticketInputs['tradeType'], ticketInputs['transactionAmount']);
         }
         counter += 1;
     }
