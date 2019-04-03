@@ -100,52 +100,59 @@ body,
     //background: darkgrey;
     .chartInput {
         height: 100%;
-        .buySellButton-area {
-            height: 10%;
-            .buySellButton {
-                width: 100%;
-                height: 98%;
-                font-size: 120%;
-                //background-color: white;
-                color: black;
-                .buyButton {
-                    border: 0px;
-                    height: 95%;
-                    width: 49%;
-                    float: left;
-                    border-radius: 10px 0px 0px 0px;
-                    background-color: white;
-                }
-                .buyButton:disabled{
-                    background-color: #4a475f;
-                    outline: none;
-                    color: white;
-                }
-                .sellButton {
-                    border: 0px;
-                    height: 95%;
-                    width: 49%;
-                    float: right;
-                    border-radius: 0px 10px 0px 0px;
-                    background-color: white;
-                }
-                .sellButton:disabled{
-                    background-color: #4a475f;
-                    outline: none;
-                    color: white;
-                }
-            }
-            //.buySellButton:disabled {
-            //    background-color: #4a475f;
-            //}
-        }
-        .amount-area {
+    }
+
+    .buySellButton-area {
+        height: 10%;
+        .buySellButton {
             width: 100%;
-            height: 90%;
-            background-color: white;
-            border-radius: 0px 0px 10px 10px;
-            text-align: center;
+            height: 98%;
+            font-size: 120%;
+            //background-color: white;
+            color: black;
+            .buyButton {
+                border: 0px;
+                height: 95%;
+                width: 49%;
+                display:inline-block;
+                border-radius: 10px 0px 0px 0px;
+                background-color: white;
+            }
+            .buyButton:disabled{
+                background-color: #4a475f;
+                outline: none;
+                color: white;
+            }
+            .sellButton {
+                border: 0px;
+                height: 95%;
+                width: 49%;
+                display:inline-block;
+                border-radius: 0px 10px 0px 0px;
+                background-color: white;
+            }
+            .sellButton:disabled{
+                background-color: #4a475f;
+                outline: none;
+                color: white;
+            }
         }
+    }
+    .amount-area {
+        width: 100%;
+        height: 90%;
+        background-color: white;
+        border-radius: 0px 0px 10px 10px;
+        text-align: center;
+        clear: both;
+        margin-top: 5px;
+        padding:15px;
+    }
+    .currency-selector {
+        margin-bottom:15px;
+    }
+    .currency-input-container{
+        margin-bottom:15px;
     }
 }
 

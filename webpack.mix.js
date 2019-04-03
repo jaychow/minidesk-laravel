@@ -1,4 +1,6 @@
 const mix = require('laravel-mix');
+var LiveReloadPlugin = require('webpack-livereload-plugin');
+
 
 /*
  |--------------------------------------------------------------------------
@@ -10,6 +12,9 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
+mix.webpackConfig({
+    plugins: [new LiveReloadPlugin()]
+});
 
 mix.setPublicPath('public');
 
@@ -17,8 +22,7 @@ mix.
     sass('resources/sass/frontend/app.scss', 'css/frontend.css')
     .sass('resources/sass/backend/app.scss', 'css/backend.css')
     .js([
-        'resources/js/frontend/app.js',
-        'resources/js/frontend/minidesk.js'
+        'resources/js/frontend/app.js'
     ], 'js/frontend.js')
     .js([
         'resources/js/backend/before.js',

@@ -8,9 +8,11 @@
 import '../bootstrap';
 import '../plugins';
 import Vue from 'vue';
-
+import Vuex from 'vuex';
+Vue.use(Vuex);
 window.Vue = Vue;
-
+window.$ = require('jquery');
+window.JQuery = require('jquery');
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -19,7 +21,12 @@ window.Vue = Vue;
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+// Chart Components
+Vue.component('chart-header', require('./components/Chart/Header.vue'));
+Vue.component('chart', require('./components/Chart.vue'));
+Vue.component('chart-footer', require('./components/Chart/Footer.vue'));
+// Sidebar Components
+Vue.component('sidebar', require('./components/Sidebar.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 
@@ -34,5 +41,48 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
  */
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    data() {
+        return {
+            ticketInputs: {},
+            chartSettings: {},
+            today: new Date(),
+            homeCurrency: '',
+            foreignCurrency: ''
+        }
+    },
+    created() {
+        console.log("App created");
+        this.initTicketInputs();
+        this.initChartSettings();
+    },
+    methods: {
+        initTicketInputs() {
+            this.ticketInputs['homeCurrency'] = "";
+            this.ticketInputs['foreignCurrency'] = "";
+            this.ticketInputs['tradeType'] = "";
+            this.ticketInputs['tradeDate'] = "";
+            this.ticketInputs['transactionAmount'] = 0;
+            this.ticketInputs['timescale'] = "1Y";
+        },
+        initChartSettings() {
+            this.chartSettings['pair'] = "";
+            this.chartSettings['timescale'] = "1Y";
+            this.chartSettings['ylabelType'] = "price";
+            this.chartSettings['type'] = "candle";
+            this.chartSettings['refreshInterval'] = "M10";
+            // adding timezone info
+            this.chartSettings['utc'] = -(this.today.getTimezoneOffset() / 60);
+        },
+        changeHomeCurrency(currency) {
+            this.homeCurrency = currency;
+            this.chartSettings['pair'] = "";
+            this.ticketInputs['homeCurrency'] = currency;
+            this.ticketInputs['foreignCurrency'] = "";
+        },
+        changeForeignCurrency(currency) {
+            this.foreignCurrency = currency;
+        }
+    }
+
 });
