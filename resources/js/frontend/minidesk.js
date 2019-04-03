@@ -372,7 +372,7 @@ $(document).ready(function() {
         });
 
         $('#' + ticketInputs['timescale'] + "Button").addClass('ticketTimescaleIndicator');
-
+debugger;
         // update candle plot only when user have choose pairs
         if (historyDataTable.bc.b.length > 0) {
             // disable timer to request single candle
@@ -477,7 +477,7 @@ function requestCandleData (argument, singleData) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     // console.log('Request ' + requestSingleCurrentCurrency + ": P# " + argument['pair'] + " / I# " + argument['refreshInterval'])
     $.get({
-            url: 'http://minidesk.laravel.coretekllc.com/chart/getTable',
+            url: APP_URL + '/chart/getTable',
             data: {
                 pair: argument['pair'],
                 timeRange: argument['timescale'],
@@ -867,7 +867,7 @@ function submitTicket (argument) {
     // TODO: change id and account value as variable when user has his own account
     if (x) {
         $.get(
-            'http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting',
+            APP_URL + '/chart/saveTradeSetting',
             {id: 0, account: 'bombobutt', home_currency:argument['homeCurrency'],
                 foreign_currency: argument['foreignCurrency'], trade: argument['tradeType'],
                 amount: argument['transactionAmount'], date: argument['tradeDate']}
@@ -982,7 +982,7 @@ function requestZoneData (argument) {
 
     // get zones info that are stored in db.
     $.get({
-            url: 'http://minidesk.laravel.coretekllc.com/chart/getZone',
+            url: APP_URL + '/chart/getZone',
             data: {
                 pair: argument['pair'],
                 trade: 'All',
@@ -1144,7 +1144,7 @@ function updateTradeExplaination (homeCurrency, foreignCurrency, tradeType, tran
 
 function getRefreshInterval() {
     $.get({
-            url: 'http://minidesk.laravel.coretekllc.com/chart/getTimeInterval',
+            url: APP_URL + '/chart/getTimeInterval',
             async: false
         }
     ).done(function (interval) {

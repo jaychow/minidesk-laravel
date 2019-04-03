@@ -100,11 +100,7 @@
                 <br>
 
             </div>
-
-
-        </form> </br>
-
-
+        </div>
     </div>
     {{--<div class="card-footer">--}}
         {{--<a href="https://fontawesome.com/v4.7.0/icon/user">User icon by fontawesome</a> <br>--}}
