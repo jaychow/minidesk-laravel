@@ -50,6 +50,7 @@ $(document).ready(function() {
     // initiate form and some settings for chart
     initiateChartSettings(today);
     initiateTicketInputs();
+    chartInitialization();
 
     // get candle update interval from database(can set this in Dashboard)
     getRefreshInterval();
@@ -123,6 +124,10 @@ $(document).ready(function() {
             // set Interval
             updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
 
+            // initiate chart if it's first time user select pair
+            if (jsonHistoryData.length == 0) {
+                chartInitialization();
+            }
             pairUpdatePlot();
             // console.log("---------------------------------");
             // console.log("            Initiate             ");
@@ -372,9 +377,9 @@ $(document).ready(function() {
         });
 
         $('#' + ticketInputs['timescale'] + "Button").addClass('ticketTimescaleIndicator');
-debugger;
+
         // update candle plot only when user have choose pairs
-        if (historyDataTable.bc.b.length > 0) {
+        if (jsonHistoryData.length > 0) {
             // disable timer to request single candle
             if (updateCandle != null) clearInterval(updateCandle);
 
@@ -538,7 +543,7 @@ function initiateTicketInputs () {
     ticketInputs['timescale'] = "1Y";
 }
 
-function initiateChartSetting () {
+function chartInitialization () {
 
     var stage = acgraph.create('chart');
     //===========================================================
@@ -1088,10 +1093,8 @@ function pairUpdatePlot () {
     requestZoneData(chartSettings);
 
     //var data_json = $.parseJSON(data);
-    if (historyDataTable.bc.b.length > 0)
-        renderHistoryDataToChart();
-    else
-        initiateChartSetting();
+    renderHistoryDataToChart();
+
 
     // if trade date is determined
     if (ticketInputs['tradeDate'] != "") {
