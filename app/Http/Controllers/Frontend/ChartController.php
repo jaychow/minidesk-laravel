@@ -128,50 +128,25 @@ class ChartController extends Controller
         ];
         $response ='';
         $fromTime = date("Y-m-d",strtotime($fromTime));
+        $granularity = $this->_getGranularity($timeRange);
+
         do
         {
             try
             {
-                switch ($timeRange)
-                {
-                    case "1W":
-                        $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=H1', [
-                            'headers' => $headers
-                        ]);
-                        break;
-                    case "1M":
-                        $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=H4', [
-                            'headers' => $headers
-                        ]);
-                        break;
-                    case "3M":
-                        $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=D', [
-                            'headers' => $headers
-                        ]);
-                        break;
-                    case "6M":
-                        $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=D', [
-                            'headers' => $headers
-                        ]);
-                        break;
-                    case "1Y":
-                        $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=W', [
-                            'headers' => $headers
-                        ]);
-                        break;
-                    case "5Y":
-                        $response = $client->request('GET', 'v3/instruments/' . $type . '/candles?from=' . $fromTime . '&granularity=M', [
-                            'headers' => $headers
-                        ]);
-                        break;
-                }
+                $response = $client->request('GET', "v3/instruments/{$type}/candles", [
+                    'headers' => $headers,
+                    'query' => [
+                        'from' => $fromTime,
+                        'granularity' => $granularity
+                    ]
+                ]);
 
                 $result = $response->getBody();
                 $result = json_decode($result);
                 $output = $this->getCandles($result);
                 // Give frontend data with time calibration
                 $final = [];
-
                 // Calculate average volume
                 $average = $this->averageVolume($output,'API');
 
@@ -237,6 +212,7 @@ class ChartController extends Controller
                     echo $fromTime . "<br>";
                     echo $timeRange . "<br>";
                     echo $type . "<br>";
+                    echo $e->getMessage();
                     exit;
                 }
             }
@@ -708,5 +684,30 @@ class ChartController extends Controller
             }
             return response()->json($output);
         }
+    }
+
+    /**
+     * @param $timeRange
+     *
+     * @return bool|string
+     */
+    private function _getGranularity($timeRange) {
+        switch ($timeRange)
+        {
+            case "1W":
+                return "H1";
+            case "1M":
+                return "H4";
+            case "3M":
+                return "D";
+            case "6M":
+                return "D";
+            case "1Y":
+                return "D";
+            case "5Y":
+                return "M";
+        }
+
+        return false;
     }
 }
