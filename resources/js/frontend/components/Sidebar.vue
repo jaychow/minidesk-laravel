@@ -2,8 +2,8 @@
     <div class="sidebar">
         <div class="buySellButton-area">
             <div class="buySellButton" id="buySellButton">
-                <button value="buy" id="buyButton" class="buyButton">I WILL NEED</br>FOREIGN CURRENCY</button>
-                <button value="sell" id="sellButton" class="sellButton">I WILL NEED</br>HOME CURRENCY</button>
+                <button value="buy" id="buyButton" class="buyButton">I WILL NEED<br/>FOREIGN CURRENCY</button>
+                <button value="sell" id="sellButton" class="sellButton">I WILL NEED<br/>HOME CURRENCY</button>
             </div>
         </div>
 
@@ -13,14 +13,14 @@
                     <h4> HOME CURRENCY</h4>
                     <select class="pairList homeCurrency" id="homeCurrency" v-on:change="changeHomeCurrency">
                         <option disabled selected value="">--select--</option>
-                        <option value="GBP">GBP</option>
+                        <option value="GBP" >GBP</option>
                         <option value="USD">USD</option>
                         <option value="CAD">CAD</option>
                     </select>
                 </div>
                 <div class="currency-selector currency-selector__foreign">
                     <h4> FOREIGN CURRENCY</h4>
-                    <select class="pairList foreignCurrency" id="foreignCurrency">
+                    <select class="pairList foreignCurrency" id="foreignCurrency" v-on:change="changeForeignCurrency">
                         <option disabled selected value="">--select--</option>
                         <option value="GBP" :disabled="homeCurrency === 'GBP'">GBP</option>
                         <option value="USD" :disabled="homeCurrency === 'USD'">USD</option>
@@ -72,14 +72,13 @@
                 this.$emit('change-home-currency', e.target.value);
             },
             changeForeignCurrency(e) {
+                if(this.homeCurrency === '') {
+                    alert("Please select home currency first");
+                    return;
+                }
                 console.log("changing foreign currency to: " + e.target.value);
                 this.$emit('change-foreign-currency', e.target.value);
             },
-        },
-        computed: {
-            isCurrencyDisabled(e, el) {
-                debugger;
-            }
         }
     }
 </script>

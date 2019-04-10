@@ -362,13 +362,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$emit('change-home-currency', e.target.value);
         },
         changeForeignCurrency: function changeForeignCurrency(e) {
+            if (this.homeCurrency === '') {
+                alert("Please select home currency first");
+                return;
+            }
             console.log("changing foreign currency to: " + e.target.value);
             this.$emit('change-foreign-currency', e.target.value);
-        }
-    },
-    computed: {
-        isCurrencyDisabled: function isCurrencyDisabled(e, el) {
-            debugger;
         }
     }
 });
@@ -626,7 +625,8 @@ var render = function() {
               "select",
               {
                 staticClass: "pairList foreignCurrency",
-                attrs: { id: "foreignCurrency" }
+                attrs: { id: "foreignCurrency" },
+                on: { change: _vm.changeForeignCurrency }
               },
               [
                 _c(
@@ -14041,6 +14041,9 @@ var app = new __WEBPACK_IMPORTED_MODULE_2_vue___default.a({
         },
         changeHomeCurrency: function changeHomeCurrency(currency) {
             this.homeCurrency = currency;
+            this.chartSettings['pair'] = "";
+            this.ticketInputs['homeCurrency'] = currency;
+            this.ticketInputs['foreignCurrency'] = "";
         },
         changeForeignCurrency: function changeForeignCurrency(currency) {
             this.foreignCurrency = currency;
