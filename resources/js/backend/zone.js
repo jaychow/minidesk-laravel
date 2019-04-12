@@ -73,6 +73,7 @@ $(document).ready(function() {
             // set Interval
             updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
         }
+    });
 
 
         // once pull-down list change
@@ -129,9 +130,8 @@ function getForm () {
 function submitZone(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
-    $.post(url, data,
-        function(data){
-            console.log("success: "  + data);
-            alert("Successfully submit!");
+    $.post(url, data, function(data){
+        console.log("success: "  + data);
+        alert("Successfully submit!");
     });
 }

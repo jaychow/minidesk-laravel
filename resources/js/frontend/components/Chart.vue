@@ -36,8 +36,6 @@
             //this.initChart();
         },
         methods: {
-
-
             initUpdateInterval() {
                 this.updateCandleInterval = this.intervalMapToMinutes[this.chartSettings['refreshInterval']];
                 this.updateIntervalCounts['1W'] = 60 / this.updateCandleInterval; // 60m/candle, need updateIntervalCounts['1W'] time to update 1 candle until it is set.
