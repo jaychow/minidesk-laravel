@@ -73,9 +73,10 @@ $(document).ready(function() {
             // set Interval
             updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
         }
+    });
 
 
-        // once pull-down list change
+    // once pull-down list change
     $('#pairOptions').on('change', function(e) {
         pair = e.target.value;
         requestData({'pair': e.target.value});
@@ -129,9 +130,8 @@ function getForm () {
 function submitZone(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
-    $.post(url, data,
-        function(data){
-            console.log("success: "  + data);
-            alert("Successfully submit!");
+    $.post(url, data, function(data){
+        console.log("success: "  + data);
+        alert("Successfully submit!");
     });
 }
