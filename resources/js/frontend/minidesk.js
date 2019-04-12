@@ -123,6 +123,7 @@ $(document).ready(function() {
             // set Interval
             updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
 
+
             pairUpdatePlot();
             // console.log("---------------------------------");
             // console.log("            Initiate             ");
@@ -374,7 +375,7 @@ $(document).ready(function() {
         $('#' + ticketInputs['timescale'] + "Button").addClass('ticketTimescaleIndicator');
 
         // update candle plot only when user have choose pairs
-        if (historyDataTable.bc.b.length > 0) {
+        if (jsonHistoryData.length > 0) {
             // disable timer to request single candle
             if (updateCandle != null) clearInterval(updateCandle);
 
@@ -477,7 +478,7 @@ function requestCandleData (argument, singleData) {
     //{pair: inputArg['pair'], timeRange: '1Y', utc: inputArg['utc']}
     // console.log('Request ' + requestSingleCurrentCurrency + ": P# " + argument['pair'] + " / I# " + argument['refreshInterval'])
     $.get({
-            url: 'http://minidesk.laravel.coretekllc.com/chart/getTable',
+            url: APP_URL + '/chart/getTable',
             data: {
                 pair: argument['pair'],
                 timeRange: argument['timescale'],
@@ -538,7 +539,7 @@ function initiateTicketInputs () {
     ticketInputs['timescale'] = "1Y";
 }
 
-function initiateChartSetting () {
+function chartInitialization () {
 
     var stage = acgraph.create('chart');
     //===========================================================
@@ -867,7 +868,7 @@ function submitTicket (argument) {
     // TODO: change id and account value as variable when user has his own account
     if (x) {
         $.get(
-            'http://minidesk.laravel.coretekllc.com/chart/saveTradeSetting',
+            APP_URL + '/chart/saveTradeSetting',
             {id: 0, account: 'bombobutt', home_currency:argument['homeCurrency'],
                 foreign_currency: argument['foreignCurrency'], trade: argument['tradeType'],
                 amount: argument['transactionAmount'], date: argument['tradeDate']}
@@ -982,7 +983,7 @@ function requestZoneData (argument) {
 
     // get zones info that are stored in db.
     $.get({
-            url: 'http://minidesk.laravel.coretekllc.com/chart/getZone',
+            url: APP_URL + '/chart/getZone',
             data: {
                 pair: argument['pair'],
                 trade: 'All',
@@ -1078,20 +1079,31 @@ function updatePair () {
 }
 
 function pairUpdatePlot () {
-    // send request of candles data
-    // requestCandleData(chartSettings, true);
-    requestCandleData(chartSettings, false);
-    // jsonHistoryData.unshift(singleCandle);
 
-    // console.log(singleCandle, jsonHistoryData[0]);
-    // send request of zones data
-    requestZoneData(chartSettings);
 
     //var data_json = $.parseJSON(data);
-    if (historyDataTable.bc.b.length > 0)
+
+    // initiate chart if it's first time user select pair
+    if (jsonHistoryData.length == 0) {
+        // send request of candles data
+        requestCandleData(chartSettings, false);
+
+        // send request of zones data
+        requestZoneData(chartSettings);
+
+        // initialize chart
+        chartInitialization();
+    } else {
+        // send request of candles data
+        requestCandleData(chartSettings, false);
+
+        // send request of zones data
+        requestZoneData(chartSettings);
+
+        // render history data
         renderHistoryDataToChart();
-    else
-        initiateChartSetting();
+    }
+
 
     // if trade date is determined
     if (ticketInputs['tradeDate'] != "") {
@@ -1144,7 +1156,7 @@ function updateTradeExplaination (homeCurrency, foreignCurrency, tradeType, tran
 
 function getRefreshInterval() {
     $.get({
-            url: 'http://minidesk.laravel.coretekllc.com/chart/getTimeInterval',
+            url: APP_URL + '/chart/getTimeInterval',
             async: false
         }
     ).done(function (interval) {
