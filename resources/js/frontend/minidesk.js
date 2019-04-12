@@ -399,17 +399,20 @@ $(document).ready(function() {
             document.getElementById("buyButton").disabled = (clickedItem == 'buy') ? true : false;
             document.getElementById("sellButton").disabled = (clickedItem == 'sell') ? true : false;
 
-            if (chartSettings['pair'] != "" && ticketInputs['tradeDate'] != "") {
+            if (chartSettings['pair'] != "") {
 
                 // remove previous segment line
                 historyPlot.annotations().removeAllAnnotations();
 
                 // zones recommendation (color depends on buy/sell)
-                horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
                 zoneBlocks = updateZoneBlocks(jsonZonesData);
 
                 // update color of yLabel
                 updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
+
+                if (ticketInputs['tradeDate'] != "") {
+                    horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
+                }
             }
 
             // update trade explaination if ticket inputs are all determined
@@ -1104,6 +1107,8 @@ function pairUpdatePlot () {
         renderHistoryDataToChart();
     }
 
+    // update zone
+    zoneBlocks = updateZoneBlocks(jsonZonesData);
 
     // if trade date is determined
     if (ticketInputs['tradeDate'] != "") {
@@ -1113,7 +1118,6 @@ function pairUpdatePlot () {
         // update projection and zone data to plot
         updateEmptySpace(true);
         horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
-        zoneBlocks = updateZoneBlocks(jsonZonesData);
     }
 
 }

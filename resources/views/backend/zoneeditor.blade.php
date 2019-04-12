@@ -8,16 +8,7 @@
 
         <div id="panel-container">
             <div id="form-container">
-                <select name="pair" id="pairOptions">
-                    <option disabled selected value> -- pairs -- </option>
-                    <option value="GBP_USD">GBP_USD</option>
-                    <option value="USD_GBP">USD_GBP</option>
-                    <option value="USD_CAD">USD_CAD</option>
-                    <option value="CAD_USD">CAD_USD</option>
-                    <option value="EUR_USD">EUR_USD</option>
-                    <option value="USD_EUR">USD_EUR</option>
-                </select>
-                <p>HOME CURRENCY</p>
+                <h4>HOME CURRENCY</h4>
                 <select class="pairList homeCurrency" id="homeCurrency">
                     <option disabled selected value="">--select--</option>
                     <option value="GBP">GBP</option>
@@ -25,7 +16,7 @@
                     <option value="CAD">CAD</option>
                 </select> <br/>
 
-                <p>FOREIGN CURRENCY</p>
+                <h4>FOREIGN CURRENCY</h4>
                 <select class="pairList foreignCurrency" id="foreignCurrency">
                     <option disabled selected value="">--select--</option>
                     <option value="GBP">GBP</option>

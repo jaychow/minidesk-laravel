@@ -40,39 +40,23 @@ $(document).ready(function() {
 
         // every time when user select homeCurrency, he will need to select foreignCurrency again.
         foreignCurrency.selectedIndex = "0";
-        chartSettings['pair'] = "";
-        ticketInputs['homeCurrency'] = homeCurrency;
-        ticketInputs['foreignCurrency'] = "";
     });
 
     $('#foreignCurrency').on('change', function(e) {
         var foreignCurrency = e.target;
         var homeCurrency = document.getElementById("homeCurrency");
-        var counter = 0;
+        var pair;
+
         // if user haven't yet choose home currency
         if (homeCurrency.value == "") {
             alert("Please select home currency first");
             foreignCurrency.selectedIndex = "0";
         } else {
             // save input
-            chartSettings['pair'] = updatePair();
-            ticketInputs['foreignCurrency'] = foreignCurrency.value;
-
-            // update title of plot
-            document.getElementById("currencyTitle").innerHTML = foreignCurrency.value;
-
-            // make button of choice for chart visible
-            document.getElementById("pricePercentageButton").style.visibility = "visible";
-            document.getElementById("timescaleButton").style.visibility = "visible";
-            document.getElementById("candleLineButton").style.visibility = "visible";
-
-
-            // disable timer to request single candle
-            if (updateCandle != null) clearInterval(updateCandle);
-
-            // set Interval
-            updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
+            pair = foreignCurrency.value + "_" + homeCurrency.value;
+            requestData({'pair': pair});
         }
+    });
 
 
         // once pull-down list change
@@ -129,9 +113,12 @@ function getForm () {
 function submitZone(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
-    $.post(url, data,
-        function(data){
-            console.log("success: "  + data);
-            alert("Successfully submit!");
+    $.post({
+        url: url,
+        data: data
+    }).done(function(data) {
+        console.log("success: "  + data);
+        alert("Successfully submit!");
+    }).fail(function (message) {
     });
 }
