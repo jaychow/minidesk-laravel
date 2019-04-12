@@ -24,7 +24,58 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    // once pull-down list change
+    $('#homeCurrency').on('change', function(e) {
+        var homeCurrency = e.target.value;
+        var foreignCurrency = document.getElementById("foreignCurrency");
+
+        // disable the same option in foreignCurrency drop down list
+        var length = document.getElementById("foreignCurrency").length;
+        for (var i = 0; i < length; i++) {
+            if (foreignCurrency.options[i].value == homeCurrency) {
+                foreignCurrency.options[i].disabled = true;
+            } else {
+                foreignCurrency.options[i].disabled = false;
+            }
+        }
+
+        // every time when user select homeCurrency, he will need to select foreignCurrency again.
+        foreignCurrency.selectedIndex = "0";
+        chartSettings['pair'] = "";
+        ticketInputs['homeCurrency'] = homeCurrency;
+        ticketInputs['foreignCurrency'] = "";
+    });
+
+    $('#foreignCurrency').on('change', function(e) {
+        var foreignCurrency = e.target;
+        var homeCurrency = document.getElementById("homeCurrency");
+        var counter = 0;
+        // if user haven't yet choose home currency
+        if (homeCurrency.value == "") {
+            alert("Please select home currency first");
+            foreignCurrency.selectedIndex = "0";
+        } else {
+            // save input
+            chartSettings['pair'] = updatePair();
+            ticketInputs['foreignCurrency'] = foreignCurrency.value;
+
+            // update title of plot
+            document.getElementById("currencyTitle").innerHTML = foreignCurrency.value;
+
+            // make button of choice for chart visible
+            document.getElementById("pricePercentageButton").style.visibility = "visible";
+            document.getElementById("timescaleButton").style.visibility = "visible";
+            document.getElementById("candleLineButton").style.visibility = "visible";
+
+
+            // disable timer to request single candle
+            if (updateCandle != null) clearInterval(updateCandle);
+
+            // set Interval
+            updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
+        }
+
+
+        // once pull-down list change
     $('#pairOptions').on('change', function(e) {
         pair = e.target.value;
         requestData({'pair': e.target.value});

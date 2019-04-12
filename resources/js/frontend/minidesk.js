@@ -50,7 +50,6 @@ $(document).ready(function() {
     // initiate form and some settings for chart
     initiateChartSettings(today);
     initiateTicketInputs();
-    chartInitialization();
 
     // get candle update interval from database(can set this in Dashboard)
     getRefreshInterval();
@@ -124,10 +123,7 @@ $(document).ready(function() {
             // set Interval
             updateCandle = kickStartTimer(updateIntervalCounts[chartSettings['timescale']]);
 
-            // initiate chart if it's first time user select pair
-            if (jsonHistoryData.length == 0) {
-                chartInitialization();
-            }
+
             pairUpdatePlot();
             // console.log("---------------------------------");
             // console.log("            Initiate             ");
@@ -1083,17 +1079,30 @@ function updatePair () {
 }
 
 function pairUpdatePlot () {
-    // send request of candles data
-    // requestCandleData(chartSettings, true);
-    requestCandleData(chartSettings, false);
-    // jsonHistoryData.unshift(singleCandle);
 
-    // console.log(singleCandle, jsonHistoryData[0]);
-    // send request of zones data
-    requestZoneData(chartSettings);
 
     //var data_json = $.parseJSON(data);
-    renderHistoryDataToChart();
+
+    // initiate chart if it's first time user select pair
+    if (jsonHistoryData.length == 0) {
+        // send request of candles data
+        requestCandleData(chartSettings, false);
+
+        // send request of zones data
+        requestZoneData(chartSettings);
+
+        // initialize chart
+        chartInitialization();
+    } else {
+        // send request of candles data
+        requestCandleData(chartSettings, false);
+
+        // send request of zones data
+        requestZoneData(chartSettings);
+
+        // render history data
+        renderHistoryDataToChart();
+    }
 
 
     // if trade date is determined
