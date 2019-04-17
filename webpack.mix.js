@@ -27,8 +27,21 @@ mix.
     .js([
         'resources/js/backend/before.js',
         'resources/js/backend/app.js',
-        'resources/js/backend/after.js'
+        'resources/js/backend/after.js',
     ], 'js/backend.js')
+
+    .js([
+        'resources/js/backend/before.js',
+        'resources/js/backend/app.js',
+        'resources/js/backend/after.js',
+        'resources/js/backend/zone.js',
+    ], 'js/backendZone.js')
+    .js([
+        'resources/js/backend/before.js',
+        'resources/js/backend/app.js',
+        'resources/js/backend/after.js',
+        'resources/js/backend/refresh.js',
+    ], 'js/backendRefresh.js')
     .extract([
         'anychart',
         'jquery',

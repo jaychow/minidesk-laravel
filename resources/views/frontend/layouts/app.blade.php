@@ -34,6 +34,9 @@
         </div><!-- #app -->
 
         <!-- Scripts -->
+        <script type="text/javascript">
+        var APP_URL = {!! json_encode(url('/')) !!}
+        </script>
         @stack('before-scripts')
         {!! script(mix('js/manifest.js')) !!}
         {!! script(mix('js/vendor.js')) !!}

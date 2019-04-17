@@ -24,7 +24,42 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    // once pull-down list change
+    $('#homeCurrency').on('change', function(e) {
+        var homeCurrency = e.target.value;
+        var foreignCurrency = document.getElementById("foreignCurrency");
+
+        // disable the same option in foreignCurrency drop down list
+        var length = document.getElementById("foreignCurrency").length;
+        for (var i = 0; i < length; i++) {
+            if (foreignCurrency.options[i].value == homeCurrency) {
+                foreignCurrency.options[i].disabled = true;
+            } else {
+                foreignCurrency.options[i].disabled = false;
+            }
+        }
+
+        // every time when user select homeCurrency, he will need to select foreignCurrency again.
+        foreignCurrency.selectedIndex = "0";
+    });
+
+    $('#foreignCurrency').on('change', function(e) {
+        var foreignCurrency = e.target;
+        var homeCurrency = document.getElementById("homeCurrency");
+        var pair;
+
+        // if user haven't yet choose home currency
+        if (homeCurrency.value == "") {
+            alert("Please select home currency first");
+            foreignCurrency.selectedIndex = "0";
+        } else {
+            // save input
+            pair = foreignCurrency.value + "_" + homeCurrency.value;
+            requestData({'pair': pair});
+        }
+    });
+
+
+        // once pull-down list change
     $('#pairOptions').on('change', function(e) {
         pair = e.target.value;
         requestData({'pair': e.target.value});
@@ -78,9 +113,12 @@ function getForm () {
 function submitZone(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
-    $.post(url, data,
-        function(data){
-            console.log("success: "  + data);
-            alert("Successfully submit!");
+    $.post({
+        url: url,
+        data: data
+    }).done(function(data) {
+        console.log("success: "  + data);
+        alert("Successfully submit!");
+    }).fail(function (message) {
     });
 }

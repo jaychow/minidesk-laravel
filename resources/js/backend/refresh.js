@@ -2,7 +2,7 @@
 $(document).ready(function()
 {
     var interval = '';
-    requestData ();
+    requestRefreshInterval ();
 
     //===========================================================
     //                      CLICK EVENTS
@@ -20,13 +20,16 @@ $(document).ready(function()
 
 });
 
-function requestData ()
+function requestRefreshInterval ()
 {
     // get chart refresh interval info that are stored in db.
     $.get(
         'http://minidesk.laravel.coretekllc.com/admin/chartrefreshinterval/getInterval',
     ).done(function (data) {
-        document.getElementById("intervalOptions").value = data;
+        if (data != "") {
+            document.getElementById("intervalOptions").value = data;
+        }
+
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {

@@ -4560,7 +4560,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 $(document).ready(function () {
     var interval = '';
-    requestData();
+    requestRefreshInterval();
 
     //===========================================================
     //                      CLICK EVENTS
@@ -4576,10 +4576,12 @@ $(document).ready(function () {
     });
 });
 
-function requestData() {
+function requestRefreshInterval() {
     // get chart refresh interval info that are stored in db.
     $.get('http://minidesk.laravel.coretekllc.com/admin/chartrefreshinterval/getInterval').done(function (data) {
-        document.getElementById("intervalOptions").value = data;
+        if (data != "") {
+            document.getElementById("intervalOptions").value = data;
+        }
     }).fail(function (data) {
         console.log("Error: " + data);
     }).always(function (data) {});
@@ -4612,6 +4614,40 @@ $(document).ready(function () {
     // prevent from the button can only submit once
     $('#zoneForm').on('submit', function (e) {
         e.preventDefault();
+    });
+
+    $('#homeCurrency').on('change', function (e) {
+        var homeCurrency = e.target.value;
+        var foreignCurrency = document.getElementById("foreignCurrency");
+
+        // disable the same option in foreignCurrency drop down list
+        var length = document.getElementById("foreignCurrency").length;
+        for (var i = 0; i < length; i++) {
+            if (foreignCurrency.options[i].value == homeCurrency) {
+                foreignCurrency.options[i].disabled = true;
+            } else {
+                foreignCurrency.options[i].disabled = false;
+            }
+        }
+
+        // every time when user select homeCurrency, he will need to select foreignCurrency again.
+        foreignCurrency.selectedIndex = "0";
+    });
+
+    $('#foreignCurrency').on('change', function (e) {
+        var foreignCurrency = e.target;
+        var homeCurrency = document.getElementById("homeCurrency");
+        var pair;
+
+        // if user haven't yet choose home currency
+        if (homeCurrency.value == "") {
+            alert("Please select home currency first");
+            foreignCurrency.selectedIndex = "0";
+        } else {
+            // save input
+            pair = foreignCurrency.value + "_" + homeCurrency.value;
+            requestData({ 'pair': pair });
+        }
     });
 
     // once pull-down list change
@@ -4658,10 +4694,13 @@ function getForm() {
 function submitZone(data) {
     var url = 'http://minidesk.laravel.coretekllc.com/admin/zoneeditor/submitZone';
 
-    $.post(url, data, function (data) {
+    $.post({
+        url: url,
+        data: data
+    }).done(function (data) {
         console.log("success: " + data);
         alert("Successfully submit!");
-    });
+    }).fail(function (message) {});
 }
 
 /***/ }),

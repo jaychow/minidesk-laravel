@@ -3,6 +3,8 @@
 @section('title', app_name() . ' | ' . __('strings.backend.chartrefreshinterval.title'))
 
 @section('content')
+    <script type="text/javascript" src="js/backendZone.js"></script>
+
     <div id="whole">
         <div id="panel-container">
             <div id="form-container">&nbsp;</div>

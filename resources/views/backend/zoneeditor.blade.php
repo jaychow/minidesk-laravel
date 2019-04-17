@@ -3,19 +3,26 @@
 @section('title', app_name() . ' | ' . __('strings.backend.dashboard.title'))
 
 @section('content')
+    <script type="text/javascript" src="js/backendRefresh.js"></script>
     <div id="whole">
 
         <div id="panel-container">
             <div id="form-container">
-                <select name="pair" id="pairOptions">
-                    <option disabled selected value> -- pairs -- </option>
-                    <option value="GBP_USD">GBP_USD</option>
-                    <option value="USD_GBP">USD_GBP</option>
-                    <option value="USD_CAD">USD_CAD</option>
-                    <option value="CAD_USD">CAD_USD</option>
-                    <option value="EUR_USD">EUR_USD</option>
-                    <option value="USD_EUR">USD_EUR</option>
-                </select>
+                <h4>HOME CURRENCY</h4>
+                <select class="pairList homeCurrency" id="homeCurrency">
+                    <option disabled selected value="">--select--</option>
+                    <option value="GBP">GBP</option>
+                    <option value="USD">USD</option>
+                    <option value="CAD">CAD</option>
+                </select> <br/>
+
+                <h4>FOREIGN CURRENCY</h4>
+                <select class="pairList foreignCurrency" id="foreignCurrency">
+                    <option disabled selected value="">--select--</option>
+                    <option value="GBP">GBP</option>
+                    <option value="USD">USD</option>
+                    <option value="CAD">CAD</option>
+                </select> <br/>
 
             </div> <hr> <br/>
 
