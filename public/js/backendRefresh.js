@@ -1,4 +1,4 @@
-webpackJsonp([4],{
+webpackJsonp([3],{
 
 /***/ "./node_modules/@coreui/coreui/dist/js/coreui.js":
 /***/ (function(module, exports, __webpack_require__) {
@@ -4893,14 +4893,15 @@ $(function () {
 
 /***/ }),
 
-/***/ 1:
+/***/ 3:
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__("./resources/js/backend/before.js");
 __webpack_require__("./resources/js/backend/app.js");
-module.exports = __webpack_require__("./resources/js/backend/after.js");
+__webpack_require__("./resources/js/backend/after.js");
+module.exports = __webpack_require__("./resources/js/backend/refresh.js");
 
 
 /***/ })
 
-},[1]);
+},[3]);
