@@ -5,18 +5,34 @@ webpackJsonp([1],{
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_anychart__ = __webpack_require__("./node_modules/anychart/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_anychart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_anychart__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 //
 //
 //
 //
 
+
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'chart',
-    props: ['ticketInputs'],
+    props: ['ticketInputs', 'Anychart'],
     data: function data() {
         return {
+            today: new Date(),
             jsonHistoryData: [],
-            chartSettings: {},
+            chartSettings: {
+                pair: "",
+                timescale: "1Y",
+                yLabelType: "price",
+                type: "candle",
+                refreshInterval: "M10",
+                utc: -(this.today.getTimezoneOffset() / 60)
+            },
             intervalMapToMinutes: {
                 "S5": 5 / 60,
                 "S10": 10 / 60,
@@ -36,12 +52,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     mounted: function mounted() {
         console.log("Chart mounted");
-        this.initUpdateInterval();
-
-        //this.initChart();
     },
 
-    methods: {
+    methods: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapActions */])(["fetchData"]), {
         initUpdateInterval: function initUpdateInterval() {
             this.updateCandleInterval = this.intervalMapToMinutes[this.chartSettings['refreshInterval']];
             this.updateIntervalCounts['1W'] = 60 / this.updateCandleInterval; // 60m/candle, need updateIntervalCounts['1W'] time to update 1 candle until it is set.
@@ -50,156 +63,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.updateIntervalCounts['1Y'] = 60 * 24 * 7 / this.updateCandleInterval; // 1W/candle, increase 1 candle every intervals.
             this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval; // 1M/candle, increase 1 candle every intervals.
         },
-        initChart: function initChart() {
-            var chart = anychart.stock();
-            var historyDataTable = anychart.data.table();
-            var stage = acgraph.create('chart');
-            //===========================================================
-            //                   Data Manipulation
-            //===========================================================
-
-            // History data (candlestick)
-            var candle_mapping = historyDataTable.mapAs({
-                'open': 2,
-                'high': 3,
-                'low': 4,
-                'close': 5
-            });
-
-            // History data (line)
-            var line_mapping = historyDataTable.mapAs({
-                'value': 5
-            });
-
-            // Put the data into data table
-            historyDataTable.addData(this.jsonHistoryData);
-
-            //===========================================================
-            //          Plot Postition, Height, and Width Settings
-            //===========================================================
-
-            // create first plot on the chart and set settings
-            var historyPlot = chart.plot(0);
-
-            historyPlot.height('100%').width('100%').yGrid(false).xGrid(false).yMinorGrid(false).xMinorGrid(false);
-
-            // chart position
-            chart.bounds(0, 0, '90%', '100%');
-
-            // setting portion of plot in the same array (2/3, 1/3)
-            // historyPlot.bounds(0, 0, '66%', '80%');
-            // futureTrendPlot.bounds('66%', 0, '34%', '80%');// chart position
-
-            // create candlestick and line series
-            var candlestick_series = historyPlot.candlestick(candle_mapping);
-            var line_series = historyPlot.line(line_mapping);
-
-            // set id for each series
-            candlestick_series.id("candle");
-            line_series.id("line");
-
-            // hide line series
-            line_series.enabled(false);
-
-            //===========================================================
-            //          X-axis and Y-axis (and labels)
-            //===========================================================
-
-            // x-axis(date-time) format settings for history plot
-            var xAxis = historyPlot.xAxis();
-            xAxis.orientation("bottom");
-
-            // setting label on x-axis
-            xAxis.labels().format(function () {
-                return anychart.format.dateTime(this.value, "MMM d, yyyy", utcOffset);
-            });
-            xAxis.labels().fontColor("#8b8dbb");
-
-            // TODO use "switchYaxisType()" function
-            // y-scale for both history and future trend plot (default: % mode)
-            var yScale = historyPlot.yScale();
-            yScale.comparisonMode("percent");
-            yScale.compareWith("seriesEnd");
-            yScale.ticks().interval(1);
-
-            // y-axis(price) format settings for history plot
-            var yAxis = historyPlot.yAxis();
-
-            yAxis.orientation("right");
-            yAxis.scale(yScale);
-            yAxis.labels().format(this.formatYAxis);
-            yAxis.labels().fontColor("#8b8dbb");
-
-            //===========================================================
-            //                      Crosshair
-            //===========================================================
-
-            // enable/disable the crosshair
-            historyPlot.crosshair(true);
-
-            // configure the crosshair
-            historyPlot.crosshair().xLabel().format(function () {
-                // TODO reformat dateTime
-                // return this.value;
-
-                return anychart.format.dateTime(this.value, "MMM d, yyyy hh:mm", utcOffset);
-            });
-            historyPlot.crosshair().yLabel().format(this.formatYLabel);
-            historyPlot.crosshair().xLabel().fontColor("white");
-            historyPlot.crosshair().xLabel().background({
-                fill: "#4a475f",
-                stroke: "#4a475f"
-            });
-
-            historyPlot.crosshair().xLabel().fontColor("white");
-            historyPlot.crosshair().yLabel().background({
-                fill: "#4a475f",
-                stroke: "#4a475f"
-            });
-
-            //===========================================================
-            //                      Legend
-            //===========================================================
-
-            // enable legend
-            historyPlot.legend(true);
-
-            // remove all the listener of legend (click and hover)
-            historyPlot.legend().removeAllListeners();
-
-            // set position and alignment of legend
-            // change size in height
-            historyPlot.legend().height(50);
-
-            // adjust the paginator
-            historyPlot.legend().paginator(false);
-
-            // set the source mode of the legend
-            historyPlot.legend().iconSize(0);
-
-            // enable html for legend items
-            candlestick_series.legendItem(true);
-            line_series.legendItem(false);
-
-            // legend style
-            candlestick_series.legendItem().useHtml(true);
-            // info_series.legendItem().iconType('rising-falling');
-
-            // configure the format of legend items (candlestick)
-            candlestick_series.legendItem().format(this.formatLegend);
-
-            //===========================================================
-            //                   Disable
-            //===========================================================
-
-            // disable tooltip
-            chart.tooltip(false);
-
-            // disable scroller
-            chart.scroller().enabled(false);
-
-            chart.container(stage);
-            chart.draw();
+        draw: function draw() {
+            if (!this.chart && this.options) {
+                var _Anychart = this.Anychart || __WEBPACK_IMPORTED_MODULE_0_anychart___default.a;
+                this.chart = new _Anychart.fromJson(this.options);
+                this.chart.container(this.$el).draw();
+            }
         },
         formatLegend: function formatLegend() {
             var length = this.jsonHistoryData.length;
@@ -221,7 +90,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return (Math.round(currency * 10000) / 10000).toFixed(4);
             }
         }
-    }
+    }),
+    watch: {
+        options: function options(_options) {
+            if (!this.chart && _options) {
+                this.draw();
+            } else {
+                this.chart.dispose();
+                this.chart = null;
+                this.draw();
+            }
+        }
+    },
+    beforeDestroy: function beforeDestroy() {
+        if (this.chart) {
+            this.chart.dispose();
+            this.chart = null;
+        }
+    },
+
+    computed: Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["c" /* mapGetters */])(['getData', 'getOptions'])
 });
 
 /***/ }),
@@ -12844,8 +12732,8 @@ if (false) {
 /* unused harmony export install */
 /* unused harmony export mapState */
 /* unused harmony export mapMutations */
-/* unused harmony export mapGetters */
-/* unused harmony export mapActions */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return mapGetters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapActions; });
 /* unused harmony export createNamespacedHelpers */
 /**
  * vuex v3.1.0

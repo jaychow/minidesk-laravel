@@ -1,4 +1,4 @@
-webpackJsonp([2],{
+webpackJsonp([4],{
 
 /***/ "./node_modules/@coreui/coreui/dist/js/coreui.js":
 /***/ (function(module, exports, __webpack_require__) {
