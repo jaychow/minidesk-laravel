@@ -29,93 +29,38 @@ class ChartController extends Controller
     // Check API data is exist or not ?
     protected function dataCheck($type,$timeRange,$fromTime)
     {
-        $from = '';
-        $to = '';
         $toTime = date("Y-m-d H").':00:00';
-
-        switch ($timeRange)
-        {
-            case "1W":
-                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
-                break;
-            case "1M":
-                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
-                break;
-            case "3M":
-                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
-                break;
-            case "6M":
-                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
-                break;
-            case "1Y":
-                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
-                break;
-            case "5Y":
-                $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
-                $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
-                break;
-        }
+        $from = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->min('time');
+        $to = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime, $toTime))->max('time');
 
         // No data in DB
-        if(($from == NULL) ||($to == NULL))
+        if (!$from || !$to )
         {
             return false;
         }
 
-        if(($timeRange == '1W')||($timeRange == '1M'))
+        if ($timeRange == '1M')
         {
-            if($timeRange == '1M')
-            {
-                $toTime = date("Y-m-d H", strtotime('-4 hour')).':00:00';
-                // Decide whether the data is in DB or not?
-                if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                // Decide whether the data is in DB or not?
-                if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            $toTime = date("Y-m-d H", strtotime('-4 hour')) . ':00:00';
+        }
+
+        if($timeRange == '1W')
+        {
+            $toTime = date("Y-m-d H") . ':00:00';
+        }
+
+        if ((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
+        {
+            return true;
         }
         else
         {
-            $fromTime = date("Y-m-d",strtotime($fromTime));
-            $from = date("Y-m-d",strtotime($from));
-            $toTime = date("Y-m-d");
-            $to = date("Y-m-d",strtotime($to));
-
-            // Decide whether the data is in DB or not?
-            if((strtotime($from) <= strtotime($fromTime)) && (strtotime($to) >= strtotime($toTime)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 
     // Get API data from Oanda
-    protected function getAPI($type, $utc, $fromTime,$timeRange)
+    protected function getFromAPI($type, $utc, $fromTime,$timeRange)
     {
         // Use to identify is the currency need to change ?
         $reverseFlag = 0;
@@ -454,81 +399,104 @@ class ChartController extends Controller
     }
 
     // Response frontend request -> Chart data
-    public function getTable(Request $request)  //Request $request
+    public function getTable(Request $request)
     {
         // Common parameter (Default)
-        $type = ($request->get('pair') == '') ? 'USD_CAD':$request->get('pair');
-        $utc = ($request->get('utc') =='') ? -8:$request->get('utc');
-        $timeRange = ($request->get('timeRange') == '') ? '1Y':$request->get('timeRange');
-        $status = $request->get('status');
-        $interval = ($request->get('interval') == '') ? 'M5':$request->get('interval');
+        $type      = ($request->get('pair') == '') ? 'USD_CAD' : $request->get('pair');
+        $utc       = ($request->get('utc') == '') ? - 8 : $request->get('utc');
+        $timeRange = ($request->get('timeRange') == '') ? '1Y' : $request->get('timeRange');
+        $status    = $request->get('status');
+        $interval  = ($request->get('interval') == '') ? 'M5' : $request->get('interval');
 
         $fromTime = '';
 
-        if($status == 'current')
+        if ($status == 'current')
         {
-            return $this->getCurrentData($type,$interval,$utc);
+            return $this->getCurrentData($type, $interval, $utc);
         }
 
+        $fromTime = $this->_getFromTime($timeRange,$utc);
+        // Check API data is exist or not ?
+        $exist = $this->dataCheck($type, $timeRange, $fromTime);
+
+        if ($exist)
+        {
+            // Get data from Database
+            $data = $this->getFromModel($type, $fromTime, $timeRange,$utc);
+        }
+        else
+        {
+            // Call Oanda API
+            $data = $this->getFromAPI($type, $utc, $fromTime, $timeRange);
+        }
+
+        return response()->json($data);
+    }
+
+    public function getFromModel($type, $fromTime, $timeRange,$utc)
+    {
+        $result = ChartData::where('type', $type)->where('time_scale', $timeRange)->whereBetween(
+            'time',
+            array(
+                $fromTime,
+                date(
+                    "Y-m-d H:i:s"
+                )
+            )
+        )->orderBy('time', 'desc')->get();
+        $output = [];
+
+        // Calculate average volume
+        $average = $this->averageVolume($result, 'DB');
+
+        foreach ($result as $data) {
+            $output[] =
+                [
+                    $time = date("Y-m-d H:i:s", strtotime($data->time . ' ' . $utc . ' hour')),
+                    $data->type,
+                    $data->open,
+                    $data->high,
+                    $data->low,
+                    $data->close,
+                    $data->volume,
+                    $average,
+                    $data->price_change,
+                    $data->price_range,
+                    $volumeChange = $this->volumeChange($data->volume, $average)
+                ];
+        }
+
+        return $output;
+    }
+
+    protected function _getFromTime($timeRange)
+    {
         // Select time scale , each time scale start from open market time
         switch ($timeRange)
         {
             case "1W":
-                $fromTime = date("Y-m-d", strtotime('-1 week')).' 05:00:00';
+                $fromTime = date("Y-m-d", strtotime('-1 week')) . ' 05:00:00';
                 break;
             case "1M":
-                $fromTime = date("Y-m-d", strtotime('-1 month')).' 02:00:00';
+                $fromTime = date("Y-m-d", strtotime('-1 month')) . ' 02:00:00';
                 break;
             case "3M":
-                $fromTime = date("Y-m-d", strtotime('-3 month')).' 21:00:00';
+                $fromTime = date("Y-m-d", strtotime('-3 month')) . ' 21:00:00';
                 break;
             case "6M":
-                $fromTime = date("Y-m-d", strtotime('-6 month')).' 21:00:00';
+                $fromTime = date("Y-m-d", strtotime('-6 month')) . ' 21:00:00';
                 break;
             case "1Y":
-                $fromTime = date("Y-m-d", strtotime('-1 year')).' 21:00:00';
+                $fromTime = date("Y-m-d", strtotime('-1 year')) . ' 21:00:00';
                 break;
             case "5Y":
-                $fromTime = date("Y-m-d", strtotime('-5 year')).' 21:00:00';
+                $fromTime = date("Y-m-d", strtotime('-5 year')) . ' 21:00:00';
                 break;
             default:
-                return 'Error time range';
+                throw new \Exception('Error time range');
         }
 
-        // Check API data is exist or not ?
-        $exist = $this->dataCheck($type,$timeRange,$fromTime);
-
-        if ($exist)     // Get data from Database
-        {
-            $result = ChartData::where('type', $type)->where('time_scale',$timeRange)->whereBetween('time', array($fromTime,date("Y-m-d H:i:s")))->orderBy('time', 'desc')->get();
-            $output = [];
-
-            // Calculate average volume
-            $average = $this->averageVolume($result,'DB');
-
-            foreach ($result as $data)
-            {
-                $output[] =
-                    [
-                        $time = date("Y-m-d H:i:s", strtotime($data->time .' ' .$utc.' hour')),
-                        $data->type,
-                        $data->open,
-                        $data->high,
-                        $data->low,
-                        $data->close,
-                        $data->volume,
-                        $average,
-                        $data->price_change,
-                        $data->price_range,
-                        $volumeChange = $this->volumeChange($data->volume,$average)
-                    ];
-            }
-                return response()->json($output);
-            }
-        else    // Call Oanda API
-        {
-            return response()->json($this->getAPI($type, $utc, $fromTime,$timeRange));
-        }
+        return $fromTime;
     }
 
     // Response frontend request -> Time interval for updating the chart data
@@ -686,12 +654,8 @@ class ChartController extends Controller
         }
     }
 
-    /**
-     * @param $timeRange
-     *
-     * @return bool|string
-     */
-    private function _getGranularity($timeRange) {
+    private function _getGranularity($timeRange)
+    {
         switch ($timeRange)
         {
             case "1W":

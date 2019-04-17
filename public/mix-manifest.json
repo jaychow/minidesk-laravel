@@ -3,6 +3,8 @@
     "/js/frontend.js": "/js/frontend.js?id=d3a10e2759b15a4c9ba6",
     "/css/frontend.css": "/css/frontend.css?id=a0108912e6a2e9dceefa",
     "/css/backend.css": "/css/backend.css?id=5a33a00ff26b83be68b9",
-    "/js/backend.js": "/js/backend.js?id=9d388f82eaad48e800e4",
+    "/js/backendZone.js": "/js/backendZone.js?id=ca2560c16ef91c31c83e",
+    "/js/backendRefresh.js": "/js/backendRefresh.js?id=824538e5837f712211ea",
+    "/js/backend.js": "/js/backend.js?id=6a503b34eb67a015e593",
     "/js/manifest.js": "/js/manifest.js?id=68cb77cbe266d4262844"
 }
