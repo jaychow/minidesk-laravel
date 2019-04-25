@@ -36,6 +36,7 @@
                 <button class="chartAreaButton candleLineButton" id="lineButton" value="line">Line</button>
             </div>
         </div>
+        <div class="chart" style="width:100%" id="sp-chart"></div>
     </div>
 
     <div id="user-panel">

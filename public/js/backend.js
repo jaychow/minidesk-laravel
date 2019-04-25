@@ -3232,7 +3232,10 @@ $(document).ready(function () {
     // submit form
     $('#submitButton').on('click', function (e) {
         var dataToSubmit = getForm();
-        dataToSubmit['pair'] = document.getElementById('pairOptions').value;
+        //dataToSubmit['pair'] = document.getElementById('pairOptions').value;
+        var homeCurrency = document.getElementById("homeCurrency");
+        var foreignCurrency = document.getElementById("foreignCurrency");
+        dataToSubmit['pair'] = foreignCurrency.value + "_" + homeCurrency.value;
         dataToSubmit['_token'] = $('[name=_token]').val();
         submitZone(dataToSubmit);
     });

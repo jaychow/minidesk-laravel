@@ -12377,6 +12377,16 @@ var hourPerCandle = { "1W": 1, "1M": 4, "3M": 24, "6M": 24, "1Y": 24 * 7, "5Y": 
 // utc timezone offset;
 var utcOffset = new Date().getTimezoneOffset();
 
+//Zone Plot Variables
+var jsonZoneDataValue = [];
+var buyZoneData = [];
+var sellZoneData = [];
+var buyZoneInterpolationData = {};
+var sellZoneInterpolationData = {};
+var buyZoneTable = [];
+var sellZoneTable = [];
+
+
 //---------------------------------------------------------------
 //                      OTHER FUNCTION
 //---------------------------------------------------------------
@@ -12480,6 +12490,8 @@ $(document).ready(function () {
                 updateYlabelsColor(historyPlot.yAxis(), chartSettings['ylabelType'], ticketInputs['tradeType']);
             }
 
+            drawBuyAndSellZone();
+
             // set Interval
             // updateCandle = setInterval(updateSingleData, updateCandleInterval * 60 * 1000); // updateCandleInterval (unit: minute)
             // updateCandle = kickStartTimer();
@@ -12579,6 +12591,7 @@ $(document).ready(function () {
                 }
             }
         }
+        drawBuyAndSellZone();
     });
 
     // type of graph (candle/line)
@@ -12634,7 +12647,7 @@ $(document).ready(function () {
     //===========================================================
     //                CLICK EVENTS (ticketInputs)
     //===========================================================
-    $('#transactionAmount').on('change', function (e) {
+    $('#transactionAmount').on('blur', function (e) {
         if (e.target.value > 0) {
             // change transactionAmount input borderColor as black;
             $(this).removeClass('error');
@@ -12652,7 +12665,7 @@ $(document).ready(function () {
         }
     });
 
-    $('#tradeDate').on('change', function (e) {
+    $('#tradeDate').on('blur', function (e) {
 
         // remove the previous ticket indicator class from that button
         if (ticketInputs['tradeDate'] != "") {
@@ -12708,6 +12721,7 @@ $(document).ready(function () {
 
             pairUpdatePlot();
         }
+
     });
 
     $('#buySellButton').on('click', function (e) {
@@ -12735,6 +12749,7 @@ $(document).ready(function () {
                 if (ticketInputs['tradeDate'] != "") {
                     horizontalLine = updateSegmentLine(chartSettings['ylabelType']);
                 }
+                drawZoneInterpolation();
             }
 
             // update trade explaination if ticket inputs are all determined
@@ -12819,7 +12834,6 @@ function requestCandleData(argument, singleData) {
 
             // copy history data to jsonHistoryData
             jsonHistoryData = historyData.slice();
-
             // jsonHistoryData.forEach(function(element) {
             //
             // });
@@ -12945,7 +12959,7 @@ function chartInitialization() {
     yAxis.labels().format(function () {
         var currency = (this.value + 100) / 100 * jsonHistoryData[0][5];
 
-        return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4);
+        return "$ " + (Math.round(currency  * 10000) / 10000).toFixed(4);
     });
     yAxis.labels().fontColor("#8b8dbb");
 
@@ -13192,7 +13206,7 @@ function updateEmptySpace(tradeDateIsSelected) {
         var dd = countDifferenceOfDate(new Date(), tradeDate) + 12;
 
         // adding empty space of 1/2 data at the right-side of chart
-        addEmptySpaceInChart(chart, historyDataTable.bc.b.length / 2, dd);
+        addEmptySpaceInChart(chart, historyDataTable.dc.b.length / 2, dd);
     } else {
         addEmptySpaceInChart(chart, 1, hourPerCandle[chartSettings['timescale']]);
     }
@@ -13224,7 +13238,8 @@ function updateZoneBlocks(zone) {
     // access the annotations() object of the plot to work with annotations
     var controller = historyPlot.annotations();
     var valueAnchor = 0;
-    var nutralColor = '#e3e3f7',
+    // var nutralColor = '#e3e3f7',
+    var nutralColor = '#012868',
         highlightColor = '#bdbded';
     var sellColor, buyColor;
 
@@ -13509,6 +13524,223 @@ function kickStartTimer(frequency) {
         counter += 1;
     }
     return updateCandle;
+}
+
+//FUNCTIONS TO GENERATE ZONE INTERPOLATION GRAPH
+function requestZoneDataValue(argument) {
+    // % / $ type (ylabelType)
+    // var percentage = (argument['ylabelType'] == "percent") ? "true" : "false";
+    var percentage = "true";
+
+    // get zones info that are stored in db.
+    $.get({
+        url: APP_URL + '/chart/getZone',
+        data: {
+            pair: argument['pair'],
+            trade: 'All',
+            percentage: percentage,
+            value: jsonHistoryData[0][5]
+        },
+        async: false
+    }).done(function (data) {
+        jsonZoneDataValue = data;
+    }).fail(function (data) {
+        console.log("Error: " + data);
+    }).always(function (data) {});
+}
+
+function getCorrectDateFormat(dateObj){
+    let y = dateObj.getFullYear();
+    let m = dateObj.getMonth() +1;
+    let d = dateObj.getDate();
+    let h = dateObj.getHours();
+    let i = dateObj.getMinutes();
+    let s = dateObj.getSeconds();
+    m = m.toString().length == 1 ? "0"+m : m;
+    d = d.toString().length == 1 ? "0"+d : d;
+    h = h.toString().length == 1 ? "0"+h : h;
+    i = i.toString().length == 1 ? "0"+i : i;
+    s = s.toString().length == 1 ? "0"+s : s;
+    return y + "-" + m + "-" + d + " " + h + ":" + i + ":" +s;
+}
+
+function getZoneDataByType(zoneType){
+    let zData = Array();
+    for(let i = 0; i < jsonZoneDataValue.length; i++){
+        if(jsonZoneDataValue[i][1].toLowerCase() == zoneType.toLowerCase()){
+            zData.push(jsonZoneDataValue[i]);
+        }
+    }
+    return zData;
+}
+
+function generateDateBetweenFromJsonHistory(start, end){
+    let dates = new Array();
+    end = jsonHistoryData[0][0];
+    start = new Date(start);
+    end = new Date(end);
+    for (let i = 0; i < jsonHistoryData.length; i++){
+        let curr = new Date(jsonHistoryData[i][0]);
+        if(curr.getTime() >= start.getTime() - 1000*60*60*10*6
+            && curr.getTime()  <= end.getTime() + 1000*60*60*10*12
+        ){
+            dates.push([curr.getTime()/1000]);
+        }
+    }
+    return dates;
+}
+
+function sortZoneData(theZone, xValueIdx){
+    theZone.sort(function(a, b){
+        let aDate = new Date(a[xValueIdx]).getTime();
+        let bDate = new Date(b[xValueIdx]).getTime();
+        return aDate > bDate ? 1 : -1;
+    });
+}
+
+function generateZoneInterpolationData(theZone, xValueIdx, fxValueIdx){
+    let zoneType = theZone[0][1];
+
+    let value = generateDateBetweenFromJsonHistory(theZone[0][xValueIdx], theZone[theZone.length - 1][xValueIdx]);
+
+    for(let i = 0; i < theZone.length; i++){
+        theZone[i][xValueIdx] = new Date(theZone[i][xValueIdx]).getTime()/1000;
+        theZone[i][fxValueIdx] = (parseFloat(theZone[i][fxValueIdx]))*1000000000;
+    }
+
+    let theVal = getInterpolatedForValue(value, theZone, xValueIdx, fxValueIdx);
+
+    if(zoneType == "Buy"){
+        buyZoneInterpolationData = [];
+        for(let i =0; i < theVal.length; i++){
+            let obj = {};
+            let unix = new Date(value[i][0]*1000);
+            obj['x'] = getCorrectDateFormat(unix);
+            obj['value'] = (theVal[i]/1000000000).toFixed(5);
+            buyZoneInterpolationData.push(obj);
+        }
+    }else{
+        sellZoneInterpolationData = [];
+        for(let i =0; i < theVal.length; i++){
+            let obj = {};
+            let unix = new Date(value[i][0]*1000);
+            obj['x'] = getCorrectDateFormat(unix);
+            obj['value'] = parseFloat((theVal[i]/1000000000).toFixed(5));
+            sellZoneInterpolationData.push(obj);
+        }
+    }
+
+}
+
+function drawZoneInterpolation(){
+    var ctrl = historyPlot.annotations();
+
+    for(let i = 0; i < buyZoneInterpolationData.length - 1; i++){
+        var buyInterp = ctrl.line({
+            xAnchor: buyZoneInterpolationData[i].x,
+            valueAnchor: buyZoneInterpolationData[i].value,
+            secondXAnchor: buyZoneInterpolationData[i+1].x,
+            secondValueAnchor: buyZoneInterpolationData[i+1].value,
+            normal: {stroke: "2 green"}
+        });
+        buyInterp.allowEdit(false);
+    }
+
+    for(let i = 0; i < sellZoneInterpolationData.length - 1; i++){
+        var sellInterp = ctrl.line({
+            xAnchor: sellZoneInterpolationData[i].x,
+            valueAnchor: sellZoneInterpolationData[i].value,
+            secondXAnchor: sellZoneInterpolationData[i+1].x,
+            secondValueAnchor: sellZoneInterpolationData[i+1].value,
+            normal: {stroke: "2 red"},
+        });
+        sellInterp.allowEdit(false);
+    }
+
+    // if(buyZoneInterpolationData.length != 0){
+    //     buyZoneTable = anychart.data.table('x');
+    //     buyZoneTable.addData(buyZoneInterpolationData);
+    //     let buyZonemapping = buyZoneTable.mapAs({x: 'x', value : 'value'});
+    //     let buyZoneseries = historyPlot.spline(buyZonemapping).stroke("2 green");
+    // }
+    // if(sellZoneInterpolationData.length != 0){
+    //     sellZoneTable = anychart.data.table('x');
+    //     sellZoneTable.addData(sellZoneInterpolationData);
+    //     let sellZoneMapping = sellZoneTable.mapAs({x : 'x', value : 'value'});
+    //     let sellZoneseries = historyPlot.spline(sellZoneMapping).stroke("2 red");
+    // }
+}
+
+function drawBuyAndSellZone(){
+    requestZoneDataValue(chartSettings);
+    buyZoneData = getZoneDataByType('Buy');
+    sellZoneData = getZoneDataByType('Sell');
+    sortZoneData(buyZoneData, 4);
+    sortZoneData(sellZoneData, 4);
+    if($.isEmptyObject(buyZoneInterpolationData)){
+        if(buyZoneData.length >= 2){
+            generateZoneInterpolationData(buyZoneData, 4, 3);
+        }
+        if(sellZoneData.length >= 2) {
+            generateZoneInterpolationData(sellZoneData, 4, 2);
+        }
+        drawZoneInterpolation();
+    }
+}
+
+//Newton Dividen Functions
+function proterm(i, value, x){
+    let pro = 1;
+    for(let j = 0; j < i; j++){
+        pro = pro * (value - x[j])
+    }
+    return pro;
+}
+
+function divideDiffTable(x, y, n){
+    for (let i = 1; i < n; i++){
+        for(let j = 0; j < n; j++){
+            y[j][i] = (y[j][i-1] - y[j+1][i-1])/(x[j] - x[i+j]);
+        }
+    }
+    return y;
+}
+
+function applyFormula(value, x, y, n){
+    let sum = y[0][0];
+
+    for(let i = 1; i < n; i++){
+        sum = sum + (proterm(i , value, x) * y[0][i]);
+    }
+    return sum;
+}
+
+function getInterpolatedForValue(value, knownpoints, xColIdx, yColIdx){
+    let x = [];
+    let y = [];
+    for(let i = 0; i < knownpoints.length; i++){
+        x.push(knownpoints[i][xColIdx]);
+    }
+    let n = x.length;
+    for(let i = 0; i < n+1; i++){
+        let temp = [];
+        for(let j = 0; j < n+1; j++){
+            temp.push(0);
+        }
+        y.push(temp);
+    }
+    for(let i = 0; i < n; i++){
+        y[i][0] = knownpoints[i][yColIdx];
+    }
+    y = divideDiffTable(x,y,n);
+
+
+    let results = [];
+
+    for(let i = 0; i < value.length; i++){
+        results.push(applyFormula(value[i][0], x, y , n));
+    }
+    return results;
 }
 
 /***/ }),

@@ -52,6 +52,7 @@
     }
   },
   "dependencies": {
-    "anychart": "^8.5.0"
+    "anychart": "^8.5.0",
+    "cubic-spline": "^1.0.4"
   }
 }
