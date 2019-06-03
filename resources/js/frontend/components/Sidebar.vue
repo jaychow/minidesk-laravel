@@ -11,16 +11,16 @@
             <div class="currency-selector-container">
                 <div class="currency-selector currency-selector__home">
                     <h4> HOME CURRENCY</h4>
-                    <select class="pairList homeCurrency" id="homeCurrency" v-on:change="changeHomeCurrency">
+                    <select class="pairList homeCurrency" id="homeCurrency" v-on:change="changeHomeCurrency" v-model="homeCurrency">
                         <option disabled selected value="">--select--</option>
-                        <option value="GBP" >GBP</option>
-                        <option value="USD">USD</option>
-                        <option value="CAD">CAD</option>
+                        <option value="GBP" :disabled="foreignCurrency === 'GBP'">GBP</option>
+                        <option value="USD" :disabled="foreignCurrency === 'USD'">USD</option>
+                        <option value="CAD" :disabled="foreignCurrency === 'CAD'">CAD</option>
                     </select>
                 </div>
                 <div class="currency-selector currency-selector__foreign">
                     <h4> FOREIGN CURRENCY</h4>
-                    <select class="pairList foreignCurrency" id="foreignCurrency" v-on:change="changeForeignCurrency">
+                    <select class="pairList foreignCurrency" id="foreignCurrency" v-on:change="changeForeignCurrency" v-model="foreignCurrency">
                         <option disabled selected value="">--select--</option>
                         <option value="GBP" :disabled="homeCurrency === 'GBP'">GBP</option>
                         <option value="USD" :disabled="homeCurrency === 'USD'">USD</option>
@@ -51,17 +51,21 @@
     </div>
 </template>
 <script>
+    import {mapGetters, mapActions} from 'vuex';
+
     export default {
-        props:[
-            'today',
-            'homeCurrency',
-            'foreignCurrency'
+        props: [
+            'today'
         ],
         mounted() {
             console.log('Sidebar Mounted!');
             this.initTradeDate();
         },
+        data() {
+            return {}
+        },
         methods:{
+            ...mapActions['setHomeCurrency', 'setForeignCurrency'],
             initTradeDate() {
                 $("#tradeDate").attr({
                     min :this.today.toISOString().substr(0,10)
@@ -69,16 +73,36 @@
             },
             changeHomeCurrency(e) {
                 console.log("changing home currency to: " + e.target.value);
-                this.$emit('change-home-currency', e.target.value);
             },
             changeForeignCurrency(e) {
-                if(this.homeCurrency === '') {
+                if(!this.foreignChangeAllowed()) {
                     alert("Please select home currency first");
+                    this.$store.commit('updateForeignCurrency', '');
                     return;
                 }
                 console.log("changing foreign currency to: " + e.target.value);
-                this.$emit('change-foreign-currency', e.target.value);
             },
+            foreignChangeAllowed() {
+                return this.$store.state.settings.homeCurrency !== ''
+            }
+        },
+        computed: {
+            homeCurrency: {
+                get () {
+                    return this.$store.state.settings.homeCurrency
+                },
+                set (currency) {
+                    this.$store.commit('updateHomeCurrency', currency)
+                }
+            },
+            foreignCurrency: {
+                get () {
+                    return this.$store.state.settings.foreignCurrency
+                },
+                set (currency) {
+                    this.$store.commit('updateForeignCurrency', currency)
+                }
+            }
         }
     }
 </script>

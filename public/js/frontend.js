@@ -20,19 +20,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'chart',
-    props: ['ticketInputs', 'Anychart'],
+    props: ['Anychart'],
     data: function data() {
         return {
             today: new Date(),
             jsonHistoryData: [],
-            chartSettings: {
-                pair: "",
-                timescale: "1Y",
-                yLabelType: "price",
-                type: "candle",
-                refreshInterval: "M10",
-                utc: -(this.today.getTimezoneOffset() / 60)
-            },
             intervalMapToMinutes: {
                 "S5": 5 / 60,
                 "S10": 10 / 60,
@@ -109,7 +101,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         }
     },
 
-    computed: Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["c" /* mapGetters */])(['getData', 'getOptions'])
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["c" /* mapGetters */])(['getChartSettings', 'getChartOptions']))
+
 });
 
 /***/ }),
@@ -179,6 +172,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 //
 //
 //
@@ -232,14 +228,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['today', 'homeCurrency', 'foreignCurrency'],
+    props: ['today'],
     mounted: function mounted() {
         console.log('Sidebar Mounted!');
         this.initTradeDate();
     },
+    data: function data() {
+        return {};
+    },
 
-    methods: {
+    methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapActions */][('setHomeCurrency', 'setForeignCurrency')], {
         initTradeDate: function initTradeDate() {
             $("#tradeDate").attr({
                 min: this.today.toISOString().substr(0, 10)
@@ -247,18 +248,822 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         changeHomeCurrency: function changeHomeCurrency(e) {
             console.log("changing home currency to: " + e.target.value);
-            this.$emit('change-home-currency', e.target.value);
         },
         changeForeignCurrency: function changeForeignCurrency(e) {
-            if (this.homeCurrency === '') {
+            if (!this.foreignChangeAllowed()) {
                 alert("Please select home currency first");
+                this.$store.commit('updateForeignCurrency', '');
                 return;
             }
             console.log("changing foreign currency to: " + e.target.value);
-            this.$emit('change-foreign-currency', e.target.value);
+        },
+        foreignChangeAllowed: function foreignChangeAllowed() {
+            return this.$store.state.settings.homeCurrency !== '';
+        }
+    }),
+    computed: {
+        homeCurrency: {
+            get: function get() {
+                return this.$store.state.settings.homeCurrency;
+            },
+            set: function set(currency) {
+                this.$store.commit('updateHomeCurrency', currency);
+            }
+        },
+        foreignCurrency: {
+            get: function get() {
+                return this.$store.state.settings.foreignCurrency;
+            },
+            set: function set(currency) {
+                this.$store.commit('updateForeignCurrency', currency);
+            }
         }
     }
 });
+
+/***/ }),
+
+/***/ "./node_modules/babel-runtime/regenerator/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__("./node_modules/regenerator-runtime/runtime-module.js");
+
+
+/***/ }),
+
+/***/ "./node_modules/regenerator-runtime/runtime-module.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// This method of obtaining a reference to the global object needs to be
+// kept identical to the way it is obtained in runtime.js
+var g = (function() { return this })() || Function("return this")();
+
+// Use `getOwnPropertyNames` because not all browsers support calling
+// `hasOwnProperty` on the global `self` object in a worker. See #183.
+var hadRuntime = g.regeneratorRuntime &&
+  Object.getOwnPropertyNames(g).indexOf("regeneratorRuntime") >= 0;
+
+// Save the old regeneratorRuntime in case it needs to be restored later.
+var oldRuntime = hadRuntime && g.regeneratorRuntime;
+
+// Force reevalutation of runtime.js.
+g.regeneratorRuntime = undefined;
+
+module.exports = __webpack_require__("./node_modules/regenerator-runtime/runtime.js");
+
+if (hadRuntime) {
+  // Restore the original runtime.
+  g.regeneratorRuntime = oldRuntime;
+} else {
+  // Remove the global property added by runtime.js.
+  try {
+    delete g.regeneratorRuntime;
+  } catch(e) {
+    g.regeneratorRuntime = undefined;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/***/ (function(module, exports) {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  runtime.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return Promise.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return Promise.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration. If the Promise is rejected, however, the
+          // result for this iteration will be rejected with the same
+          // reason. Note that rejections of yielded Promises are not
+          // thrown back into the generator function, as is the case
+          // when an awaited Promise is rejected. This difference in
+          // behavior between yield and await is important, because it
+          // allows the consumer to decide what to do with the yielded
+          // rejection (swallow it and continue, manually .throw it back
+          // into the generator, abandon iteration, whatever). With
+          // await, by contrast, there is no opportunity to examine the
+          // rejection reason outside the generator function, so the
+          // only option is to throw it from the await expression, and
+          // let the generator function handle the exception.
+          result.value = unwrapped;
+          resolve(result);
+        }, reject);
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new Promise(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    return this;
+  };
+  runtime.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        if (delegate.iterator.return) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // In sloppy mode, unbound `this` refers to the global object, fallback to
+  // Function constructor if we're in global strict mode. That is sadly a form
+  // of indirect eval which violates Content Security Policy.
+  (function() { return this })() || Function("return this")()
+);
+
 
 /***/ }),
 
@@ -482,9 +1287,34 @@ var render = function() {
             _c(
               "select",
               {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.homeCurrency,
+                    expression: "homeCurrency"
+                  }
+                ],
                 staticClass: "pairList homeCurrency",
                 attrs: { id: "homeCurrency" },
-                on: { change: _vm.changeHomeCurrency }
+                on: {
+                  change: [
+                    function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.homeCurrency = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    },
+                    _vm.changeHomeCurrency
+                  ]
+                }
               },
               [
                 _c(
@@ -493,11 +1323,38 @@ var render = function() {
                   [_vm._v("--select--")]
                 ),
                 _vm._v(" "),
-                _c("option", { attrs: { value: "GBP" } }, [_vm._v("GBP")]),
+                _c(
+                  "option",
+                  {
+                    attrs: {
+                      value: "GBP",
+                      disabled: _vm.foreignCurrency === "GBP"
+                    }
+                  },
+                  [_vm._v("GBP")]
+                ),
                 _vm._v(" "),
-                _c("option", { attrs: { value: "USD" } }, [_vm._v("USD")]),
+                _c(
+                  "option",
+                  {
+                    attrs: {
+                      value: "USD",
+                      disabled: _vm.foreignCurrency === "USD"
+                    }
+                  },
+                  [_vm._v("USD")]
+                ),
                 _vm._v(" "),
-                _c("option", { attrs: { value: "CAD" } }, [_vm._v("CAD")])
+                _c(
+                  "option",
+                  {
+                    attrs: {
+                      value: "CAD",
+                      disabled: _vm.foreignCurrency === "CAD"
+                    }
+                  },
+                  [_vm._v("CAD")]
+                )
               ]
             )
           ]
@@ -512,9 +1369,34 @@ var render = function() {
             _c(
               "select",
               {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.foreignCurrency,
+                    expression: "foreignCurrency"
+                  }
+                ],
                 staticClass: "pairList foreignCurrency",
                 attrs: { id: "foreignCurrency" },
-                on: { change: _vm.changeForeignCurrency }
+                on: {
+                  change: [
+                    function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.foreignCurrency = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    },
+                    _vm.changeForeignCurrency
+                  ]
+                }
               },
               [
                 _c(
@@ -13850,12 +14732,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue__ = __webpack_require__("./node_modules/vue/dist/vue.common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store__ = __webpack_require__("./resources/js/frontend/store/index.js");
 
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+
+
 
 
 
@@ -13894,49 +14779,18 @@ __WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('sidebar', __webpack_requi
 
 var app = new __WEBPACK_IMPORTED_MODULE_2_vue___default.a({
     el: '#app',
+    store: __WEBPACK_IMPORTED_MODULE_4__store__["a" /* default */],
     data: function data() {
         return {
-            ticketInputs: {},
-            chartSettings: {},
-            today: new Date(),
-            homeCurrency: '',
-            foreignCurrency: ''
+            today: new Date()
         };
     },
     created: function created() {
         console.log("App created");
-        this.initTicketInputs();
-        this.initChartSettings();
     },
 
-    methods: {
-        initTicketInputs: function initTicketInputs() {
-            this.ticketInputs['homeCurrency'] = "";
-            this.ticketInputs['foreignCurrency'] = "";
-            this.ticketInputs['tradeType'] = "";
-            this.ticketInputs['tradeDate'] = "";
-            this.ticketInputs['transactionAmount'] = 0;
-            this.ticketInputs['timescale'] = "1Y";
-        },
-        initChartSettings: function initChartSettings() {
-            this.chartSettings['pair'] = "";
-            this.chartSettings['timescale'] = "1Y";
-            this.chartSettings['ylabelType'] = "price";
-            this.chartSettings['type'] = "candle";
-            this.chartSettings['refreshInterval'] = "M10";
-            // adding timezone info
-            this.chartSettings['utc'] = -(this.today.getTimezoneOffset() / 60);
-        },
-        changeHomeCurrency: function changeHomeCurrency(currency) {
-            this.homeCurrency = currency;
-            this.chartSettings['pair'] = "";
-            this.ticketInputs['homeCurrency'] = currency;
-            this.ticketInputs['foreignCurrency'] = "";
-        },
-        changeForeignCurrency: function changeForeignCurrency(currency) {
-            this.foreignCurrency = currency;
-        }
-    }
+    methods: {},
+    computed: {}
 
 });
 
@@ -14131,6 +14985,1738 @@ if (false) {(function () {
 
 module.exports = Component.exports
 
+
+/***/ }),
+
+/***/ "./resources/js/frontend/store/index.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__("./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_options__ = __webpack_require__("./resources/js/frontend/store/modules/options.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_settings__ = __webpack_require__("./resources/js/frontend/store/modules/settings.js");
+
+
+
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
+
+var debug = "development" !== 'production';
+
+/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
+    modules: {
+        options: __WEBPACK_IMPORTED_MODULE_2__modules_options__["a" /* default */],
+        settings: __WEBPACK_IMPORTED_MODULE_3__modules_settings__["a" /* default */]
+    }
+}));
+
+/***/ }),
+
+/***/ "./resources/js/frontend/store/modules/options.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__("./node_modules/babel-runtime/regenerator/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__("./node_modules/axios/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
+
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+
+
+var state = {
+    options: {
+        'chart': {
+            "zIndex": 0,
+            "enabled": true,
+            "type": "stock",
+            "background": {
+                "zIndex": 0.5,
+                "enabled": true
+            },
+            "tooltip": {
+                "zIndex": 0,
+                "enabled": false,
+                "title": {
+                    "zIndex": 1,
+                    "enabled": true,
+                    "fontSize": 13,
+                    "fontFamily": "Verdana, Helvetica, Arial, sans-serif",
+                    "fontColor": "#ffffff",
+                    "fontOpacity": 1,
+                    "fontDecoration": "none",
+                    "fontStyle": "normal",
+                    "fontVariant": "normal",
+                    "fontWeight": "normal",
+                    "letterSpacing": "normal",
+                    "textDirection": "ltr",
+                    "lineHeight": "normal",
+                    "textIndent": 0,
+                    "vAlign": "top",
+                    "hAlign": "left",
+                    "wordWrap": "normal",
+                    "wordBreak": "normal",
+                    "textOverflow": "",
+                    "selectable": false,
+                    "disablePointerEvents": false,
+                    "useHtml": false,
+                    "width": null,
+                    "height": null,
+                    "align": "left",
+                    "orientation": "top",
+                    "rotation": 0,
+                    "text": "",
+                    "margin": {
+                        "left": 0,
+                        "top": 0,
+                        "bottom": 0,
+                        "right": 0
+                    },
+                    "padding": {
+                        "left": 0,
+                        "top": 0,
+                        "bottom": 0,
+                        "right": 0
+                    },
+                    "background": {
+                        "enabled": false
+                    }
+                },
+                "separator": {
+                    "zIndex": 1,
+                    "enabled": true,
+                    "fill": {
+                        "color": "#CECECE",
+                        "opacity": 0.3
+                    },
+                    "stroke": "none",
+                    "width": "100%",
+                    "height": 1,
+                    "orientation": "top",
+                    "margin": {
+                        "left": 0,
+                        "top": 5,
+                        "bottom": 5,
+                        "right": 0
+                    }
+                },
+                "background": {
+                    "zIndex": 0,
+                    "enabled": true
+                },
+                "padding": {
+                    "left": 10,
+                    "top": 5,
+                    "bottom": 5,
+                    "right": 10
+                }
+            },
+            "margin": {
+                "left": 0,
+                "top": 0,
+                "bottom": 0,
+                "right": 0
+            },
+            "padding": {
+                "left": 60,
+                "top": 20,
+                "bottom": 20,
+                "right": 30
+            },
+            "a11y": {
+                "enabled": true,
+                "mode": "chart-elements"
+            },
+            "autoRedraw": true,
+            "bounds": {
+                "top": 0,
+                "left": 0,
+                "width": "90%",
+                "height": "100%"
+            },
+            "credits": {
+                "text": "MiniDesk",
+                "url": "",
+                "alt": "",
+                "imgAlt": "",
+                "logoSrc": "",
+                "enabled": true
+            },
+            "selectMarqueeFill": {
+                "color": "#d3d3d3",
+                "opacity": 0.4
+            },
+            "selectMarqueeStroke": "#d3d3d3",
+            "grouping": {
+                "enabled": true,
+                "forced": false,
+                "levels": [{
+                    "unit": "millisecond",
+                    "count": 1
+                }, {
+                    "unit": "millisecond",
+                    "count": 5
+                }, {
+                    "unit": "millisecond",
+                    "count": 10
+                }, {
+                    "unit": "millisecond",
+                    "count": 25
+                }, {
+                    "unit": "millisecond",
+                    "count": 50
+                }, {
+                    "unit": "millisecond",
+                    "count": 100
+                }, {
+                    "unit": "millisecond",
+                    "count": 250
+                }, {
+                    "unit": "millisecond",
+                    "count": 500
+                }, {
+                    "unit": "second",
+                    "count": 1
+                }, {
+                    "unit": "second",
+                    "count": 5
+                }, {
+                    "unit": "second",
+                    "count": 10
+                }, {
+                    "unit": "second",
+                    "count": 20
+                }, {
+                    "unit": "second",
+                    "count": 30
+                }, {
+                    "unit": "minute",
+                    "count": 1
+                }, {
+                    "unit": "minute",
+                    "count": 5
+                }, {
+                    "unit": "minute",
+                    "count": 15
+                }, {
+                    "unit": "minute",
+                    "count": 30
+                }, {
+                    "unit": "hour",
+                    "count": 1
+                }, {
+                    "unit": "hour",
+                    "count": 2
+                }, {
+                    "unit": "hour",
+                    "count": 6
+                }, {
+                    "unit": "hour",
+                    "count": 12
+                }, {
+                    "unit": "day",
+                    "count": 1
+                }, {
+                    "unit": "week",
+                    "count": 1
+                }, {
+                    "unit": "month",
+                    "count": 1
+                }, {
+                    "unit": "month",
+                    "count": 3
+                }, {
+                    "unit": "month",
+                    "count": 6
+                }, {
+                    "unit": "year",
+                    "count": 1
+                }],
+                "maxVisiblePoints": 500,
+                "minPixPerPoint": null
+            },
+            "scrollerGrouping": {
+                "enabled": true,
+                "forced": false,
+                "levels": [{
+                    "unit": "millisecond",
+                    "count": 1
+                }, {
+                    "unit": "millisecond",
+                    "count": 2
+                }, {
+                    "unit": "millisecond",
+                    "count": 5
+                }, {
+                    "unit": "millisecond",
+                    "count": 10
+                }, {
+                    "unit": "millisecond",
+                    "count": 25
+                }, {
+                    "unit": "millisecond",
+                    "count": 50
+                }, {
+                    "unit": "millisecond",
+                    "count": 100
+                }, {
+                    "unit": "millisecond",
+                    "count": 250
+                }, {
+                    "unit": "millisecond",
+                    "count": 500
+                }, {
+                    "unit": "second",
+                    "count": 1
+                }, {
+                    "unit": "second",
+                    "count": 2
+                }, {
+                    "unit": "second",
+                    "count": 5
+                }, {
+                    "unit": "second",
+                    "count": 10
+                }, {
+                    "unit": "second",
+                    "count": 20
+                }, {
+                    "unit": "second",
+                    "count": 30
+                }, {
+                    "unit": "minute",
+                    "count": 1
+                }, {
+                    "unit": "minute",
+                    "count": 2
+                }, {
+                    "unit": "minute",
+                    "count": 5
+                }, {
+                    "unit": "minute",
+                    "count": 10
+                }, {
+                    "unit": "minute",
+                    "count": 20
+                }, {
+                    "unit": "minute",
+                    "count": 30
+                }, {
+                    "unit": "hour",
+                    "count": 1
+                }, {
+                    "unit": "hour",
+                    "count": 2
+                }, {
+                    "unit": "hour",
+                    "count": 3
+                }, {
+                    "unit": "hour",
+                    "count": 4
+                }, {
+                    "unit": "hour",
+                    "count": 6
+                }, {
+                    "unit": "hour",
+                    "count": 12
+                }, {
+                    "unit": "day",
+                    "count": 1
+                }, {
+                    "unit": "day",
+                    "count": 2
+                }, {
+                    "unit": "day",
+                    "count": 4
+                }, {
+                    "unit": "week",
+                    "count": 1
+                }, {
+                    "unit": "week",
+                    "count": 2
+                }, {
+                    "unit": "month",
+                    "count": 1
+                }, {
+                    "unit": "month",
+                    "count": 2
+                }, {
+                    "unit": "month",
+                    "count": 3
+                }, {
+                    "unit": "month",
+                    "count": 6
+                }, {
+                    "unit": "year",
+                    "count": 1
+                }],
+                "maxVisiblePoints": null,
+                "minPixPerPoint": 1
+            },
+            "xScale": {},
+            "scroller": {
+                "zIndex": 40,
+                "enabled": false,
+                "height": 40,
+                "minHeight": null,
+                "maxHeight": null,
+                "orientation": "bottom",
+                "inverted": false,
+                "autoHide": false,
+                "fill": "none",
+                "selectedFill": {
+                    "color": "#1976d2",
+                    "opacity": 0.2
+                },
+                "outlineStroke": "#cecece",
+                "allowRangeChange": true,
+                "thumbs": {
+                    "normal": {
+                        "fill": "#E9E9E9",
+                        "stroke": "#7c868e"
+                    },
+                    "hovered": {
+                        "fill": "#ffffff",
+                        "stroke": "#757575"
+                    },
+                    "enabled": true,
+                    "autoHide": false
+                },
+                "defaultSeriesType": "line",
+                "palette": {
+                    "type": "distinct",
+                    "items": ["#64b5f6", "#1976d2", "#ef6c00", "#ffd54f", "#455a64", "#96a6a6", "#dd2c00", "#00838f", "#00bfa5", "#ffa000"]
+                },
+                "hatchFillPalette": {
+                    "items": [{
+                        "type": "backward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "forward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "horizontal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "vertical",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-backward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "grid",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-forward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-horizontal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-vertical",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "diagonal-cross",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "diagonal-brick",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "divot",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "horizontal-brick",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "vertical-brick",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "checker-board",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "confetti",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "plaid",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "solid-diamond",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "zig-zag",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "weave",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-05",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-10",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-20",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-25",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-30",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-40",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-50",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-60",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-70",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-75",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-80",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-90",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }]
+                }
+            },
+            "plots": [{
+                "zIndex": 10,
+                "enabled": true,
+                "maxPointWidth": "100%",
+                "minPointLength": 0,
+                "baseline": 0,
+                "yScale": 0,
+                "defaultSeriesType": "line",
+                "background": {
+                    "zIndex": 1,
+                    "enabled": false
+                },
+                "title": {
+                    "zIndex": 80,
+                    "enabled": false,
+                    "fontSize": 12,
+                    "fontFamily": "Verdana, Helvetica, Arial, sans-serif",
+                    "fontColor": "#7c868e",
+                    "fontOpacity": 1,
+                    "fontDecoration": "none",
+                    "fontStyle": "normal",
+                    "fontVariant": "normal",
+                    "fontWeight": "normal",
+                    "letterSpacing": "normal",
+                    "textDirection": "ltr",
+                    "lineHeight": "normal",
+                    "textIndent": 0,
+                    "vAlign": "top",
+                    "hAlign": "center",
+                    "wordWrap": "normal",
+                    "wordBreak": "normal",
+                    "textOverflow": "",
+                    "selectable": false,
+                    "disablePointerEvents": false,
+                    "useHtml": false,
+                    "width": null,
+                    "height": null,
+                    "align": "center",
+                    "text": "Plot Title",
+                    "margin": {
+                        "left": 0,
+                        "top": 0,
+                        "bottom": 0,
+                        "right": 0
+                    },
+                    "padding": {
+                        "left": 5,
+                        "top": 5,
+                        "bottom": 2,
+                        "right": 5
+                    },
+                    "background": {
+                        "zIndex": 0,
+                        "enabled": false
+                    }
+                },
+                "noDataLabel": {
+                    "zIndex": 999999,
+                    "enabled": false,
+                    "fontSize": 15,
+                    "fontFamily": "Arial",
+                    "fontColor": "black",
+                    "fontOpacity": 1,
+                    "fontDecoration": "none",
+                    "fontStyle": "normal",
+                    "fontVariant": "normal",
+                    "fontWeight": "bold",
+                    "letterSpacing": "normal",
+                    "textDirection": "ltr",
+                    "lineHeight": "normal",
+                    "textIndent": 0,
+                    "vAlign": "top",
+                    "hAlign": "start",
+                    "wordWrap": "normal",
+                    "wordBreak": "normal",
+                    "textOverflow": "",
+                    "selectable": false,
+                    "disablePointerEvents": false,
+                    "useHtml": false,
+                    "text": "No data.",
+                    "position": "center",
+                    "width": null,
+                    "height": null,
+                    "anchor": "center",
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotation": 0,
+                    "adjustFontSize": {
+                        "width": false,
+                        "height": false
+                    },
+                    "minFontSize": 8,
+                    "maxFontSize": 72,
+                    "background": {
+                        "zIndex": 0,
+                        "enabled": false
+                    },
+                    "padding": {}
+                },
+                "dataArea": {
+                    "zIndex": 10,
+                    "enabled": true,
+                    "background": {
+                        "enabled": false
+                    }
+                },
+                "xAxis": {
+                    "zIndex": 35,
+                    "enabled": true,
+                    "height": 25,
+                    "showHelperLabel": true,
+                    "overlapMode": "no-overlap",
+                    "labels": {
+                        "zIndex": 35,
+                        "enabled": true,
+                        "fontColor": "#8b8dbb"
+                    },
+                    "minorLabels": {
+                        "zIndex": 35,
+                        "enabled": true
+                    },
+                    "ticks": {
+                        "zIndex": 35,
+                        "enabled": false,
+                        "stroke": "#CECECE",
+                        "length": 6,
+                        "position": "center"
+                    },
+                    "minorTicks": {
+                        "zIndex": 35,
+                        "enabled": false,
+                        "stroke": "#EAEAEA",
+                        "length": 4,
+                        "position": "outside"
+                    },
+                    "background": {
+                        "enabled": false
+                    }
+                },
+                "palette": {
+                    "type": "distinct",
+                    "items": ["#64b5f6", "#1976d2", "#ef6c00", "#ffd54f", "#455a64", "#96a6a6", "#dd2c00", "#00838f", "#00bfa5", "#ffa000"]
+                },
+                "markerPalette": {
+                    "items": ["circle", "diamond", "square", "triangle-down", "triangle-up", "diagonal-cross", "pentagon", "cross", "v-line", "star5", "star4", "trapezium", "star7", "star6", "star10"]
+                },
+                "hatchFillPalette": {
+                    "items": [{
+                        "type": "backward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "forward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "horizontal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "vertical",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-backward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "grid",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-forward-diagonal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-horizontal",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "dashed-vertical",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "diagonal-cross",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "diagonal-brick",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "divot",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "horizontal-brick",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "vertical-brick",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "checker-board",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "confetti",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "plaid",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "solid-diamond",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "zig-zag",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "weave",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-05",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-10",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-20",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-25",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-30",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-40",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-50",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-60",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-70",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-75",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-80",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }, {
+                        "type": "percent-90",
+                        "color": "black 0.5",
+                        "thickness": 1,
+                        "size": 10
+                    }]
+                },
+                "crosshair": {
+                    "zIndex": 201,
+                    "enabled": true,
+                    "xLabels": [{
+                        "fontColor": "white",
+                        "background": {
+                            "enabled": true,
+                            "fill": "#4a475f",
+                            "stroke": "#4a475f"
+                        },
+                        "padding": {}
+                    }],
+                    "yLabels": [{
+                        "background": {
+                            "enabled": true,
+                            "fill": "#4a475f",
+                            "stroke": "#4a475f"
+                        },
+                        "padding": {}
+                    }]
+                },
+                "yAxes": [{
+                    "zIndex": 35,
+                    "enabled": true,
+                    "width": 50,
+                    "drawFirstLabel": true,
+                    "drawLastLabel": true,
+                    "staggerMode": false,
+                    "overlapMode": "no-overlap",
+                    "staggerMaxLines": 2,
+                    "staggerLines": null,
+                    "orientation": "right",
+                    "stroke": "#CECECE",
+                    "title": {
+                        "zIndex": 35,
+                        "enabled": false,
+                        "fontSize": 13,
+                        "fontFamily": "Verdana, Helvetica, Arial, sans-serif",
+                        "fontColor": "#545f69",
+                        "fontOpacity": 1,
+                        "fontDecoration": "none",
+                        "fontStyle": "normal",
+                        "fontVariant": "normal",
+                        "fontWeight": "normal",
+                        "letterSpacing": "normal",
+                        "textDirection": "ltr",
+                        "lineHeight": "normal",
+                        "textIndent": 0,
+                        "vAlign": "top",
+                        "hAlign": "center",
+                        "wordWrap": "normal",
+                        "wordBreak": "normal",
+                        "textOverflow": "",
+                        "selectable": false,
+                        "disablePointerEvents": false,
+                        "useHtml": false,
+                        "width": null,
+                        "height": null,
+                        "align": "center",
+                        "text": "Y-Axis",
+                        "margin": {
+                            "left": 0,
+                            "top": 0,
+                            "bottom": 0,
+                            "right": 0
+                        },
+                        "padding": {
+                            "left": 5,
+                            "top": 5,
+                            "bottom": 5,
+                            "right": 5
+                        },
+                        "background": {
+                            "enabled": false
+                        }
+                    },
+                    "labels": {
+                        "zIndex": 35,
+                        "enabled": true,
+                        "fontColor": "#8b8dbb"
+                    },
+                    "minorLabels": {
+                        "zIndex": 35,
+                        "enabled": false
+                    },
+                    "ticks": {
+                        "zIndex": 35,
+                        "enabled": true,
+                        "stroke": "#CECECE",
+                        "length": 6,
+                        "position": "outside"
+                    },
+                    "minorTicks": {
+                        "zIndex": 35,
+                        "enabled": false,
+                        "stroke": "#EAEAEA",
+                        "length": 4,
+                        "position": "outside"
+                    },
+                    "scale": 0
+                }],
+                "xGrids": [{
+                    "zIndex": 11.001,
+                    "enabled": false,
+                    "stroke": "#CECECE",
+                    "drawFirstLine": true,
+                    "drawLastLine": true,
+                    "isMinor": false
+                }],
+                "yGrids": [{
+                    "zIndex": 11,
+                    "enabled": false,
+                    "stroke": "#CECECE",
+                    "drawFirstLine": true,
+                    "drawLastLine": true,
+                    "isMinor": false
+                }],
+                "xMinorGrids": [{
+                    "zIndex": 10.003,
+                    "enabled": false,
+                    "stroke": "#EAEAEA",
+                    "drawFirstLine": true,
+                    "drawLastLine": true,
+                    "isMinor": true
+                }],
+                "yMinorGrids": [{
+                    "zIndex": 10.002,
+                    "enabled": false,
+                    "stroke": "#EAEAEA",
+                    "drawFirstLine": true,
+                    "drawLastLine": true,
+                    "isMinor": true
+                }],
+                "series": [{
+                    "enabled": true,
+                    "seriesType": "candlestick",
+                    "clip": true,
+                    "id": "candle",
+                    "color": null,
+                    "pointWidth": "75%",
+                    "isVertical": null,
+                    "normal": {
+                        "risingFill": "#64b5f6",
+                        "fallingFill": "#ef6c00",
+                        "risingStroke": "#64b5f6",
+                        "fallingStroke": "#ef6c00",
+                        "hatchFill": "none",
+                        "risingHatchFill": "none",
+                        "fallingHatchFill": "none",
+                        "labels": {
+                            "enabled": null,
+                            "padding": {
+                                "left": 4,
+                                "top": 4,
+                                "bottom": 4,
+                                "right": 4
+                            }
+                        },
+                        "minLabels": {
+                            "enabled": null
+                        },
+                        "maxLabels": {
+                            "enabled": null
+                        },
+                        "markers": {
+                            "enabled": false,
+                            "disablePointerEvents": false,
+                            "position": "high",
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 4
+                        },
+                        "outlierMarkers": {
+                            "enabled": null,
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 6
+                        }
+                    },
+                    "hovered": {
+                        "hatchFill": "none",
+                        "risingHatchFill": "none",
+                        "fallingHatchFill": "none",
+                        "labels": {
+                            "enabled": null
+                        },
+                        "minLabels": {
+                            "enabled": null
+                        },
+                        "maxLabels": {
+                            "enabled": null
+                        },
+                        "markers": {
+                            "enabled": null,
+                            "size": 6
+                        },
+                        "outlierMarkers": {
+                            "enabled": null,
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 6
+                        }
+                    },
+                    "selected": {
+                        "fill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "negativeFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "risingFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "fallingFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "stroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "lowStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "highStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "lowFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "highFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "negativeStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "risingStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "fallingStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "hatchFill": "none",
+                        "risingHatchFill": "none",
+                        "fallingHatchFill": "none",
+                        "labels": {
+                            "enabled": null
+                        },
+                        "minLabels": {
+                            "enabled": null
+                        },
+                        "maxLabels": {
+                            "enabled": null
+                        },
+                        "markers": {
+                            "enabled": null,
+                            "size": 6,
+                            "fill": {
+                                "color": "#333",
+                                "opacity": 0.85
+                            },
+                            "stroke": {
+                                "color": "#212121",
+                                "thickness": 1.5
+                            }
+                        },
+                        "outlierMarkers": {
+                            "enabled": null,
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 6
+                        }
+                    },
+                    "a11y": {
+                        "enabled": false,
+                        "titleFormat": "Series named {%SeriesName} with {%SeriesPointsCount} points. Min value is {%SeriesYMin}, max value is {%SeriesYMax}"
+                    },
+                    "yScale": 0
+                }, {
+                    "enabled": false,
+                    "seriesType": "line",
+                    "clip": true,
+                    "id": "line",
+                    "color": null,
+                    "connectMissingPoints": false,
+                    "isVertical": null,
+                    "normal": {
+                        "hatchFill": "none",
+                        "risingHatchFill": "none",
+                        "fallingHatchFill": "none",
+                        "labels": {
+                            "enabled": null,
+                            "padding": {
+                                "left": 4,
+                                "top": 4,
+                                "bottom": 4,
+                                "right": 4
+                            }
+                        },
+                        "minLabels": {
+                            "enabled": null
+                        },
+                        "maxLabels": {
+                            "enabled": null
+                        },
+                        "markers": {
+                            "enabled": false,
+                            "disablePointerEvents": false,
+                            "position": "value",
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 4
+                        },
+                        "outlierMarkers": {
+                            "enabled": null,
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 6
+                        }
+                    },
+                    "hovered": {
+                        "hatchFill": "none",
+                        "risingHatchFill": "none",
+                        "fallingHatchFill": "none",
+                        "labels": {
+                            "enabled": null
+                        },
+                        "minLabels": {
+                            "enabled": null
+                        },
+                        "maxLabels": {
+                            "enabled": null
+                        },
+                        "markers": {
+                            "enabled": null,
+                            "size": 6
+                        },
+                        "outlierMarkers": {
+                            "enabled": null,
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 6
+                        }
+                    },
+                    "selected": {
+                        "fill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "negativeFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "risingFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "fallingFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "stroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "lowStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "highStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "lowFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "highFill": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "negativeStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "risingStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "fallingStroke": {
+                            "color": "#333",
+                            "opacity": 0.85
+                        },
+                        "hatchFill": "none",
+                        "risingHatchFill": "none",
+                        "fallingHatchFill": "none",
+                        "labels": {
+                            "enabled": null
+                        },
+                        "minLabels": {
+                            "enabled": null
+                        },
+                        "maxLabels": {
+                            "enabled": null
+                        },
+                        "markers": {
+                            "enabled": null,
+                            "size": 6,
+                            "fill": {
+                                "color": "#333",
+                                "opacity": 0.85
+                            },
+                            "stroke": {
+                                "color": "#212121",
+                                "thickness": 1.5
+                            }
+                        },
+                        "outlierMarkers": {
+                            "enabled": null,
+                            "anchor": "center",
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "rotation": 0,
+                            "size": 6
+                        }
+                    },
+                    "a11y": {
+                        "enabled": false,
+                        "titleFormat": "Series named {%SeriesName} with {%SeriesPointsCount} points. Min value is {%SeriesYMin}, max value is {%SeriesYMax}"
+                    },
+                    "yScale": 0
+                }],
+                "scales": [{
+                    "type": "linear",
+                    "inverted": false,
+                    "maximum": null,
+                    "minimum": null,
+                    "minimumGap": 0.1,
+                    "maximumGap": 0.1,
+                    "softMinimum": null,
+                    "softMaximum": null,
+                    "alignMinimum": true,
+                    "alignMaximum": true,
+                    "maxTicksCount": 1000,
+                    "ticks": {
+                        "mode": "linear",
+                        "base": 0,
+                        "allowFractional": true,
+                        "interval": 1
+                    },
+                    "minorTicks": {
+                        "mode": "linear",
+                        "base": 0,
+                        "allowFractional": true,
+                        "count": 5
+                    },
+                    "stackMode": "none",
+                    "stackDirection": "direct",
+                    "stickToZero": true,
+                    "comparisonMode": "percent"
+                }]
+            }],
+            "crosshair": {
+                "enabled": true,
+                "xStroke": "#969EA5",
+                "yStroke": "#969EA5",
+                "displayMode": "sticky",
+                "xLabels": [{
+                    "enabled": true,
+                    "fontSize": 12,
+                    "fontFamily": "Verdana, Helvetica, Arial, sans-serif",
+                    "fontColor": "#ffffff",
+                    "fontOpacity": 1,
+                    "fontDecoration": "none",
+                    "fontStyle": "normal",
+                    "fontVariant": "normal",
+                    "fontWeight": 400,
+                    "letterSpacing": "normal",
+                    "textDirection": "ltr",
+                    "lineHeight": "normal",
+                    "textIndent": 0,
+                    "vAlign": "top",
+                    "hAlign": "start",
+                    "wordWrap": "normal",
+                    "wordBreak": "normal",
+                    "textOverflow": "",
+                    "selectable": false,
+                    "disablePointerEvents": true,
+                    "useHtml": false,
+                    "text": "Label text",
+                    "width": null,
+                    "height": null,
+                    "anchor": null,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotation": 0,
+                    "adjustFontSize": {
+                        "width": false,
+                        "height": false
+                    },
+                    "minFontSize": 8,
+                    "maxFontSize": 16,
+                    "background": {
+                        "zIndex": 0,
+                        "enabled": true
+                    },
+                    "padding": {
+                        "left": 10,
+                        "top": 5,
+                        "bottom": 5,
+                        "right": 10
+                    },
+                    "axisIndex": 0
+                }],
+                "yLabels": [{
+                    "enabled": true,
+                    "fontSize": 12,
+                    "fontFamily": "Verdana, Helvetica, Arial, sans-serif",
+                    "fontColor": "#ffffff",
+                    "fontOpacity": 1,
+                    "fontDecoration": "none",
+                    "fontStyle": "normal",
+                    "fontVariant": "normal",
+                    "fontWeight": 400,
+                    "letterSpacing": "normal",
+                    "textDirection": "ltr",
+                    "lineHeight": "normal",
+                    "textIndent": 0,
+                    "vAlign": "top",
+                    "hAlign": "start",
+                    "wordWrap": "normal",
+                    "wordBreak": "normal",
+                    "textOverflow": "",
+                    "selectable": false,
+                    "disablePointerEvents": true,
+                    "useHtml": false,
+                    "text": "Label text",
+                    "width": null,
+                    "height": null,
+                    "anchor": null,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotation": 0,
+                    "adjustFontSize": {
+                        "width": false,
+                        "height": false
+                    },
+                    "minFontSize": 8,
+                    "maxFontSize": 16,
+                    "background": {
+                        "zIndex": 0,
+                        "enabled": true
+                    },
+                    "padding": {
+                        "left": 10,
+                        "top": 5,
+                        "bottom": 5,
+                        "right": 10
+                    },
+                    "axisIndex": 0
+                }]
+            },
+            "eventMarkers": {
+                "direction": "auto",
+                "position": "axis",
+                "seriesId": "0",
+                "fieldName": "value",
+                "stickToLeft": true,
+                "normal": {
+                    "type": "circle",
+                    "width": 22,
+                    "height": 22,
+                    "fill": "#515151",
+                    "stroke": "#515151",
+                    "format": "A",
+                    "fontPadding": 2,
+                    "minFontSize": 6,
+                    "maxFontSize": 20,
+                    "adjustFontSize": {
+                        "width": true,
+                        "height": true
+                    },
+                    "fontSize": null,
+                    "fontFamily": "Verdana, Helvetica, Arial, sans-serif",
+                    "fontColor": "#fff",
+                    "fontOpacity": 1,
+                    "fontDecoration": "none",
+                    "fontStyle": "normal",
+                    "fontVariant": "normal",
+                    "fontWeight": "normal",
+                    "letterSpacing": "normal",
+                    "textDirection": "ltr",
+                    "lineHeight": "normal",
+                    "textIndent": 0,
+                    "vAlign": "middle",
+                    "hAlign": "center",
+                    "wordWrap": "normal",
+                    "wordBreak": "normal",
+                    "textOverflow": "",
+                    "selectable": false,
+                    "disablePointerEvents": false,
+                    "useHtml": false,
+                    "connector": {
+                        "stroke": "#455a64",
+                        "length": 5
+                    }
+                },
+                "hovered": {
+                    "connector": {}
+                },
+                "selected": {
+                    "fill": "#dd2c00",
+                    "connector": {}
+                },
+                "tooltip": {
+                    "zIndex": 0,
+                    "enabled": true,
+                    "title": {
+                        "zIndex": 1,
+                        "enabled": true,
+                        "fontSize": 14,
+                        "fontFamily": "Verdana, Helvetica, Arial, sans-serif",
+                        "fontColor": "#fff",
+                        "fontOpacity": 1,
+                        "fontDecoration": "none",
+                        "fontStyle": "normal",
+                        "fontVariant": "normal",
+                        "fontWeight": "normal",
+                        "letterSpacing": "normal",
+                        "textDirection": "ltr",
+                        "lineHeight": "normal",
+                        "textIndent": 0,
+                        "vAlign": "top",
+                        "hAlign": "left",
+                        "wordWrap": "normal",
+                        "wordBreak": "normal",
+                        "textOverflow": "",
+                        "selectable": false,
+                        "disablePointerEvents": false,
+                        "useHtml": false,
+                        "width": null,
+                        "height": null,
+                        "align": "left",
+                        "orientation": "top",
+                        "rotation": 0,
+                        "text": "",
+                        "margin": {
+                            "left": 0,
+                            "top": 0,
+                            "bottom": 0,
+                            "right": 0
+                        },
+                        "padding": {
+                            "left": 0,
+                            "top": 0,
+                            "bottom": 0,
+                            "right": 0
+                        },
+                        "background": {
+                            "enabled": false
+                        }
+                    },
+                    "separator": {
+                        "zIndex": 1,
+                        "enabled": true,
+                        "fill": {
+                            "color": "#CECECE",
+                            "opacity": 0.3
+                        },
+                        "stroke": "none",
+                        "width": "100%",
+                        "height": 1,
+                        "orientation": "top",
+                        "margin": {
+                            "left": 0,
+                            "top": 5,
+                            "bottom": 5,
+                            "right": 0
+                        }
+                    },
+                    "background": {
+                        "zIndex": 0,
+                        "enabled": true
+                    },
+                    "padding": {
+                        "left": 10,
+                        "top": 5,
+                        "bottom": 5,
+                        "right": 10
+                    }
+                }
+            },
+            "zoomMarqueeFill": {
+                "color": "#d3d3d3",
+                "opacity": 0.4
+            },
+            "zoomMarqueeStroke": "#d3d3d3",
+            "interactivity": {
+                "spotRadius": 2,
+                "multiSelectOnClick": false,
+                "unselectOnClickOutOfPoint": true,
+                "hoverMode": "single",
+                "selectionMode": "multi-select"
+            }
+        }
+    }
+};
+
+var getters = {
+    getChartOptions: function getChartOptions(state) {
+        return state.chart;
+    }
+};
+
+var actions = {
+    fetchData: function () {
+        var _ref2 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee(_ref, params) {
+            var commit = _ref.commit;
+            var response;
+            return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
+                while (1) {
+                    switch (_context.prev = _context.next) {
+                        case 0:
+                            _context.next = 2;
+                            return __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get(window.APP_URL + '/chart/getTable', {
+                                params: {
+                                    pair: params['pair'],
+                                    timeRage: params['timeRange'],
+                                    status: params['status'],
+                                    interval: params['interval']
+                                }
+                            });
+
+                        case 2:
+                            response = _context.sent;
+
+
+                            commit('setData', response.data);
+
+                        case 4:
+                        case 'end':
+                            return _context.stop();
+                    }
+                }
+            }, _callee, this);
+        }));
+
+        function fetchData(_x, _x2) {
+            return _ref2.apply(this, arguments);
+        }
+
+        return fetchData;
+    }()
+};
+
+var mutations = {
+    setData: function setData(state, data) {
+        return state.chart.data = data;
+    }
+
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    state: state,
+    getters: getters,
+    actions: actions,
+    mutations: mutations
+});
+
+/***/ }),
+
+/***/ "./resources/js/frontend/store/modules/settings.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var state = {
+    settings: {
+        pair: '',
+        timescale: "1Y",
+        yLabelType: "price",
+        type: "candle",
+        refreshInterval: "M10",
+        utc: -(new Date().getTimezoneOffset() / 60)
+    },
+    homeCurrency: '',
+    foreignCurrency: ''
+};
+
+var mutations = {
+    updateHomeCurrency: function updateHomeCurrency(state, currency) {
+        state.homeCurrency = currency;
+    },
+    updateForeignCurrency: function updateForeignCurrency(state, currency) {
+        state.foreignCurrency = currency;
+    }
+};
+
+var actions = {
+    setHomeCurrency: function setHomeCurrency(_ref, currency) {
+        var commit = _ref.commit;
+
+        commit('updateHomeCurrency', currency);
+    },
+    setForeignCurrency: function setForeignCurrency(_ref2, currency) {
+        var commit = _ref2.commit;
+
+        commit('updateForeignCurrency', currency);
+    }
+};
+
+var getters = {
+    getChartSettings: function getChartSettings(state) {
+        return state.settings;
+    },
+    getHomeCurrency: function getHomeCurrency(state) {
+        return state.homeCurrency;
+    },
+    getForeignCurrency: function getForeignCurrency(state) {
+        return state.foreignCurrency;
+    }
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    state: state,
+    mutations: mutations,
+    actions: actions,
+    getters: getters
+});
 
 /***/ }),
 

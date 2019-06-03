@@ -9,21 +9,12 @@
     export default {
         name: 'chart',
         props: [
-            'ticketInputs',
-            'Anychart'
+            'Anychart',
         ],
         data() {
             return {
                 today: new Date(),
                 jsonHistoryData: [],
-                chartSettings: {
-                    pair: "",
-                    timescale: "1Y",
-                    yLabelType: "price",
-                    type: "candle",
-                    refreshInterval: "M10",
-                    utc: - (this.today.getTimezoneOffset() / 60)
-                },
                 intervalMapToMinutes: {
                     "S5": 5 / 60,
                     "S10": 10 / 60,
@@ -38,7 +29,7 @@
                     "H1": 60
                 },
                 updateCandleInterval: 1,
-                updateIntervalCounts: {}
+                updateIntervalCounts: {},
         }
         },
         mounted() {
@@ -104,6 +95,9 @@
                 this.chart = null;
             }
         },
-        computed: mapGetters(['getData','getOptions'])
+        computed: {
+            ...mapGetters(['getChartSettings','getChartOptions']),
+        },
+
     }
 </script>

@@ -9,6 +9,8 @@ import '../bootstrap';
 import '../plugins';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import store from './store';
+
 Vue.use(Vuex);
 window.Vue = Vue;
 window.$ = require('jquery');
@@ -42,47 +44,18 @@ Vue.component('sidebar', require('./components/Sidebar.vue'));
 
 const app = new Vue({
     el: '#app',
+    store,
     data() {
         return {
-            ticketInputs: {},
-            chartSettings: {},
-            today: new Date(),
-            homeCurrency: '',
-            foreignCurrency: ''
+            today: new Date()
         }
     },
     created() {
         console.log("App created");
-        this.initTicketInputs();
-        this.initChartSettings();
     },
     methods: {
-        initTicketInputs() {
-            this.ticketInputs['homeCurrency'] = "";
-            this.ticketInputs['foreignCurrency'] = "";
-            this.ticketInputs['tradeType'] = "";
-            this.ticketInputs['tradeDate'] = "";
-            this.ticketInputs['transactionAmount'] = 0;
-            this.ticketInputs['timescale'] = "1Y";
-        },
-        initChartSettings() {
-            this.chartSettings['pair'] = "";
-            this.chartSettings['timescale'] = "1Y";
-            this.chartSettings['ylabelType'] = "price";
-            this.chartSettings['type'] = "candle";
-            this.chartSettings['refreshInterval'] = "M10";
-            // adding timezone info
-            this.chartSettings['utc'] = -(this.today.getTimezoneOffset() / 60);
-        },
-        changeHomeCurrency(currency) {
-            this.homeCurrency = currency;
-            this.chartSettings['pair'] = "";
-            this.ticketInputs['homeCurrency'] = currency;
-            this.ticketInputs['foreignCurrency'] = "";
-        },
-        changeForeignCurrency(currency) {
-            this.foreignCurrency = currency;
-        }
+    },
+    computed: {
     }
 
 });
