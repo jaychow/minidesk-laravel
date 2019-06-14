@@ -22,13 +22,7 @@ window.JQuery = require('jquery');
  *
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
-
-// Chart Components
-Vue.component('chart-header', require('./components/Chart/Header.vue'));
-Vue.component('chart', require('./components/Chart.vue'));
-Vue.component('chart-footer', require('./components/Chart/Footer.vue'));
-// Sidebar Components
-Vue.component('sidebar', require('./components/Sidebar.vue'));
+Vue.component('minidesk', require('./components/Minidesk.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 
@@ -47,7 +41,7 @@ const app = new Vue({
     store,
     data() {
         return {
-            today: new Date()
+
         }
     },
     created() {

@@ -5,7 +5,8 @@ const state = {
         yLabelType: "price",
         type: "candle",
         refreshInterval: "M10",
-        utc: - (new Date().getTimezoneOffset() / 60)
+        utc: - (new Date().getTimezoneOffset() / 60),
+        today: new Date()
     },
     homeCurrency: '',
     foreignCurrency: ''
@@ -30,9 +31,13 @@ const actions = {
 }
 
 const getters = {
+    today: (state) => state.today,
     getChartSettings: (state) => state.settings,
     getHomeCurrency: (state) => state.homeCurrency,
     getForeignCurrency: (state) => state.foreignCurrency,
+    getTradeDate: (state) => {
+        return state.settings.today.toISOString().substr(0,10)
+    }
 }
 
 export default {

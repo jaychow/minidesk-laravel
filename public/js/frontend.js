@@ -167,6 +167,57 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Minidesk.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Chart_Header__ = __webpack_require__("./resources/js/frontend/components/Chart/Header.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Chart_Header___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Chart_Header__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Chart__ = __webpack_require__("./resources/js/frontend/components/Chart.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Chart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Chart__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Sidebar__ = __webpack_require__("./resources/js/frontend/components/Sidebar.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Sidebar___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Sidebar__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart_Footer__ = __webpack_require__("./resources/js/frontend/components/Chart/Footer.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart_Footer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Chart_Footer__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    components: {
+        ChartHeader: __WEBPACK_IMPORTED_MODULE_0__Chart_Header___default.a,
+        Chart: __WEBPACK_IMPORTED_MODULE_1__Chart___default.a,
+        Sidebar: __WEBPACK_IMPORTED_MODULE_2__Sidebar___default.a,
+        ChartFooter: __WEBPACK_IMPORTED_MODULE_3__Chart_Footer___default.a
+    }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Sidebar.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -231,7 +282,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['today'],
     mounted: function mounted() {
         console.log('Sidebar Mounted!');
         this.initTradeDate();
@@ -243,7 +293,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapActions */][('setHomeCurrency', 'setForeignCurrency')], {
         initTradeDate: function initTradeDate() {
             $("#tradeDate").attr({
-                min: this.today.toISOString().substr(0, 10)
+                min: this.getTradeDate
             });
         },
         changeHomeCurrency: function changeHomeCurrency(e) {
@@ -261,7 +311,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             return this.$store.state.settings.homeCurrency !== '';
         }
     }),
-    computed: {
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["c" /* mapGetters */])(['today', 'getTradeDate']), {
         homeCurrency: {
             get: function get() {
                 return this.$store.state.settings.homeCurrency;
@@ -278,7 +328,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 this.$store.commit('updateForeignCurrency', currency);
             }
         }
-    }
+    })
 });
 
 /***/ }),
@@ -1174,6 +1224,48 @@ module.exports = function normalizeComponent (
   }
 }
 
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1bca1c6a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { attrs: { id: "Minidesk" } }, [
+    _c(
+      "div",
+      { staticClass: "chart-container", attrs: { id: "chart-container" } },
+      [
+        _c("div", { staticClass: "top-area" }, [_c("ChartHeader")], 1),
+        _vm._v(" "),
+        _c("div", { staticClass: "chart-body" }, [_c("Chart")], 1),
+        _vm._v(" "),
+        _c("div", { staticClass: "bottom-area" }, [_c("ChartFooter")], 1)
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", { attrs: { id: "user-panel" } }, [
+      _c(
+        "div",
+        { staticClass: "chartInput", attrs: { id: "chartInput" } },
+        [_c("Sidebar")],
+        1
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1bca1c6a", module.exports)
+  }
+}
 
 /***/ }),
 
@@ -14757,13 +14849,7 @@ window.JQuery = __webpack_require__("./node_modules/jquery/dist/jquery.js");
  *
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
-
-// Chart Components
-__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('chart-header', __webpack_require__("./resources/js/frontend/components/Chart/Header.vue"));
-__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('chart', __webpack_require__("./resources/js/frontend/components/Chart.vue"));
-__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('chart-footer', __webpack_require__("./resources/js/frontend/components/Chart/Footer.vue"));
-// Sidebar Components
-__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('sidebar', __webpack_require__("./resources/js/frontend/components/Sidebar.vue"));
+__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('minidesk', __webpack_require__("./resources/js/frontend/components/Minidesk.vue"));
 
 // const files = require.context('./', true, /\.vue$/i)
 
@@ -14778,19 +14864,17 @@ __WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('sidebar', __webpack_requi
  */
 
 var app = new __WEBPACK_IMPORTED_MODULE_2_vue___default.a({
-    el: '#app',
-    store: __WEBPACK_IMPORTED_MODULE_4__store__["a" /* default */],
-    data: function data() {
-        return {
-            today: new Date()
-        };
-    },
-    created: function created() {
-        console.log("App created");
-    },
+  el: '#app',
+  store: __WEBPACK_IMPORTED_MODULE_4__store__["a" /* default */],
+  data: function data() {
+    return {};
+  },
+  created: function created() {
+    console.log("App created");
+  },
 
-    methods: {},
-    computed: {}
+  methods: {},
+  computed: {}
 
 });
 
@@ -14929,6 +15013,54 @@ if (false) {(function () {
     hotAPI.createRecord("data-v-2fd83210", Component.options)
   } else {
     hotAPI.reload("data-v-2fd83210", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/js/frontend/components/Minidesk.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Minidesk.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1bca1c6a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/frontend/components/Minidesk.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1bca1c6a", Component.options)
+  } else {
+    hotAPI.reload("data-v-1bca1c6a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -16671,7 +16803,8 @@ var state = {
         yLabelType: "price",
         type: "candle",
         refreshInterval: "M10",
-        utc: -(new Date().getTimezoneOffset() / 60)
+        utc: -(new Date().getTimezoneOffset() / 60),
+        today: new Date()
     },
     homeCurrency: '',
     foreignCurrency: ''
@@ -16700,6 +16833,9 @@ var actions = {
 };
 
 var getters = {
+    today: function today(state) {
+        return state.today;
+    },
     getChartSettings: function getChartSettings(state) {
         return state.settings;
     },
@@ -16708,6 +16844,9 @@ var getters = {
     },
     getForeignCurrency: function getForeignCurrency(state) {
         return state.foreignCurrency;
+    },
+    getTradeDate: function getTradeDate(state) {
+        return state.settings.today.toISOString().substr(0, 10);
     }
 };
 

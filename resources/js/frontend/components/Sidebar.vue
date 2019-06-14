@@ -54,9 +54,6 @@
     import {mapGetters, mapActions} from 'vuex';
 
     export default {
-        props: [
-            'today'
-        ],
         mounted() {
             console.log('Sidebar Mounted!');
             this.initTradeDate();
@@ -68,7 +65,7 @@
             ...mapActions['setHomeCurrency', 'setForeignCurrency'],
             initTradeDate() {
                 $("#tradeDate").attr({
-                    min :this.today.toISOString().substr(0,10)
+                    min :this.getTradeDate
                 });
             },
             changeHomeCurrency(e) {
@@ -87,6 +84,7 @@
             }
         },
         computed: {
+            ...mapGetters(['today', 'getTradeDate']),
             homeCurrency: {
                 get () {
                     return this.$store.state.settings.homeCurrency
