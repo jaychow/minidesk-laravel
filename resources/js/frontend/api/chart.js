@@ -1,15 +1,15 @@
-import api from './api';
+import api from './api'
 
 export default {
-    getTable(chartSettings) {
+    async getTable(pair, timerange, status, interval) {
         return api().get('/getTable', {
             params: {
-                pair: chartSettings['pair'],
-                timeRange: argument['timescale'],
+                pair: pair,
+                timeRange: timerange,
                 utc: 0,
-                status: requestSingleCurrentCurrency,
-                interval: argument['refreshInterval']
+                status: status,
+                interval: interval
             }
-        });
+        })
     }
 }

@@ -13,20 +13,20 @@ const state = {
 }
 
 const mutations = {
-    updateHomeCurrency(state, currency) {
-        state.homeCurrency = currency;
+    UPDATE_HOME_CURRENCY(state, currency) {
+        state.homeCurrency = currency
     },
-    updateForeignCurrency(state, currency) {
-        state.foreignCurrency = currency;
+    UPDATE_FOREIGN_CURRENCY(state, currency) {
+        state.foreignCurrency = currency
     }
 }
 
 const actions = {
     setHomeCurrency: ({commit}, currency) => {
-        commit('updateHomeCurrency', currency);
+        commit('UPDATE_HOME_CURRENCY', currency)
     },
     setForeignCurrency: ({commit}, currency) => {
-        commit('updateForeignCurrency', currency);
+        commit('UPDATE_FOREIGN_CURRENCY', currency)
     }
 }
 

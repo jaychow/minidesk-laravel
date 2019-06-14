@@ -51,33 +51,42 @@
     </div>
 </template>
 <script>
-    import {mapGetters, mapActions} from 'vuex';
+    import {mapGetters, mapActions} from 'vuex'
 
     export default {
         mounted() {
-            console.log('Sidebar Mounted!');
-            this.initTradeDate();
+            console.log('Sidebar Mounted!')
+            this.initTradeDate()
         },
         data() {
-            return {}
+            return {
+
+            }
         },
         methods:{
             ...mapActions['setHomeCurrency', 'setForeignCurrency'],
             initTradeDate() {
                 $("#tradeDate").attr({
                     min :this.getTradeDate
-                });
+                })
             },
             changeHomeCurrency(e) {
-                console.log("changing home currency to: " + e.target.value);
+                console.log("changing home currency to: " + e.target.value)
+                this.homeCurrency = e.target.value
             },
             changeForeignCurrency(e) {
                 if(!this.foreignChangeAllowed()) {
-                    alert("Please select home currency first");
-                    this.$store.commit('updateForeignCurrency', '');
-                    return;
+                    alert("Please select home currency first")
+                    this.$store.dispatch('setForeignCurrency', '')
+                    return
                 }
-                console.log("changing foreign currency to: " + e.target.value);
+                console.log("changing foreign currency to: " + e.target.value)
+                this.foreignCurrency = e.target.value
+                console.log(this.pair)
+                // this.$store.dispatch('fetchChartData',{
+                //     pair: this.pair(),
+                //
+                // })
             },
             foreignChangeAllowed() {
                 return this.$store.state.settings.homeCurrency !== ''
@@ -90,7 +99,7 @@
                     return this.$store.state.settings.homeCurrency
                 },
                 set (currency) {
-                    this.$store.commit('updateHomeCurrency', currency)
+                    this.$store.dispatch('setHomeCurrency', currency)
                 }
             },
             foreignCurrency: {
@@ -98,8 +107,11 @@
                     return this.$store.state.settings.foreignCurrency
                 },
                 set (currency) {
-                    this.$store.commit('updateForeignCurrency', currency)
+                    this.$store.dispatch('setForeignCurrency', currency)
                 }
+            },
+            pair() {
+                return this.homeCurrency+"_"+this.foreignCurrency
             }
         }
     }

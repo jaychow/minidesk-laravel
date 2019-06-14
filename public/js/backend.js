@@ -4623,10 +4623,10 @@ $(document).ready(function () {
         // disable the same option in foreignCurrency drop down list
         var length = document.getElementById("foreignCurrency").length;
         for (var i = 0; i < length; i++) {
-            if (foreignCurrency.options[i].value == homeCurrency) {
-                foreignCurrency.options[i].disabled = true;
+            if (foreignCurrency.chart[i].value == homeCurrency) {
+                foreignCurrency.chart[i].disabled = true;
             } else {
-                foreignCurrency.options[i].disabled = false;
+                foreignCurrency.chart[i].disabled = false;
             }
         }
 

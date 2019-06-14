@@ -20,10 +20,10 @@
     </div>
 </template>
 <script>
-    import ChartHeader from "./Chart/Header";
-    import Chart from "./Chart";
+    import ChartHeader from "./Chart/Header"
+    import Chart from "./Chart"
     import Sidebar from "./Sidebar"
-    import ChartFooter from "./Chart/Footer";
+    import ChartFooter from "./Chart/Footer"
 
     export default {
         components: {

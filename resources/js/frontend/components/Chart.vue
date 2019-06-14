@@ -3,8 +3,8 @@
 </template>
 
 <script>
-    import Anychart from 'anychart';
-    import { mapGetters, mapActions } from 'vuex';
+    import Anychart from 'anychart'
+    import { mapGetters, mapActions } from 'vuex'
 
     export default {
         name: 'chart',
@@ -33,66 +33,68 @@
         }
         },
         mounted() {
-            console.log("Chart mounted");
+            console.log("Chart mounted")
         },
         methods: {
-            ...mapActions(["fetchData"]),
             initUpdateInterval() {
-                this.updateCandleInterval = this.intervalMapToMinutes[this.chartSettings['refreshInterval']];
-                this.updateIntervalCounts['1W'] = 60 / this.updateCandleInterval; // 60m/candle, need updateIntervalCounts['1W'] time to update 1 candle until it is set.
-                this.updateIntervalCounts['1M'] = 60 * 4 / this.updateCandleInterval; // 240m/candle, increase 1 candle every intervals.
-                this.updateIntervalCounts['3M'] = 60 * 24 / this.updateCandleInterval; // 60m*24/candle, increase 1 candle every intervals.
-                this.updateIntervalCounts['1Y'] = 60 * 24 * 7 / this.updateCandleInterval; // 1W/candle, increase 1 candle every intervals.
-                this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval; // 1M/candle, increase 1 candle every intervals.
+                this.updateCandleInterval = this.intervalMapToMinutes[this.chartSettings['refreshInterval']]
+                this.updateIntervalCounts['1W'] = 60 / this.updateCandleInterval // 60m/candle, need updateIntervalCounts['1W'] time to update 1 candle until it is set.
+                this.updateIntervalCounts['1M'] = 60 * 4 / this.updateCandleInterval // 240m/candle, increase 1 candle every intervals.
+                this.updateIntervalCounts['3M'] = 60 * 24 / this.updateCandleInterval // 60m*24/candle, increase 1 candle every intervals.
+                this.updateIntervalCounts['1Y'] = 60 * 24 * 7 / this.updateCandleInterval // 1W/candle, increase 1 candle every intervals.
+                this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval // 1M/candle, increase 1 candle every intervals.
             },
             draw() {
-               if (!this.chart && this.options) {
-                   let _Anychart = this.Anychart || Anychart;
-                   this.chart = new _Anychart.fromJson(this.options);
-                   this.chart.container(this.$el).draw();
+               if (!this.chart && this.chart) {
+                   let _Anychart = this.Anychart || Anychart
+                   this.chart = new _Anychart.fromJson(this.chart)
+                   this.chart.container(this.$el).draw()
                }
             },
             formatLegend() {
-                const length = this.jsonHistoryData.length;
+                const length = this.jsonHistoryData.length
                 if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
+                    return "<span style='color:#455a64font-weight:600'>" + this.index +
                         "</span>: <b>O</b> " + Number(this.open).toFixed(4) + " <b>H</b> " + Number(this.high).toFixed(4) + " <b>L</b> " + Number(this.low).toFixed(4) + " <b>C</b> " + Number(this.close).toFixed(4) + "<br/>" +
                         "<b>Vol</b> " + this.jsonHistoryData[length - this.index - 1][6].toLocaleString() + " <b>Avg Vol</b> " + this.jsonHistoryData[length - this.index - 1][7].toLocaleString() +
-                        " <b>Delta O-C(%)</b> " + Number(this.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "% <b>Range(L-H)</b> " + Number(this.jsonHistoryData[length - this.index - 1][9]).toFixed(4) + " <b>Avg Vol(%)</b> " + Number(this.jsonHistoryData[length - this.index - 1][10]).toFixed(2) + "%";
+                        " <b>Delta O-C(%)</b> " + Number(this.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "% <b>Range(L-H)</b> " + Number(this.jsonHistoryData[length - this.index - 1][9]).toFixed(4) + " <b>Avg Vol(%)</b> " + Number(this.jsonHistoryData[length - this.index - 1][10]).toFixed(2) + "%"
                 } else {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
+                    return "<span style='color:#455a64font-weight:600'>" + this.index +
                         "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" +
-                        "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
+                        "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% "
                 }
             },
             formatYAxis() {
                 if (this.jsonHistoryData.length > 0) {
-                    const currency = (this.value + 100) / 100 * this.jsonHistoryData()[0][5];
-                    return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4);
+                    const currency = (this.value + 100) / 100 * this.jsonHistoryData()[0][5]
+                    return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4)
                 }
             },
             formatYLabel() {
                 if (this.jsonHistoryData.length > 0) {
-                    const currency = (this.value + 100) / 100 * this.jsonHistoryData()[0][5];
-                    return (Math.round(currency * 10000) / 10000).toFixed(4);
+                    const currency = (this.value + 100) / 100 * this.jsonHistoryData()[0][5]
+                    return (Math.round(currency * 10000) / 10000).toFixed(4)
                 }
             }
         },
         watch: {
-            options: function(options) {
-                if(!this.chart && options) {
-                    this.draw()
-                } else {
-                    this.chart.dispose();
-                    this.chart = null;
-                    this.draw();
-                }
-            }
+            ...mapGetters({
+                options: function(options) {
+                    if(!this.chart && options) {
+                        this.draw()
+                    } else {
+                        this.chart.dispose()
+                        this.chart = null
+                        this.draw()
+                    }
+                },
+                data: 'chartData'
+            })
         },
         beforeDestroy() {
             if (this.chart) {
-                this.chart.dispose();
-                this.chart = null;
+                this.chart.dispose()
+                this.chart = null
             }
         },
         computed: {
