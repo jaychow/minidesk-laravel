@@ -13,18 +13,14 @@
                     <h4> HOME CURRENCY</h4>
                     <select class="pairList homeCurrency" id="homeCurrency" v-on:change="changeHomeCurrency" v-model="homeCurrency">
                         <option disabled selected value="">--select--</option>
-                        <option value="GBP" :disabled="foreignCurrency === 'GBP'">GBP</option>
-                        <option value="USD" :disabled="foreignCurrency === 'USD'">USD</option>
-                        <option value="CAD" :disabled="foreignCurrency === 'CAD'">CAD</option>
+                        <option v-for="currencyItem in currencyItems">{{currencyItem.currency}}</option>
                     </select>
                 </div>
                 <div class="currency-selector currency-selector__foreign">
                     <h4> FOREIGN CURRENCY</h4>
                     <select class="pairList foreignCurrency" id="foreignCurrency" v-on:change="changeForeignCurrency" v-model="foreignCurrency">
-                        <option disabled selected value="">--select--</option>
-                        <option value="GBP" :disabled="homeCurrency === 'GBP'">GBP</option>
-                        <option value="USD" :disabled="homeCurrency === 'USD'">USD</option>
-                        <option value="CAD" :disabled="homeCurrency === 'CAD'">CAD</option>
+                        <option selected value="">--select--</option>
+                        <option v-for="currencyItem in currencyItems" :disabled="homeCurrency === currencyItem.currency">{{currencyItem.currency}}</option>
                     </select>
                 </div>
             </div>
@@ -60,7 +56,11 @@
         },
         data() {
             return {
-
+                currencyItems: [
+                    {currency: 'GBP'},
+                    {currency: 'USD'},
+                    {currency: 'CAD'}
+                ]
             }
         },
         methods:{
@@ -70,11 +70,14 @@
                     min :this.getTradeDate
                 })
             },
-            changeHomeCurrency(e) {
+            changeHomeCurrency: function(e) {
                 console.log("changing home currency to: " + e.target.value)
                 this.homeCurrency = e.target.value
+                if(this.homeCurrency === this.foreignCurrency) {
+                    this.$store.dispatch('setForeignCurrency', '')
+                }
             },
-            changeForeignCurrency(e) {
+            changeForeignCurrency: function(e) {
                 if(!this.foreignChangeAllowed()) {
                     alert("Please select home currency first")
                     this.$store.dispatch('setForeignCurrency', '')
