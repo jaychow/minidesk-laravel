@@ -65,11 +65,11 @@ class ChartController extends Controller
         // Use to identify is the currency need to change ?
         $reverseFlag = 0;
         $sourceCurrency = $type;
-        $token = env('OANDA_API_KEY');
+        $token = \config('oanda.apiKey');
         $client = new Client(['base_uri' => 'https://api-fxpractice.oanda.com/']);
         $headers = [
             'Authorization' => 'Bearer ' . $token,
-            'accountid' => env('OANDA_ACCOUNT_ID'),
+            'accountid' => \config('oanda.accountId'),
         ];
         $response ='';
         $fromTime = date("Y-m-d",strtotime($fromTime));
