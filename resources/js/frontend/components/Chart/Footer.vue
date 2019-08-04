@@ -1,24 +1,56 @@
 <template>
     <div class="chart-footer">
-        <div class="timescale-area" id="timescaleButton">
-            <button class="timescaleButton" id="1WButton" value="1W">1W</button>
-            <button class="timescaleButton" id="1MButton" value="1M">1M</button>
-            <button class="timescaleButton" id="3MButton" value="3M">3M</button>
-            <button class="timescaleButton" id="6MButton" value="6M">6M</button>
-            <button class="timescaleButton" id="1YButton" value="1Y" disabled>1Y</button>
-            <button class="timescaleButton" id="5YButton" value="5Y">5Y</button>
+        <div class="timescale-area">
+            <button v-for="_timescale in timescaleOptions"
+                    class="timescaleButton"
+                    :value="_timescale"
+                    :disabled="_timescale === chartSettings.timescale"
+                    @click="setTimescale">{{_timescale}}</button>
         </div>
         <div class="candleLine-area" id="candleLineButton">
-            <button class="chartAreaButton candleLineButton" id="candleButton" value="candle" disabled>Candle</button>
-            <button class="chartAreaButton candleLineButton" id="lineButton" value="line">Line</button>
+            <button v-for="(_typeTitle, _type) in typeOptions"
+                    class="chartAreaButton candleLineButton"
+                    :id="_type + 'Button'"
+                    :value="_type"
+                    :disabled="_type === chartSettings.type"
+                    @click="setType">{{_typeTitle}}</button>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapGetters} from 'vuex'
+
     export default {
+        data() {
+            return {
+                timescaleOptions: [
+                    '1W',
+                    '1M',
+                    '3M',
+                    '6M',
+                    '1Y',
+                    '5Y'
+                ],
+                typeOptions: {
+                    candle: 'Candle',
+                    line: 'Line'
+                }
+            }
+        },
         mounted() {
             console.log('ChartFooter Mounted!')
+        },
+        computed: {
+            ...mapGetters(['chartSettings'])
+        },
+        methods: {
+            setTimescale(event) {
+                this.$store.dispatch('setChartTimescale', event.target.value)
+            },
+            setType(event) {
+                this.$store.dispatch('setChartType', event.target.value)
+            }
         }
     }
 </script>

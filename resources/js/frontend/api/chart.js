@@ -2,7 +2,7 @@ import api from './api'
 
 export default {
     async getTable(pair, timerange, status, interval) {
-        return api().get('/getTable', {
+        return api().get('/chart/getTable', {
             params: {
                 pair: pair,
                 timeRange: timerange,

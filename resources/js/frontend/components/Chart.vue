@@ -8,13 +8,9 @@
 
     export default {
         name: 'chart',
-        props: [
-            'Anychart',
-        ],
         data() {
             return {
-                today: new Date(),
-                jsonHistoryData: [],
+                chart: null,
                 intervalMapToMinutes: {
                     "S5": 5 / 60,
                     "S10": 10 / 60,
@@ -30,7 +26,7 @@
                 },
                 updateCandleInterval: 1,
                 updateIntervalCounts: {},
-        }
+            }
         },
         mounted() {
             console.log("Chart mounted")
@@ -45,10 +41,15 @@
                 this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval // 1M/candle, increase 1 candle every intervals.
             },
             draw() {
-               if (!this.chart && this.chart) {
-                   let _Anychart = this.Anychart || Anychart
-                   this.chart = new _Anychart.fromJson(this.chart)
-                   this.chart.container(this.$el).draw()
+               if (!this.chart && this.$store.getters.chartOptions) {
+                   try {
+                       let _Anychart = this.Anychart || Anychart
+                       this.chart = new _Anychart.stock()
+                       this.chart.container(this.$el).draw()
+                   } catch (error) {
+                       console.error(error)
+                   }
+
                }
             },
             formatLegend() {
@@ -78,18 +79,15 @@
             }
         },
         watch: {
-            ...mapGetters({
-                options: function(options) {
-                    if(!this.chart && options) {
-                        this.draw()
-                    } else {
-                        this.chart.dispose()
-                        this.chart = null
-                        this.draw()
-                    }
-                },
-                data: 'chartData'
-            })
+            chartData: function() {
+                if(!this.chart && this.$store.getters.chartOptions) {
+                    this.draw()
+                } else {
+                    this.chart.dispose()
+                    this.chart = null
+                    this.draw()
+                }
+            },
         },
         beforeDestroy() {
             if (this.chart) {
@@ -98,7 +96,11 @@
             }
         },
         computed: {
-            ...mapGetters(['getChartSettings','getChartOptions']),
+            ...mapGetters([
+                'chartSettings',
+                'chartOptions',
+                'chartData'
+            ]),
         },
 
     }

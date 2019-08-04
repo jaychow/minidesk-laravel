@@ -47,7 +47,7 @@
     </div>
 </template>
 <script>
-    import {mapGetters, mapActions} from 'vuex'
+    import {mapGetters} from 'vuex'
 
     export default {
         mounted() {
@@ -64,10 +64,9 @@
             }
         },
         methods:{
-            ...mapActions['setHomeCurrency', 'setForeignCurrency'],
             initTradeDate() {
                 $("#tradeDate").attr({
-                    min :this.getTradeDate
+                    min :this.tradeDate
                 })
             },
             changeHomeCurrency: function(e) {
@@ -85,21 +84,16 @@
                 }
                 console.log("changing foreign currency to: " + e.target.value)
                 this.foreignCurrency = e.target.value
-                console.log(this.pair)
-                // this.$store.dispatch('fetchChartData',{
-                //     pair: this.pair(),
-                //
-                // })
             },
             foreignChangeAllowed() {
-                return this.$store.state.settings.homeCurrency !== ''
+                return this.$store.getters.homeCurrency !== ''
             }
         },
         computed: {
-            ...mapGetters(['today', 'getTradeDate']),
+            ...mapGetters(['today', 'tradeDate', 'pair']),
             homeCurrency: {
                 get () {
-                    return this.$store.state.settings.homeCurrency
+                    return this.$store.getters.homeCurrency
                 },
                 set (currency) {
                     this.$store.dispatch('setHomeCurrency', currency)
@@ -107,15 +101,12 @@
             },
             foreignCurrency: {
                 get () {
-                    return this.$store.state.settings.foreignCurrency
+                    return this.$store.getters.foreignCurrency
                 },
                 set (currency) {
                     this.$store.dispatch('setForeignCurrency', currency)
                 }
             },
-            pair() {
-                return this.homeCurrency+"_"+this.foreignCurrency
-            }
         }
     }
 </script>

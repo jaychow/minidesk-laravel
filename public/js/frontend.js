@@ -20,11 +20,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'chart',
-    props: ['Anychart'],
     data: function data() {
         return {
-            today: new Date(),
-            jsonHistoryData: [],
+            chart: null,
             intervalMapToMinutes: {
                 "S5": 5 / 60,
                 "S10": 10 / 60,
@@ -56,10 +54,14 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval; // 1M/candle, increase 1 candle every intervals.
         },
         draw: function draw() {
-            if (!this.chart && this.chart) {
-                var _Anychart = this.Anychart || __WEBPACK_IMPORTED_MODULE_0_anychart___default.a;
-                this.chart = new _Anychart.fromJson(this.chart);
-                this.chart.container(this.$el).draw();
+            if (!this.chart && this.$store.getters.chartOptions) {
+                try {
+                    var _Anychart = this.Anychart || __WEBPACK_IMPORTED_MODULE_0_anychart___default.a;
+                    this.chart = new _Anychart.stock();
+                    this.chart.container(this.$el).draw();
+                } catch (error) {
+                    console.error(error);
+                }
             }
         },
         formatLegend: function formatLegend() {
@@ -83,18 +85,17 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             }
         }
     },
-    watch: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["c" /* mapGetters */])({
-        options: function options(_options) {
-            if (!this.chart && _options) {
+    watch: {
+        chartData: function chartData() {
+            if (!this.chart && this.$store.getters.chartOptions) {
                 this.draw();
             } else {
                 this.chart.dispose();
                 this.chart = null;
                 this.draw();
             }
-        },
-        data: 'chartData'
-    })),
+        }
+    },
     beforeDestroy: function beforeDestroy() {
         if (this.chart) {
             this.chart.dispose();
@@ -102,7 +103,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         }
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["c" /* mapGetters */])(['getChartSettings', 'getChartOptions']))
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapGetters */])(['chartSettings', 'chartOptions', 'chartData']))
 
 });
 
@@ -113,6 +114,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+//
+//
+//
 //
 //
 //
@@ -131,9 +138,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            timescaleOptions: ['1W', '1M', '3M', '6M', '1Y', '5Y'],
+            typeOptions: {
+                candle: 'Candle',
+                line: 'Line'
+            }
+        };
+    },
     mounted: function mounted() {
         console.log('ChartFooter Mounted!');
+    },
+
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['chartSettings'])),
+    methods: {
+        setTimescale: function setTimescale(event) {
+            this.$store.dispatch('setChartTimescale', event.target.value);
+        },
+        setType: function setType(event) {
+            this.$store.dispatch('setChartType', event.target.value);
+        }
     }
 });
 
@@ -144,6 +172,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+//
+//
+//
 //
 //
 //
@@ -160,9 +194,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            yLabelTypeOptions: [{
+                value: 'user',
+                label: '<i class="fa fa-user"></i>'
+            }, {
+                value: 'price',
+                label: '$'
+            }, {
+                value: 'percent',
+                label: '%'
+            }]
+        };
+    },
     mounted: function mounted() {
         console.log('ChartHeader Mounted!');
+    },
+
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['homeCurrency', 'chartSettings'])),
+    methods: {
+        setYLabelType: function setYLabelType(event) {
+            console.log(event.target.value);
+            this.$store.dispatch('setYLabelType', event.target.value);
+        },
+        isDisabled: function isDisabled(option) {
+            return option.value === this.chartSettings.yLabelType;
+        }
     }
 });
 
@@ -291,10 +352,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         return {};
     },
 
-    methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapActions */][('setHomeCurrency', 'setForeignCurrency')], {
+    methods: {
         initTradeDate: function initTradeDate() {
             $("#tradeDate").attr({
-                min: this.getTradeDate
+                min: this.tradeDate
             });
         },
         changeHomeCurrency: function changeHomeCurrency(e) {
@@ -309,20 +370,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             }
             console.log("changing foreign currency to: " + e.target.value);
             this.foreignCurrency = e.target.value;
-            console.log(this.pair);
-            // this.$store.dispatch('fetchChartData',{
-            //     pair: this.pair(),
-            //
-            // })
         },
         foreignChangeAllowed: function foreignChangeAllowed() {
-            return this.$store.state.settings.homeCurrency !== '';
+            return this.$store.getters.homeCurrency !== '';
         }
-    }),
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["c" /* mapGetters */])(['today', 'getTradeDate']), {
+    },
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['today', 'tradeDate', 'pair']), {
         homeCurrency: {
             get: function get() {
-                return this.$store.state.settings.homeCurrency;
+                return this.$store.getters.homeCurrency;
             },
             set: function set(currency) {
                 this.$store.dispatch('setHomeCurrency', currency);
@@ -330,14 +386,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         },
         foreignCurrency: {
             get: function get() {
-                return this.$store.state.settings.foreignCurrency;
+                return this.$store.getters.foreignCurrency;
             },
             set: function set(currency) {
                 this.$store.dispatch('setForeignCurrency', currency);
             }
-        },
-        pair: function pair() {
-            return this.homeCurrency + "_" + this.foreignCurrency;
         }
     })
 });
@@ -1308,56 +1361,36 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "chart-header" }, [
+    _c("div", { staticClass: "currency-title" }, [
+      _c("p", { attrs: { id: "currencyTitle" } }, [
+        _vm._v(_vm._s(_vm.homeCurrency))
+      ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "pricePercentage-area",
+        attrs: { id: "pricePercentageButton" }
+      },
+      _vm._l(_vm.yLabelTypeOptions, function(_option) {
+        return _c("button", {
+          staticClass: "chartAreaButton pricePercentageButton",
+          attrs: {
+            id: _option.value + "Button",
+            value: _option.value,
+            disabled: _vm.isDisabled(_option)
+          },
+          domProps: { innerHTML: _vm._s(_option.label) },
+          on: { click: _vm.setYLabelType }
+        })
+      }),
+      0
+    )
+  ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "chart-header" }, [
-      _c("div", { staticClass: "currency-title" }, [
-        _c("p", { attrs: { id: "currencyTitle" } })
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "pricePercentage-area",
-          attrs: { id: "pricePercentageButton" }
-        },
-        [
-          _c(
-            "button",
-            {
-              staticClass: "chartAreaButton pricePercentageButton",
-              attrs: { id: "userButton", value: "user" }
-            },
-            [_c("i", { staticClass: "fa fa-user" })]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "chartAreaButton pricePercentageButton",
-              attrs: { id: "priceButton", value: "price", disabled: "" }
-            },
-            [_vm._v("$")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "chartAreaButton pricePercentageButton",
-              attrs: { id: "percentButton", value: "percent" }
-            },
-            [_vm._v("%")]
-          )
-        ]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -1645,100 +1678,50 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "chart-footer" }, [
+    _c(
+      "div",
+      { staticClass: "timescale-area" },
+      _vm._l(_vm.timescaleOptions, function(_timescale) {
+        return _c(
+          "button",
+          {
+            staticClass: "timescaleButton",
+            attrs: {
+              value: _timescale,
+              disabled: _timescale === _vm.chartSettings.timescale
+            },
+            on: { click: _vm.setTimescale }
+          },
+          [_vm._v(_vm._s(_timescale))]
+        )
+      }),
+      0
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "candleLine-area", attrs: { id: "candleLineButton" } },
+      _vm._l(_vm.typeOptions, function(_typeTitle, _type) {
+        return _c(
+          "button",
+          {
+            staticClass: "chartAreaButton candleLineButton",
+            attrs: {
+              id: _type + "Button",
+              value: _type,
+              disabled: _type === _vm.chartSettings.type
+            },
+            on: { click: _vm.setType }
+          },
+          [_vm._v(_vm._s(_typeTitle))]
+        )
+      }),
+      0
+    )
+  ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "chart-footer" }, [
-      _c(
-        "div",
-        { staticClass: "timescale-area", attrs: { id: "timescaleButton" } },
-        [
-          _c(
-            "button",
-            {
-              staticClass: "timescaleButton",
-              attrs: { id: "1WButton", value: "1W" }
-            },
-            [_vm._v("1W")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "timescaleButton",
-              attrs: { id: "1MButton", value: "1M" }
-            },
-            [_vm._v("1M")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "timescaleButton",
-              attrs: { id: "3MButton", value: "3M" }
-            },
-            [_vm._v("3M")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "timescaleButton",
-              attrs: { id: "6MButton", value: "6M" }
-            },
-            [_vm._v("6M")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "timescaleButton",
-              attrs: { id: "1YButton", value: "1Y", disabled: "" }
-            },
-            [_vm._v("1Y")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "timescaleButton",
-              attrs: { id: "5YButton", value: "5Y" }
-            },
-            [_vm._v("5Y")]
-          )
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "candleLine-area", attrs: { id: "candleLineButton" } },
-        [
-          _c(
-            "button",
-            {
-              staticClass: "chartAreaButton candleLineButton",
-              attrs: { id: "candleButton", value: "candle", disabled: "" }
-            },
-            [_vm._v("Candle")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "chartAreaButton candleLineButton",
-              attrs: { id: "lineButton", value: "line" }
-            },
-            [_vm._v("Line")]
-          )
-        ]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -13717,8 +13700,8 @@ if (false) {
 /* unused harmony export install */
 /* unused harmony export mapState */
 /* unused harmony export mapMutations */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return mapGetters; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapActions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapGetters; });
+/* unused harmony export mapActions */
 /* unused harmony export createNamespacedHelpers */
 /**
  * vuex v3.1.0
@@ -14865,7 +14848,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
-                            return _context.abrupt('return', Object(__WEBPACK_IMPORTED_MODULE_1__api__["a" /* default */])().get('/getTable', {
+                            return _context.abrupt('return', Object(__WEBPACK_IMPORTED_MODULE_1__api__["a" /* default */])().get('/chart/getTable', {
                                 params: {
                                     pair: pair,
                                     timeRange: timerange,
@@ -15208,8 +15191,6 @@ module.exports = Component.exports
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_chart__ = __webpack_require__("./resources/js/frontend/store/modules/chart.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_settings__ = __webpack_require__("./resources/js/frontend/store/modules/settings.js");
-
 
 
 
@@ -15220,8 +15201,7 @@ var debug = "development" !== 'production';
 
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
     modules: {
-        chart: __WEBPACK_IMPORTED_MODULE_2__modules_chart__["a" /* default */],
-        settings: __WEBPACK_IMPORTED_MODULE_3__modules_settings__["a" /* default */]
+        chart: __WEBPACK_IMPORTED_MODULE_2__modules_chart__["a" /* default */]
     }
 }));
 
@@ -15247,69 +15227,186 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 var state = {
     chart: {
+        settings: {
+            pair: '',
+            timescale: "1Y",
+            yLabelType: "price",
+            type: "candle",
+            refreshInterval: "M10",
+            utc: -(new Date().getTimezoneOffset() / 60),
+            today: new Date()
+        },
         options: __WEBPACK_IMPORTED_MODULE_3__chart_options__["a" /* default */],
         data: {}
-    }
+    },
+    homeCurrency: '',
+    foreignCurrency: ''
 };
 
 var getters = {
+    today: function today(state) {
+        return state.chart.settings.today;
+    },
+    tradeDate: function tradeDate(state) {
+        return state.chart.settings.today.toISOString().substr(0, 10);
+    },
     chartOptions: function chartOptions(state) {
         return state.chart.options;
     },
     chartData: function chartData(state) {
         return state.chart.data;
+    },
+    chartSettings: function chartSettings(state) {
+        return state.chart.settings;
+    },
+    homeCurrency: function homeCurrency(state) {
+        return state.homeCurrency;
+    },
+    foreignCurrency: function foreignCurrency(state) {
+        return state.foreignCurrency;
+    },
+    pair: function pair(state) {
+        return state.homeCurrency + '_' + state.foreignCurrency;
     }
 };
 
 var actions = {
     fetchChartData: function () {
-        var _ref3 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee(_ref, _ref2) {
+        var _ref2 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee(_ref) {
             var commit = _ref.commit;
-            var pair = _ref2.pair,
-                timeRange = _ref2.timeRange,
-                status = _ref2.status,
-                interval = _ref2.interval;
             var response;
             return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
                             _context.prev = 0;
-                            _context.next = 3;
-                            return __WEBPACK_IMPORTED_MODULE_2__api_chart__["a" /* default */].getTable(pair, timeRange, status, interval);
+
+                            if (this.getters.homeCurrency) {
+                                _context.next = 3;
+                                break;
+                            }
+
+                            return _context.abrupt('return');
 
                         case 3:
-                            response = _context.sent;
+                            if (this.getters.foreignCurrency) {
+                                _context.next = 5;
+                                break;
+                            }
 
-                            commit('SET_CHART_DATA', response.data);
-                            _context.next = 10;
-                            break;
+                            return _context.abrupt('return');
+
+                        case 5:
+                            if (this.getters.chartSettings.timescale) {
+                                _context.next = 7;
+                                break;
+                            }
+
+                            return _context.abrupt('return');
 
                         case 7:
-                            _context.prev = 7;
+                            if (this.getters.chartSettings.refreshInterval) {
+                                _context.next = 9;
+                                break;
+                            }
+
+                            return _context.abrupt('return');
+
+                        case 9:
+
+                            console.log({
+                                pair: this.getters.pair,
+                                timescale: this.getters.chartSettings.timescale,
+                                status: false,
+                                interval: this.getters.chartSettings.refreshInterval
+                            });
+                            _context.next = 12;
+                            return __WEBPACK_IMPORTED_MODULE_2__api_chart__["a" /* default */].getTable(this.getters.pair, this.getters.chartSettings.timescale, false, this.getters.chartSettings.refreshInterval);
+
+                        case 12:
+                            response = _context.sent;
+
+                            console.log(response.data);
+                            commit('UPDATE_CHART_DATA', response.data);
+                            _context.next = 20;
+                            break;
+
+                        case 17:
+                            _context.prev = 17;
                             _context.t0 = _context['catch'](0);
 
                             console.error(_context.t0);
 
-                        case 10:
+                        case 20:
                         case 'end':
                             return _context.stop();
                     }
                 }
-            }, _callee, this, [[0, 7]]);
+            }, _callee, this, [[0, 17]]);
         }));
 
-        function fetchChartData(_x, _x2) {
-            return _ref3.apply(this, arguments);
+        function fetchChartData(_x) {
+            return _ref2.apply(this, arguments);
         }
 
         return fetchChartData;
-    }()
+    }(),
+
+    setHomeCurrency: function setHomeCurrency(_ref3, currency) {
+        var commit = _ref3.commit,
+            dispatch = _ref3.dispatch;
+
+        commit('UPDATE_HOME_CURRENCY', currency);
+        dispatch('fetchChartData');
+    },
+    setForeignCurrency: function setForeignCurrency(_ref4, currency) {
+        var commit = _ref4.commit,
+            dispatch = _ref4.dispatch;
+
+        commit('UPDATE_FOREIGN_CURRENCY', currency);
+        dispatch('fetchChartData');
+    },
+    setChartTimescale: function setChartTimescale(_ref5, timescale) {
+        var commit = _ref5.commit,
+            dispatch = _ref5.dispatch;
+
+        commit('UPDATE_CHART_TIMESCALE', timescale);
+        dispatch('fetchChartData');
+    },
+    setChartType: function setChartType(_ref6, type) {
+        var commit = _ref6.commit,
+            dispatch = _ref6.dispatch;
+
+        commit('UPDATE_CHART_TYPE', type);
+        dispatch('fetchChartData');
+    },
+    setYLabelType: function setYLabelType(_ref7, type) {
+        var commit = _ref7.commit,
+            dispatch = _ref7.dispatch;
+
+        commit('UPDATE_CHART_Y_LABEL_TYPE', type);
+        dispatch('fetchChartData');
+    }
 };
 
 var mutations = {
-    SET_CHART_DATA: function SET_CHART_DATA(state, data) {
+    UPDATE_CHART_DATA: function UPDATE_CHART_DATA(state, data) {
         return state.chart.data = data;
+    },
+    UPDATE_HOME_CURRENCY: function UPDATE_HOME_CURRENCY(state, currency) {
+        return state.homeCurrency = currency;
+    },
+    UPDATE_FOREIGN_CURRENCY: function UPDATE_FOREIGN_CURRENCY(state, currency) {
+        return state.foreignCurrency = currency;
+    },
+    UPDATE_CHART_TIMESCALE: function UPDATE_CHART_TIMESCALE(state, timescale) {
+        return state.chart.settings.timescale = timescale;
+    },
+    UPDATE_CHART_TYPE: function UPDATE_CHART_TYPE(state, type) {
+        return state.chart.settings.type = type;
+    },
+    UPDATE_CHART_Y_LABEL_TYPE: function UPDATE_CHART_Y_LABEL_TYPE(state, type) {
+        return state.chart.settings.yLabelType = type;
     }
 };
 
@@ -16893,73 +16990,6 @@ var options = {
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (options);
-
-/***/ }),
-
-/***/ "./resources/js/frontend/store/modules/settings.js":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-var state = {
-    settings: {
-        pair: '',
-        timescale: "1Y",
-        yLabelType: "price",
-        type: "candle",
-        refreshInterval: "M10",
-        utc: -(new Date().getTimezoneOffset() / 60),
-        today: new Date()
-    },
-    homeCurrency: '',
-    foreignCurrency: ''
-};
-
-var mutations = {
-    UPDATE_HOME_CURRENCY: function UPDATE_HOME_CURRENCY(state, currency) {
-        state.homeCurrency = currency;
-    },
-    UPDATE_FOREIGN_CURRENCY: function UPDATE_FOREIGN_CURRENCY(state, currency) {
-        state.foreignCurrency = currency;
-    }
-};
-
-var actions = {
-    setHomeCurrency: function setHomeCurrency(_ref, currency) {
-        var commit = _ref.commit;
-
-        commit('UPDATE_HOME_CURRENCY', currency);
-    },
-    setForeignCurrency: function setForeignCurrency(_ref2, currency) {
-        var commit = _ref2.commit;
-
-        commit('UPDATE_FOREIGN_CURRENCY', currency);
-    }
-};
-
-var getters = {
-    today: function today(state) {
-        return state.today;
-    },
-    getChartSettings: function getChartSettings(state) {
-        return state.settings;
-    },
-    getHomeCurrency: function getHomeCurrency(state) {
-        return state.homeCurrency;
-    },
-    getForeignCurrency: function getForeignCurrency(state) {
-        return state.foreignCurrency;
-    },
-    getTradeDate: function getTradeDate(state) {
-        return state.settings.today.toISOString().substr(0, 10);
-    }
-};
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-    state: state,
-    mutations: mutations,
-    actions: actions,
-    getters: getters
-});
 
 /***/ }),
 

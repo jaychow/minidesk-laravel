@@ -43,7 +43,6 @@ mix.
         'resources/js/backend/refresh.js',
     ], 'js/backendRefresh.js')
     .extract([
-        'anychart',
         'jquery',
         'bootstrap',
         'popper.js/dist/umd/popper',

@@ -1,32 +1,99 @@
 import axios from 'axios'
 import chart from '../../api/chart'
-
 import options from './chart/options'
+
 const state = {
     chart: {
+        settings: {
+            pair: '',
+            timescale: "1Y",
+            yLabelType: "price",
+            type: "candle",
+            refreshInterval: "M10",
+            utc: - (new Date().getTimezoneOffset() / 60),
+            today: new Date()
+        },
         options: options,
         data: {}
-    }
+    },
+    homeCurrency: '',
+    foreignCurrency: ''
 }
 
 const getters = {
+    today: (state) => state.chart.settings.today,
+    tradeDate: (state) => (state.chart.settings.today.toISOString().substr(0,10)),
     chartOptions: (state) => state.chart.options,
-    chartData:  (state) => state.chart.data
+    chartData:  (state) => state.chart.data,
+    chartSettings: (state) => state.chart.settings,
+    homeCurrency: (state) => state.homeCurrency,
+    foreignCurrency: (state) => state.foreignCurrency,
+    pair: (state) => (state.homeCurrency + '_' + state.foreignCurrency)
 }
 
 const actions  = {
-    async fetchChartData({commit}, {pair, timeRange, status, interval}) {
+    async fetchChartData({commit}) {
         try {
-            const response = await chart.getTable(pair, timeRange, status, interval)
-            commit('SET_CHART_DATA', response.data)
+            if(!this.getters.homeCurrency) {
+                return
+            }
+            if(!this.getters.foreignCurrency) {
+                return
+            }
+            if(!this.getters.chartSettings.timescale) {
+                return
+            }
+            if(!this.getters.chartSettings.refreshInterval) {
+                return
+            }
+
+            console.log({
+                pair:this.getters.pair,
+                timescale: this.getters.chartSettings.timescale,
+                status: false,
+                interval: this.getters.chartSettings.refreshInterval
+            })
+            const response = await chart.getTable(
+                this.getters.pair,
+                this.getters.chartSettings.timescale,
+                false,
+                this.getters.chartSettings.refreshInterval
+            )
+            console.log(response.data)
+            commit('UPDATE_CHART_DATA', response.data)
         } catch (err) {
             console.error(err)
         }
+    },
+    setHomeCurrency: ({commit, dispatch}, currency) => {
+        commit('UPDATE_HOME_CURRENCY', currency)
+        dispatch('fetchChartData')
+    },
+    setForeignCurrency: ({commit, dispatch}, currency) => {
+        commit('UPDATE_FOREIGN_CURRENCY', currency)
+        dispatch('fetchChartData')
+    },
+    setChartTimescale: ({commit, dispatch}, timescale) => {
+        commit('UPDATE_CHART_TIMESCALE', timescale)
+        dispatch('fetchChartData')
+    },
+    setChartType: ({commit, dispatch}, type) => {
+        commit('UPDATE_CHART_TYPE', type)
+        dispatch('fetchChartData')
+    },
+    setYLabelType: ({commit, dispatch}, type) => {
+        commit('UPDATE_CHART_Y_LABEL_TYPE', type)
+        dispatch('fetchChartData')
     }
 }
 
 const mutations = {
-    SET_CHART_DATA: (state, data) => (state.chart.data = data)
+    UPDATE_CHART_DATA: (state, data) => (state.chart.data = data),
+    UPDATE_HOME_CURRENCY: (state, currency) => (state.homeCurrency = currency),
+    UPDATE_FOREIGN_CURRENCY: (state, currency) => (state.foreignCurrency = currency),
+    UPDATE_CHART_TIMESCALE: (state, timescale) => (state.chart.settings.timescale = timescale),
+    UPDATE_CHART_TYPE: (state, type) => (state.chart.settings.type = type),
+    UPDATE_CHART_Y_LABEL_TYPE: (state, type) => (state.chart.settings.yLabelType = type),
 }
 
 export default {
