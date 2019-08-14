@@ -28,7 +28,9 @@ const getters = {
     chartSettings: (state) => state.chart.settings,
     homeCurrency: (state) => state.homeCurrency,
     foreignCurrency: (state) => state.foreignCurrency,
-    pair: (state) => (state.homeCurrency + '_' + state.foreignCurrency)
+    pair: (state) => (state.homeCurrency + '_' + state.foreignCurrency),
+    chartType: (state) => (state.chart.settings.type),
+    chartYLabelType: (state) => (state.chart.settings.yLabelType)
 }
 
 const actions  = {
@@ -53,37 +55,54 @@ const actions  = {
                 status: false,
                 interval: this.getters.chartSettings.refreshInterval
             })
-            const response = await chart.getTable(
+            
+            let data = {}
+
+            let response = await chart.getTable(
                 this.getters.pair,
                 this.getters.chartSettings.timescale,
                 false,
                 this.getters.chartSettings.refreshInterval
             )
-            console.log(response.data)
-            commit('UPDATE_CHART_DATA', response.data)
+            data.jsonHistoryData = response.data.slice()
+            
+            // response = await chart.getZone(
+            //     this.getters.pair,
+            //     "true",
+            //     data.jsonHistoryData[0][5]
+            // ) 
+            
+            // data.jsonZonesData = response.data
+
+            console.log(data.jsonHistoryData)
+            commit('UPDATE_CHART_DATA', data)
         } catch (err) {
             console.error(err)
         }
     },
     setHomeCurrency: ({commit, dispatch}, currency) => {
         commit('UPDATE_HOME_CURRENCY', currency)
-        dispatch('fetchChartData')
+        if(state.foreignCurrency !== '' && state.homeCurrency !== '' && state.homeCurrency!== state.foreignCurrency)
+            dispatch('fetchChartData')
     },
     setForeignCurrency: ({commit, dispatch}, currency) => {
         commit('UPDATE_FOREIGN_CURRENCY', currency)
-        dispatch('fetchChartData')
+        if(state.homeCurrency !== '' && state.foreignCurrency !== '' && state.homeCurrency!== state.foreignCurrency)
+            dispatch('fetchChartData')
     },
     setChartTimescale: ({commit, dispatch}, timescale) => {
+        console.log('setChartTimescale')
         commit('UPDATE_CHART_TIMESCALE', timescale)
         dispatch('fetchChartData')
     },
     setChartType: ({commit, dispatch}, type) => {
+        console.log('setChartType')
         commit('UPDATE_CHART_TYPE', type)
-        dispatch('fetchChartData')
+        // dispatch('fetchChartData')
     },
     setYLabelType: ({commit, dispatch}, type) => {
         commit('UPDATE_CHART_Y_LABEL_TYPE', type)
-        dispatch('fetchChartData')
+        // dispatch('fetchChartData')
     }
 }
 

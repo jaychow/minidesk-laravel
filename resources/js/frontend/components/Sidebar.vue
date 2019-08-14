@@ -71,7 +71,7 @@
             },
             changeHomeCurrency: function(e) {
                 console.log("changing home currency to: " + e.target.value)
-                this.homeCurrency = e.target.value
+                
                 if(this.homeCurrency === this.foreignCurrency) {
                     this.$store.dispatch('setForeignCurrency', '')
                 }
@@ -83,7 +83,6 @@
                     return
                 }
                 console.log("changing foreign currency to: " + e.target.value)
-                this.foreignCurrency = e.target.value
             },
             foreignChangeAllowed() {
                 return this.$store.getters.homeCurrency !== ''

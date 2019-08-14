@@ -1,16 +1,26 @@
 <template>
-    <div class="chart" id="chart"></div>
+    <div class="chart" id="chart"></div> 
 </template>
 
 <script>
     import Anychart from 'anychart'
     import { mapGetters, mapActions } from 'vuex'
-
+    import { chartInit } from '../store/modules/chart/init.js'
+    import { setChartMapping, setXAxis, setYLabel, showData } from '../store/modules/chart/chart_setting.js'
     export default {
         name: 'chart',
         data() {
             return {
-                chart: null,
+                chart: {
+                    chart: null,
+                    chartType: 'candle',
+                    chartLabelType: 'price',
+                    historyDataTable: null,
+                    historyPlot: null,
+                    jsonHistoryData: [],
+                    jsonZonesData: [],
+                    singleCandle: []
+                },              
                 intervalMapToMinutes: {
                     "S5": 5 / 60,
                     "S10": 10 / 60,
@@ -30,6 +40,10 @@
         },
         mounted() {
             console.log("Chart mounted")
+            // console.log(chartInit)
+            chartInit(this.chart);
+
+            console.log('finish chart init');
         },
         methods: {
             initUpdateInterval() {
@@ -41,53 +55,41 @@
                 this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval // 1M/candle, increase 1 candle every intervals.
             },
             draw() {
-               if (!this.chart && this.$store.getters.chartOptions) {
-                   try {
-                       let _Anychart = this.Anychart || Anychart
-                       this.chart = new _Anychart.stock()
-                       this.chart.container(this.$el).draw()
-                   } catch (error) {
-                       console.error(error)
-                   }
+            //     if (!this.chart && this.$store.getters.chartOptions) {
+            //        try {     
+            //             // this.initChar()                     
+            //             this.chart.container(this.$el).draw()
+            //         } catch (error) {
+            //             console.error(error)
+            //         }
 
-               }
+            //    }
             },
-            formatLegend() {
-                const length = this.jsonHistoryData.length
-                if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64font-weight:600'>" + this.index +
-                        "</span>: <b>O</b> " + Number(this.open).toFixed(4) + " <b>H</b> " + Number(this.high).toFixed(4) + " <b>L</b> " + Number(this.low).toFixed(4) + " <b>C</b> " + Number(this.close).toFixed(4) + "<br/>" +
-                        "<b>Vol</b> " + this.jsonHistoryData[length - this.index - 1][6].toLocaleString() + " <b>Avg Vol</b> " + this.jsonHistoryData[length - this.index - 1][7].toLocaleString() +
-                        " <b>Delta O-C(%)</b> " + Number(this.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "% <b>Range(L-H)</b> " + Number(this.jsonHistoryData[length - this.index - 1][9]).toFixed(4) + " <b>Avg Vol(%)</b> " + Number(this.jsonHistoryData[length - this.index - 1][10]).toFixed(2) + "%"
-                } else {
-                    return "<span style='color:#455a64font-weight:600'>" + this.index +
-                        "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" +
-                        "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% "
-                }
-            },
-            formatYAxis() {
-                if (this.jsonHistoryData.length > 0) {
-                    const currency = (this.value + 100) / 100 * this.jsonHistoryData()[0][5]
-                    return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4)
-                }
-            },
-            formatYLabel() {
-                if (this.jsonHistoryData.length > 0) {
-                    const currency = (this.value + 100) / 100 * this.jsonHistoryData()[0][5]
-                    return (Math.round(currency * 10000) / 10000).toFixed(4)
-                }
-            }
+
         },
         watch: {
             chartData: function() {
-                if(!this.chart && this.$store.getters.chartOptions) {
-                    this.draw()
-                } else {
-                    this.chart.dispose()
-                    this.chart = null
-                    this.draw()
+                this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
+                if(this.chart.chart){
+                    setYLabel(this.chart);
+                    showData(this.chart)
                 }
+                // if(!this.chart && this.$store.getters.chartOptions) {
+                //     this.draw()
+                // } else {
+                //     this.chart.dispose()
+                //     this.chart = null
+                //     this.draw()
+                // }
             },
+            chartType: function(){
+                this.chart.chartType = this.chartType;
+                setChartMapping(this.chart);
+            },
+            chartYLabelType: function(){
+                this.chart.chartLabelType = this.chartYLabelType;
+                setYLabel(this.chart);
+            }
         },
         beforeDestroy() {
             if (this.chart) {
@@ -99,8 +101,10 @@
             ...mapGetters([
                 'chartSettings',
                 'chartOptions',
-                'chartData'
-            ]),
+                'chartData',
+                'chartType',
+                'chartYLabelType'
+            ])
         },
 
     }
