@@ -33,34 +33,54 @@ function setXAxis(chart){
 function setYLabel(chart){
     let option = chart.chartLabelType;
     let yAxis = chart.historyPlot.yAxis();
+    // let controller = chart.historyPlot.annotations();
+    let indicator = chart.historyPlot.priceIndicator();
+    indicator.value('series-end');
+    indicator.stroke("gray", 2, "2 2");
+    indicator.label().background().fill("Gray");
     yAxis.orientation("right");
     yAxis.labels().fontColor("#8b8dbb");
-
     let yScale = chart.historyPlot.yScale();
+
+    if(chart.jsonHistoryData.length > 0){
+        let min = parseFloat(getMinY(chart.jsonHistoryData));
+        let max = parseFloat(getMaxY(chart.jsonHistoryData));
+        let gap = (max - min)/10;
+        let ticksArray = [];
+        for(var i=-2; i<=13; i++){
+            ticksArray.push((min + i * gap).toFixed(4));
+        }
+        yScale.minimum(ticksArray[0]);
+        yScale.maximum(ticksArray[15]);
+        yScale.ticks().set(ticksArray);
+    }
+    yAxis.scale(yScale);
+
     let crosshair = chart.historyPlot.crosshair();
     crosshair.yStroke(null);
     switch(option){
-        case 'price':
-            yScale.comparisonMode("percent");
-            yScale.compareWith("seriesEnd");
-            yScale.ticks().interval(1);
+        case 'price':         
             yAxis.labels().format(function() {
-                var currency = (this.value + 100) / 100 * chart.jsonHistoryData[0][5];     
-                return "$ " + (Math.round(currency * 10000) / 10000).toFixed(4);
+                return "$" + this.value;
             });
-
             crosshair.yLabel().format(function() {
                 return "$ " + this.tickValue.toFixed(4);
             });
+            indicator.label().format(function(){
+                return "$" + this.value.toFixed(4);
+            });
             break;
         case 'percent':
-            yScale.comparisonMode("percent");
-            yScale.compareWith("seriesEnd");
-            yScale.ticks().interval(1);
-            yAxis.labels().format("{%value}{decimalsCount:2, zeroFillDecimals:true} %");
+            yAxis.labels().format(function() {
+                let percent = (((this.value - chart.jsonHistoryData[0][5]) / chart.jsonHistoryData[0][5])*100).toFixed(2);
+                return percent + "%";
+            });
             crosshair.yLabel().format(function(){
-                let percent = (((this.tickValue - chart.jsonHistoryData[0][5]) / chart.jsonHistoryData[0][5])*100)
-                return percent.toFixed(2) + "%";
+                let percent = (((this.tickValue - chart.jsonHistoryData[0][5]) / chart.jsonHistoryData[0][5])*100).toFixed(2);
+                return percent + "%";
+            });
+            indicator.label().format(function(){
+                return "current";
             });
             break;
         case 'user':
@@ -71,7 +91,7 @@ function setYLabel(chart){
         default:
             break; 
     }
-    yAxis.scale(yScale);
+    
 }
 
 function setLegend(chart){
@@ -130,5 +150,20 @@ function showData(chart){
     }
     
 }
+
+function getMinY(data) {
+    if(data.length > 0)
+        return data.reduce((min, p) => p[5] < min ? p[5] : min, data[0][5]);
+    else
+        return;
+}
+
+function getMaxY(data) {
+    if(data.length > 0)
+        return data.reduce((max, p) => p[5] > max ? p[5] : max, data[0][5]);
+    else
+        return;
+}
+
 
 export { setChartMapping, setXAxis, setYLabel, showData };
