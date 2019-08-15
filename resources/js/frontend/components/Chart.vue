@@ -71,7 +71,6 @@
             chartData: function() {
                 this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
                 if(this.chart.chart){
-                    setYLabel(this.chart);
                     showData(this.chart)
                 }
                 // if(!this.chart && this.$store.getters.chartOptions) {

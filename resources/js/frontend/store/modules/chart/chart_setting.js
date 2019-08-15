@@ -125,6 +125,7 @@ function showData(chart){
     }else{
         chart.historyDataTable.remove();
         chart.historyDataTable.addData(chart.jsonHistoryData);
+        setYLabel(chart);
         chart.chart.container('chart').draw();
     }
     
