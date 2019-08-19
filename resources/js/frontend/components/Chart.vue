@@ -41,8 +41,7 @@
         },
         mounted() {
             console.log("Chart mounted")
-            // console.log(chartInit)
-            chartInit(this.chart);
+            chartInit(this.chart, this.$el);
 
             console.log('finish chart init');
         },
@@ -94,6 +93,15 @@
             tradeType: function(){
                 this.chart.tradeType = this.tradeType;
                 setYLabelColor(this.chart);
+            },
+            loading: function(){
+                if(this.chart.preloader){
+                    if(this.loading){
+                        this.chart.preloader.visible(true);
+                    }else{
+                        this.chart.preloader.visible(false);
+                    }
+                }
             }
         },
         beforeDestroy() {
@@ -108,7 +116,8 @@
                 'chartData',
                 'chartType',
                 'chartYLabelType',
-                'tradeType'
+                'tradeType',
+                'loading'
             ])
         },
 

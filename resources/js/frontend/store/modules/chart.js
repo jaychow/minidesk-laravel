@@ -11,6 +11,7 @@ const state = {
             refreshInterval: "M10",
             utc: - (new Date().getTimezoneOffset() / 60),
             tradeType: "",
+            isLoading: false,
             today: new Date()
         },
         data: {}
@@ -29,7 +30,8 @@ const getters = {
     pair: (state) => (state.homeCurrency + '_' + state.foreignCurrency),
     chartType: (state) => (state.chart.settings.type),
     chartYLabelType: (state) => (state.chart.settings.yLabelType),
-    tradeType: (state) => (state.chart.settings.tradeType)
+    tradeType: (state) => (state.chart.settings.tradeType),
+    loading: (state) => (state.chart.settings.isLoading)
 }
 
 const actions  = {
@@ -56,7 +58,7 @@ const actions  = {
             })
             
             let data = {}
-
+            commit('UPDATE_LOADING', true)
             let response = await chart.getTable(
                 this.getters.pair,
                 this.getters.chartSettings.timescale,
@@ -74,7 +76,9 @@ const actions  = {
             // data.jsonZonesData = response.data
 
             console.log(data.jsonHistoryData)
+
             commit('UPDATE_CHART_DATA', data)
+            commit('UPDATE_LOADING', false)
         } catch (err) {
             console.error(err)
         }
@@ -106,7 +110,11 @@ const actions  = {
     setTradeType: ({commit, dispatch}, type) => {
         commit('UPDATE_TRADE_TYPE', type)
         // dispatch('fetchChartData')
-    }
+    },
+    setLoading: ({commit, dispatch}, loading) => {
+        commit('UPDATE_LOADING', loading)
+        // dispatch('fetchChartData')
+    },
 }
 
 const mutations = {
@@ -117,6 +125,7 @@ const mutations = {
     UPDATE_CHART_TYPE: (state, type) => (state.chart.settings.type = type),
     UPDATE_CHART_Y_LABEL_TYPE: (state, type) => (state.chart.settings.yLabelType = type),
     UPDATE_TRADE_TYPE: (state, type) => (state.chart.settings.tradeType = type),
+    UPDATE_LOADING: (state, loading) => (state.chart.settings.isLoading = loading),
 }
 
 export default {

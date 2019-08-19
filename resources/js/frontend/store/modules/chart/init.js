@@ -4,7 +4,7 @@ import { setChartMapping, setXAxis, setYLabel} from './chart_setting.js'
 
 const utcOffset = new Date().getTimezoneOffset();
 
-function chartInit(chart) {
+function chartInit(chart, el) {
     // Anychart.format.locales.default.numberLocale.decimalsCount = 4;
     // Anychart.format.locales.default.numberLocale.scale = true;
     // Anychart.fromJson not support chart type "stock" yet
@@ -12,7 +12,7 @@ function chartInit(chart) {
 
     //create new chart object
     chart.historyDataTable = Anychart.data.table();   
-    chart.chart = anychart.stock();
+    chart.chart = Anychart.stock();
 
     chart.historyPlot = chart.chart.plot(0);
     chart.historyPlot.height('100%')
@@ -72,6 +72,10 @@ function chartInit(chart) {
     // disable scroller
     chart.chart.scroller().enabled(false);
 
+    //chart perloader init
+    chart.preloader = Anychart.ui.preloader();
+    chart.preloader.render(el);  
+    chart.chart.container(el);
     console.log('chartInit');
 
     // init test data
