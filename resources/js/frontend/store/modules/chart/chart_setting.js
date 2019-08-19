@@ -165,5 +165,40 @@ function getMaxY(data) {
         return;
 }
 
+function setYLabelColor(chart){
+    const safeColor = "#0b9ca8";
+    const warningColor = "#a80a47";
+    const defaultColor = "#8b8dbb";
+    if(chart.jsonHistoryData.length > 0){
+        let yScale = chart.historyPlot.yScale();
+        let yAxis = chart.historyPlot.yAxis();
+        let tickArray = yScale.ticks().get();
+        let currentValue = chart.jsonHistoryData[0][5];
+        let count = yAxis.labels().getLabelsCount();
+        for (var i = 0; i < count; i++) {
+            let label = yAxis.labels().getLabel(i);
+            label.fontColor(warningColor);         
+            if(chart.tradeType === 'buy'){
+                if(tickArray[i] > currentValue)
+                    label.fontColor(warningColor);
+                else if(tickArray[i] < currentValue)
+                    label.fontColor(safeColor);
+                else
+                    label.fontColor(defaultColor);
+            }else if(chart.tradeType === 'sell'){
+                if(tickArray[i] > currentValue)
+                    label.fontColor(safeColor);
+                else if(tickArray[i] < currentValue)
+                    label.fontColor(warningColor);
+                else
+                    label.fontColor(defaultColor);
+            }else
+                label.fontColor(defaultColor);
+            label.draw();
+        }
+    }
+    
+}
 
-export { setChartMapping, setXAxis, setYLabel, showData };
+
+export { setChartMapping, setXAxis, setYLabel, showData, setYLabelColor };

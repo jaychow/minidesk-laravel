@@ -1,6 +1,5 @@
 import axios from 'axios'
 import chart from '../../api/chart'
-import options from './chart/options'
 
 const state = {
     chart: {
@@ -11,9 +10,9 @@ const state = {
             type: "candle",
             refreshInterval: "M10",
             utc: - (new Date().getTimezoneOffset() / 60),
+            tradeType: "",
             today: new Date()
         },
-        options: options,
         data: {}
     },
     homeCurrency: '',
@@ -23,14 +22,14 @@ const state = {
 const getters = {
     today: (state) => state.chart.settings.today,
     tradeDate: (state) => (state.chart.settings.today.toISOString().substr(0,10)),
-    chartOptions: (state) => state.chart.options,
     chartData:  (state) => state.chart.data,
     chartSettings: (state) => state.chart.settings,
     homeCurrency: (state) => state.homeCurrency,
     foreignCurrency: (state) => state.foreignCurrency,
     pair: (state) => (state.homeCurrency + '_' + state.foreignCurrency),
     chartType: (state) => (state.chart.settings.type),
-    chartYLabelType: (state) => (state.chart.settings.yLabelType)
+    chartYLabelType: (state) => (state.chart.settings.yLabelType),
+    tradeType: (state) => (state.chart.settings.tradeType)
 }
 
 const actions  = {
@@ -103,6 +102,10 @@ const actions  = {
     setYLabelType: ({commit, dispatch}, type) => {
         commit('UPDATE_CHART_Y_LABEL_TYPE', type)
         // dispatch('fetchChartData')
+    },
+    setTradeType: ({commit, dispatch}, type) => {
+        commit('UPDATE_TRADE_TYPE', type)
+        // dispatch('fetchChartData')
     }
 }
 
@@ -113,6 +116,7 @@ const mutations = {
     UPDATE_CHART_TIMESCALE: (state, timescale) => (state.chart.settings.timescale = timescale),
     UPDATE_CHART_TYPE: (state, type) => (state.chart.settings.type = type),
     UPDATE_CHART_Y_LABEL_TYPE: (state, type) => (state.chart.settings.yLabelType = type),
+    UPDATE_TRADE_TYPE: (state, type) => (state.chart.settings.tradeType = type),
 }
 
 export default {

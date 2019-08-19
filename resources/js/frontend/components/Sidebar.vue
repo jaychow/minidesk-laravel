@@ -2,8 +2,8 @@
     <div class="sidebar">
         <div class="buySellButton-area">
             <div class="buySellButton" id="buySellButton">
-                <button value="buy" id="buyButton" class="buyButton">I WILL NEED<br/>FOREIGN CURRENCY</button>
-                <button value="sell" id="sellButton" class="sellButton">I WILL NEED<br/>HOME CURRENCY</button>
+                <button value="buy" id="buyButton" class="buyButton" @click="setTrade" :disabled="tradeType === `buy`">I WILL NEED<br/>FOREIGN CURRENCY</button>
+                <button value="sell" id="sellButton" class="sellButton" @click="setTrade" :disabled="tradeType === `sell`">I WILL NEED<br/>HOME CURRENCY</button>
             </div>
         </div>
 
@@ -86,10 +86,13 @@
             },
             foreignChangeAllowed() {
                 return this.$store.getters.homeCurrency !== ''
-            }
+            },
+            setTrade(e){
+                this.$store.dispatch('setTradeType', e.target.value)
+            },
         },
         computed: {
-            ...mapGetters(['today', 'tradeDate', 'pair']),
+            ...mapGetters(['today', 'tradeDate', 'pair', 'tradeType']),
             homeCurrency: {
                 get () {
                     return this.$store.getters.homeCurrency

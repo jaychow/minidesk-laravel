@@ -6,7 +6,7 @@
     import Anychart from 'anychart'
     import { mapGetters, mapActions } from 'vuex'
     import { chartInit } from '../store/modules/chart/init.js'
-    import { setChartMapping, setXAxis, setYLabel, showData } from '../store/modules/chart/chart_setting.js'
+    import { setChartMapping, setXAxis, setYLabel, showData, setYLabelColor } from '../store/modules/chart/chart_setting.js'
     export default {
         name: 'chart',
         data() {
@@ -15,6 +15,7 @@
                     chart: null,
                     chartType: 'candle',
                     chartLabelType: 'price',
+                    tradeType: '',
                     historyDataTable: null,
                     historyPlot: null,
                     jsonHistoryData: [],
@@ -88,6 +89,10 @@
             chartYLabelType: function(){
                 this.chart.chartLabelType = this.chartYLabelType;
                 setYLabel(this.chart);
+            },
+            tradeType: function(){
+                this.chart.tradeType = this.tradeType;
+                setYLabelColor(this.chart);
             }
         },
         beforeDestroy() {
@@ -99,10 +104,10 @@
         computed: {
             ...mapGetters([
                 'chartSettings',
-                'chartOptions',
                 'chartData',
                 'chartType',
-                'chartYLabelType'
+                'chartYLabelType',
+                'tradeType'
             ])
         },
 
