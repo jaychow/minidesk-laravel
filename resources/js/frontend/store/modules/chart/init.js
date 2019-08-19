@@ -61,6 +61,9 @@ function chartInit(chart) {
     setChartMapping(chart);
 
     setXAxis(chart);
+
+    let yAxis = chart.historyPlot.yAxis();
+    yAxis.labels().fontColor("#8b8dbb");
     setYLabel(chart);
 
     // disable tooltip

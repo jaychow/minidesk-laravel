@@ -89,6 +89,7 @@
             chartYLabelType: function(){
                 this.chart.chartLabelType = this.chartYLabelType;
                 setYLabel(this.chart);
+                setYLabelColor(this.chart);
             },
             tradeType: function(){
                 this.chart.tradeType = this.tradeType;

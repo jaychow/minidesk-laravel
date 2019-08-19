@@ -39,7 +39,6 @@ function setYLabel(chart){
     indicator.stroke("gray", 2, "2 2");
     indicator.label().background().fill("Gray");
     yAxis.orientation("right");
-    yAxis.labels().fontColor("#8b8dbb");
     let yScale = chart.historyPlot.yScale();
 
     if(chart.jsonHistoryData.length > 0){
@@ -58,6 +57,7 @@ function setYLabel(chart){
 
     let crosshair = chart.historyPlot.crosshair();
     crosshair.yStroke(null);
+    
     switch(option){
         case 'price':         
             yAxis.labels().format(function() {
@@ -145,8 +145,9 @@ function showData(chart){
     }else{
         chart.historyDataTable.remove();
         chart.historyDataTable.addData(chart.jsonHistoryData);
-        setYLabel(chart);
+        setYLabel(chart);     
         chart.chart.container('chart').draw();
+        setYLabelColor(chart); 
     }
     
 }
@@ -169,7 +170,7 @@ function setYLabelColor(chart){
     const safeColor = "#0b9ca8";
     const warningColor = "#a80a47";
     const defaultColor = "#8b8dbb";
-    if(chart.jsonHistoryData.length > 0){
+    if(chart.jsonHistoryData.length > 0){     
         let yScale = chart.historyPlot.yScale();
         let yAxis = chart.historyPlot.yAxis();
         let tickArray = yScale.ticks().get();
