@@ -30,7 +30,11 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">$</span>
                     </div>
-                    <input type="number" id="transactionAmount" class="form-control" placeholder="Amount">
+                    <input type="number" id="transactionAmount" 
+                        class="form-control" placeholder="Amount"
+                        v-model="amountInput"
+                        @input="amountChange"
+                        >
                 </div>
                 <div class="input-group">
                     <div class="input-group-prepend">
@@ -40,15 +44,18 @@
                            placeholder="MM/DD/YYYY">
                 </div>
             </form>
-
-            <p id="tradeExplaination"></p>
+            <div :class="alertClass" v-html="alertHtml">
+            <!-- <div class="alert alert-light" role="alert" ref="tradeAlert"> -->
+                <!-- {{ tradeExplaination }} -->
+                <!-- <p id="tradeExplaination">{{ tradeExplaination }}</p> -->
+            </div>       
             <button class="submitButton" id="submitButton">submit</button>
         </div>
     </div>
 </template>
 <script>
     import {mapGetters} from 'vuex'
-
+    import _ from 'lodash'
     export default {
         mounted() {
             console.log('Sidebar Mounted!')
@@ -60,7 +67,15 @@
                     {currency: 'GBP'},
                     {currency: 'USD'},
                     {currency: 'CAD'}
-                ]
+                ],
+                alertClass: {
+                    'alert': true,
+                    'alert-custom-pass': true,
+                    'alert-custom-danger': false
+                },
+                alertHtml: "",
+                tradeExplaination : "",
+                amountInput: ""
             }
         },
         methods:{
@@ -88,11 +103,52 @@
                 return this.$store.getters.homeCurrency !== ''
             },
             setTrade(e){
-                this.$store.dispatch('setTradeType', e.target.value)
+                this.$store.dispatch('setTradeType', e.target.value)          
+                if(this.amountInput !== ""){
+                    this.watchAmount()
+                }
             },
+            watchAmount(){
+                let alertList = []
+                if(this.tradeType === "")
+                    alertList.push("TradeType")
+                if(this.homeCurrency === "")
+                    alertList.push("HomeCurrency")
+                if(this.foreignCurrency === "")
+                    alertList.push("ForeignCurrency")
+
+                //todo: add tradeDate
+
+                if(alertList.length !== 0){
+                    this.alertClass['alert-custom-pass'] = false
+                    this.alertClass['alert-custom-danger'] = true
+                    // this.tradeExplaination = "Please set " + alertList.join(", ") + " first!"
+                    this.alertHtml = "Please set " + alertList.join(", ") + " first!"
+                }else{
+                    this.alertClass['alert-custom-pass'] = true
+                    this.alertClass['alert-custom-danger'] = false
+                    try {
+                        let result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                        let s = "If you transfer today,<br>" + this.amountInput + " " +
+                                 this.homeCurrency + " will"
+                        if(this.tradeType === 'buy')
+                            s += " get"
+                        else
+                            s += " cost"
+                        s += " you " + result + " " + this.foreignCurrency + "."
+                        // this.tradeExplaination = s
+                        this.alertHtml = s
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+            },
+            amountChange:_.debounce(function () {
+                this.watchAmount()
+            }, 1000)       
         },
         computed: {
-            ...mapGetters(['today', 'tradeDate', 'pair', 'tradeType']),
+            ...mapGetters(['today', 'tradeDate', 'pair', 'tradeType', 'chartData']),
             homeCurrency: {
                 get () {
                     return this.$store.getters.homeCurrency
@@ -109,6 +165,12 @@
                     this.$store.dispatch('setForeignCurrency', currency)
                 }
             },
+        },
+        watch: {
+            chartData(){
+                if(this.amountInput !== "")
+                    this.watchAmount()
+            }
         }
     }
 </script>
