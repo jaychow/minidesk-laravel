@@ -1,5 +1,5 @@
 <template>
-    <div class="chart" id="chart"></div> 
+    <div class="chart" id="chart" v-show="showChart === true"></div> 
 </template>
 
 <script>
@@ -37,12 +37,14 @@
                 },
                 updateCandleInterval: 1,
                 updateIntervalCounts: {},
+                showChart: true
             }
         },
         mounted() {
             console.log("Chart mounted")
             chartInit(this.chart, this.$el);
-
+            this.showChart = false;
+            
             console.log('finish chart init');
         },
         methods: {
@@ -69,6 +71,7 @@
         },
         watch: {
             chartData: function() {
+                this.showChart = true;
                 this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
                 if(this.chart.chart){
                     showData(this.chart)
@@ -95,6 +98,7 @@
                 setYLabelColor(this.chart);
             },
             loading: function(){
+                this.showChart = true;                
                 if(this.chart.preloader){
                     if(this.loading){
                         this.chart.preloader.visible(true);
@@ -117,7 +121,9 @@
                 'chartType',
                 'chartYLabelType',
                 'tradeType',
-                'loading'
+                'loading',
+                'homeCurrency', 
+                'foreignCurrency'
             ])
         },
 

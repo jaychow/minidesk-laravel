@@ -1,5 +1,5 @@
 <template>
-    <div class="chart-header">
+    <div class="chart-header" v-show="homeCurrency !== '' && foreignCurrency !== ''">
         <div class="currency-title">
             <p id="currencyTitle">{{ homeCurrency }}</p>
         </div>
@@ -42,7 +42,7 @@
             console.log('ChartHeader Mounted!')
         },
         computed: {
-            ...mapGetters(['homeCurrency', 'chartSettings'])
+            ...mapGetters(['homeCurrency', 'chartSettings', 'foreignCurrency'])
         },
         methods: {
             setYLabelType(event) {

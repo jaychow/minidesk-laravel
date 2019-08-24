@@ -1,5 +1,5 @@
 <template>
-    <div class="chart-footer">
+    <div class="chart-footer" v-show="homeCurrency !== '' && foreignCurrency !== ''">
         <div class="timescale-area">
             <button v-for="_timescale in timescaleOptions"
                     class="timescaleButton"
@@ -42,7 +42,7 @@
             console.log('ChartFooter Mounted!')
         },
         computed: {
-            ...mapGetters(['chartSettings'])
+            ...mapGetters(['chartSettings', 'homeCurrency', 'foreignCurrency'])
         },
         methods: {
             setTimescale(event) {
