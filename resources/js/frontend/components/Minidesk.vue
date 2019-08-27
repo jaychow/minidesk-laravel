@@ -13,9 +13,7 @@
         </div>
 
         <div id="user-panel">
-            <div class="chartInput" id="chartInput">
-                <Sidebar></Sidebar>
-            </div>
+            <Sidebar></Sidebar>
         </div>
     </div>
 </template>

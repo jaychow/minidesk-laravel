@@ -9,7 +9,7 @@
         </div>
         <div class="candleLine-area" id="candleLineButton">
             <button v-for="(_typeTitle, _type) in typeOptions"
-                    class="chartAreaButton candleLineButton"
+                    class="candleLineButton"
                     :id="_type + 'Button'"
                     :value="_type"
                     :disabled="_type === chartSettings.type"

@@ -2,54 +2,61 @@
     <div class="sidebar">
         <div class="buySellButton-area">
             <div class="buySellButton" id="buySellButton">
-                <button value="buy" id="buyButton" class="buyButton" @click="setTrade" :disabled="tradeType === `buy`">I WILL NEED<br/>FOREIGN CURRENCY</button>
-                <button value="sell" id="sellButton" class="sellButton" @click="setTrade" :disabled="tradeType === `sell`">I WILL NEED<br/>HOME CURRENCY</button>
+                <button value="buy" id="buyButton" class="buyButton" @click="setTrade" :disabled="tradeType === `buy`">I WILL NEED<br>FOREIGN CURRENCY</button>
+                <button value="sell" id="sellButton" class="sellButton" @click="setTrade" :disabled="tradeType === `sell`">I WILL NEED<br>HOME CURRENCY</button>
             </div>
         </div>
 
         <div class="amount-area">
             <div class="currency-selector-container">
-                <div class="currency-selector currency-selector__home">
-                    <h4> HOME CURRENCY</h4>
-                    <select class="pairList homeCurrency" id="homeCurrency" v-on:change="changeHomeCurrency" v-model="homeCurrency">
+                <div class="currency-text">
+                    <h5>HOME CURRENCY</h5>
+                </div>
+                <div class="pair-list">       
+                    <select class="currency" id="homeCurrency" v-on:change="changeHomeCurrency" v-model="homeCurrency">
                         <option disabled selected value="">--select--</option>
-                        <option v-for="currencyItem in currencyItems">{{currencyItem.currency}}</option>
+                        <option v-for="currencyItem in currencyItems" class="currency-option">{{currencyItem.currency}}</option>
                     </select>
                 </div>
-                <div class="currency-selector currency-selector__foreign">
-                    <h4> FOREIGN CURRENCY</h4>
-                    <select class="pairList foreignCurrency" id="foreignCurrency" v-on:change="changeForeignCurrency" v-model="foreignCurrency">
+                <div class="currency-text">
+                    <h5>FOREIGN CURRENCY</h5>
+                </div>
+                <div class="pair-list">
+                    <select class="currency" id="foreignCurrency" v-on:change="changeForeignCurrency" v-model="foreignCurrency">
                         <option selected value="">--select--</option>
-                        <option v-for="currencyItem in currencyItems" :disabled="homeCurrency === currencyItem.currency">{{currencyItem.currency}}</option>
+                        <option v-for="currencyItem in currencyItems" :disabled="homeCurrency === currencyItem.currency" class="currency-option">{{currencyItem.currency}}</option>
                     </select>
+                </div>  
+            </div>
+            <div class="trade-input-container">
+                <form id="tradingTicketForm">
+                    <div class="input-group currency-input-container">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">{{ this.amountSymbol }}</span>
+                        </div>
+                        <input type="number" id="transactionAmount" 
+                            class="amount-input form-control" placeholder="Amount"
+                            v-model="amountInput"
+                            @input="amountChange"
+                            >
+                    </div>
+                    <!-- <div class="input-group date-input-container">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Date</span>
+                        </div>
+                        <input type="date" name="tradeDate" id="tradeDate" class="form-control"
+                            placeholder="MM/DD/YYYY">
+                    </div> -->
+                </form>
+            </div>
+            
+            <div class="alert-container">
+                <div :class="alertClass" v-html="tradeExplaination">
                 </div>
             </div>
-
-            <form id="tradingTicketForm">
-                <div class="input-group currency-input-container">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">$</span>
-                    </div>
-                    <input type="number" id="transactionAmount" 
-                        class="form-control" placeholder="Amount"
-                        v-model="amountInput"
-                        @input="amountChange"
-                        >
-                </div>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Date</span>
-                    </div>
-                    <input type="date" name="tradeDate" id="tradeDate" class="form-control"
-                           placeholder="MM/DD/YYYY">
-                </div>
-            </form>
-            <div :class="alertClass" v-html="alertHtml">
-            <!-- <div class="alert alert-light" role="alert" ref="tradeAlert"> -->
-                <!-- {{ tradeExplaination }} -->
-                <!-- <p id="tradeExplaination">{{ tradeExplaination }}</p> -->
-            </div>       
-            <button class="submitButton" id="submitButton">submit</button>
+            <div class="submit-area">
+                <button class="submitButton" id="submitButton">submit</button>
+            </div>           
         </div>
     </div>
 </template>
@@ -71,9 +78,9 @@
                 alertClass: {
                     'alert': true,
                     'alert-custom-pass': true,
-                    'alert-custom-danger': false
+                    'alert-danger': false
                 },
-                alertHtml: "",
+                amountSymbol: '$',
                 tradeExplaination : "",
                 amountInput: ""
             }
@@ -111,22 +118,21 @@
             watchAmount(){
                 let alertList = []
                 if(this.tradeType === "")
-                    alertList.push("TradeType")
+                    alertList.push("<b>TradeType</b>")
                 if(this.homeCurrency === "")
-                    alertList.push("HomeCurrency")
+                    alertList.push("<b>HomeCurrency</b>")
                 if(this.foreignCurrency === "")
-                    alertList.push("ForeignCurrency")
+                    alertList.push("<b>ForeignCurrency</b>")
 
                 //todo: add tradeDate
 
                 if(alertList.length !== 0){
                     this.alertClass['alert-custom-pass'] = false
-                    this.alertClass['alert-custom-danger'] = true
-                    // this.tradeExplaination = "Please set " + alertList.join(", ") + " first!"
-                    this.alertHtml = "Please set " + alertList.join(", ") + " first!"
+                    this.alertClass['alert-danger'] = true
+                    this.tradeExplaination = "Please set " + alertList.join(", ") + " first!"
                 }else{
                     this.alertClass['alert-custom-pass'] = true
-                    this.alertClass['alert-custom-danger'] = false
+                    this.alertClass['alert-danger'] = false                   
                     try {
                         let result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
                         let s = "If you transfer today,<br>" + this.amountInput + " " +
@@ -136,8 +142,7 @@
                         else
                             s += " cost"
                         s += " you " + result + " " + this.foreignCurrency + "."
-                        // this.tradeExplaination = s
-                        this.alertHtml = s
+                        this.tradeExplaination = s
                     } catch (error) {
                         console.log(error)
                     }
@@ -155,6 +160,23 @@
                 },
                 set (currency) {
                     this.$store.dispatch('setHomeCurrency', currency)
+                    switch(this.homeCurrency){
+                        case 'GBP':
+                            this.amountSymbol = "£"
+                            break;
+                        case 'USD':
+                            this.amountSymbol = "$"
+                            break;
+                        case 'CAD':
+                            this.amountSymbol = "$"
+                            break;
+                        case 'EUR':
+                            this.amountSymbol = "€"
+                            break;    
+                        default:
+                            this.amountSymbol = "$"
+                            break;
+                    }
                 }
             },
             foreignCurrency: {

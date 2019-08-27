@@ -24,16 +24,16 @@
             return {
                 yLabelTypeOptions: [
                     {
-                        value: 'user',
-                        label: '<i class="fa fa-user"></i>'
-                    },
-                    {
                         value: 'price',
                         label: '$'
                     },
                     {
                         value: 'percent',
                         label: '%'
+                    },
+                    {
+                        value: 'user',
+                        label: '<i class="fa fa-user"></i>'
                     }
                 ]
             }
