@@ -2,6 +2,7 @@ import axios from 'axios'
 import chart from '../../api/chart'
 
 const state = {
+    flow: "ASSESS",
     chart: {
         settings: {
             pair: '',
@@ -21,6 +22,7 @@ const state = {
 }
 
 const getters = {
+    flow: (state) => state.flow,
     today: (state) => state.chart.settings.today,
     tradeDate: (state) => (state.chart.settings.today.toISOString().substr(0,10)),
     chartData:  (state) => state.chart.data,
@@ -115,6 +117,9 @@ const actions  = {
         commit('UPDATE_LOADING', loading)
         // dispatch('fetchChartData')
     },
+    setFlow: ({commit, dispatch}, flow) =>{
+        commit('UPDATE_FLOW', flow)
+    },
 }
 
 const mutations = {
@@ -126,6 +131,7 @@ const mutations = {
     UPDATE_CHART_Y_LABEL_TYPE: (state, type) => (state.chart.settings.yLabelType = type),
     UPDATE_TRADE_TYPE: (state, type) => (state.chart.settings.tradeType = type),
     UPDATE_LOADING: (state, loading) => (state.chart.settings.isLoading = loading),
+    UPDATE_FLOW: (state, flow) => (state.flow = flow),
 }
 
 export default {

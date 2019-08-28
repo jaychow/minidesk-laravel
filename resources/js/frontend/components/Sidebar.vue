@@ -35,7 +35,7 @@
                             <span class="input-group-text">{{ this.amountSymbol }}</span>
                         </div>
                         <input type="number" id="transactionAmount" 
-                            class="amount-input form-control" placeholder="Amount"
+                            class="amount-input form-control" placeholder="AMOUNT"
                             v-model="amountInput"
                             @input="amountChange"
                             >
