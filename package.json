@@ -18,7 +18,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.2.0",
     "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@vue/test-utils": "^1.0.0-beta.10",
-    "anychart": "^8.5.0",
+    "anychart": "^8.7.0",
     "axios": "^0.18",
     "babel-jest": "^22.1.0",
     "bootstrap": "^4.0.0",
@@ -55,5 +55,8 @@
       "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
       ".*\\.(vue)$": "<rootDir>/node_modules/jest-vue-preprocessor"
     }
+  },
+  "dependencies": {
+    "bs-stepper": "^1.7.0"
   }
 }
