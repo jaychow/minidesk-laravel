@@ -3,7 +3,7 @@
         <div class="minidesk-flow">
             <Flow></Flow>
         </div>
-        <div class="minidesk-bottom" aria-labelledby="logins-part-trigger">
+        <!-- <div class="minidesk-bottom" aria-labelledby="logins-part-trigger">
             <div class="chart-container" id="chart-container">
                 <div class="top-area">
                     <ChartHeader></ChartHeader>
@@ -18,7 +18,7 @@
             <div id="user-panel">
                 <Sidebar></Sidebar>
             </div>
-        </div>
+        </div> -->
 
     </div>
 </template>
