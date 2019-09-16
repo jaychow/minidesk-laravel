@@ -5,6 +5,7 @@
 <script>
     import Anychart from 'anychart'
     import { mapGetters, mapActions } from 'vuex'
+    import chartApi from '../api/chart'
     import { chartInit } from '../store/modules/chart/init.js'
     import { setChartMapping, setXAxis, setYLabel, showData, setYLabelColor } from '../store/modules/chart/chart_setting.js'
     export default {
@@ -42,6 +43,16 @@
         },
         mounted() {
             console.log("Chart mounted")
+            chartApi.getRefreshInterval((data, err) =>{
+                if(!err){
+                    if(data !== "")
+                        this.$store.dispatch('setRefreshInterval', data)
+                    else
+                        this.$store.dispatch('setRefreshInterval', "M10")
+                }
+                this.initUpdateInterval()
+            })
+            console.log('set updateIntervalCounts')
             chartInit(this.chart, this.$el);
             this.showChart = false;
             
@@ -49,25 +60,13 @@
         },
         methods: {
             initUpdateInterval() {
-                this.updateCandleInterval = this.intervalMapToMinutes[this.chartSettings['refreshInterval']]
+                this.updateCandleInterval = this.intervalMapToMinutes[this.refreshInterval]
                 this.updateIntervalCounts['1W'] = 60 / this.updateCandleInterval // 60m/candle, need updateIntervalCounts['1W'] time to update 1 candle until it is set.
                 this.updateIntervalCounts['1M'] = 60 * 4 / this.updateCandleInterval // 240m/candle, increase 1 candle every intervals.
                 this.updateIntervalCounts['3M'] = 60 * 24 / this.updateCandleInterval // 60m*24/candle, increase 1 candle every intervals.
                 this.updateIntervalCounts['1Y'] = 60 * 24 * 7 / this.updateCandleInterval // 1W/candle, increase 1 candle every intervals.
                 this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval // 1M/candle, increase 1 candle every intervals.
             },
-            draw() {
-            //     if (!this.chart && this.$store.getters.chartOptions) {
-            //        try {     
-            //             // this.initChar()                     
-            //             this.chart.container(this.$el).draw()
-            //         } catch (error) {
-            //             console.error(error)
-            //         }
-
-            //    }
-            },
-
         },
         watch: {
             chartData: function() {
@@ -76,13 +75,6 @@
                 if(this.chart.chart){
                     showData(this.chart)
                 }
-                // if(!this.chart && this.$store.getters.chartOptions) {
-                //     this.draw()
-                // } else {
-                //     this.chart.dispose()
-                //     this.chart = null
-                //     this.draw()
-                // }
             },
             chartType: function(){
                 this.chart.chartType = this.chartType;
@@ -123,7 +115,8 @@
                 'tradeType',
                 'loading',
                 'homeCurrency', 
-                'foreignCurrency'
+                'foreignCurrency',
+                'refreshInterval'
             ])
         },
 

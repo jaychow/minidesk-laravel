@@ -1,5 +1,5 @@
 import axios from 'axios'
-import chart from '../../api/chart'
+import chartApi from '../../api/chart'
 
 const state = {
     flow: "ASSESS",
@@ -33,7 +33,8 @@ const getters = {
     chartType: (state) => (state.chart.settings.type),
     chartYLabelType: (state) => (state.chart.settings.yLabelType),
     tradeType: (state) => (state.chart.settings.tradeType),
-    loading: (state) => (state.chart.settings.isLoading)
+    loading: (state) => (state.chart.settings.isLoading),
+    refreshInterval: (state) => (state.chart.settings.refreshInterval),
 }
 
 const actions  = {
@@ -61,7 +62,7 @@ const actions  = {
             
             let data = {}
             commit('UPDATE_LOADING', true)
-            let response = await chart.getTable(
+            let response = await chartApi.getTable(
                 this.getters.pair,
                 this.getters.chartSettings.timescale,
                 false,
@@ -69,12 +70,12 @@ const actions  = {
             )
             data.jsonHistoryData = response.data.slice()
             
-            // response = await chart.getZone(
-            //     this.getters.pair,
-            //     "true",
-            //     data.jsonHistoryData[0][5]
-            // ) 
-            
+            response = await chartApi.getZone(
+                this.getters.pair,
+                "true",
+                data.jsonHistoryData[0][5]
+            ) 
+            console.log(response)
             // data.jsonZonesData = response.data
 
             console.log(data.jsonHistoryData)
@@ -120,6 +121,9 @@ const actions  = {
     setFlow: ({commit, dispatch}, flow) =>{
         commit('UPDATE_FLOW', flow)
     },
+    setRefreshInterval: ({commit, dispatch}, interval) => {
+        commit('UPDATE_INTERVAL', interval)
+    },
 }
 
 const mutations = {
@@ -132,6 +136,7 @@ const mutations = {
     UPDATE_TRADE_TYPE: (state, type) => (state.chart.settings.tradeType = type),
     UPDATE_LOADING: (state, loading) => (state.chart.settings.isLoading = loading),
     UPDATE_FLOW: (state, flow) => (state.flow = flow),
+    UPDATE_INTERVAL: (state, interval) => (state.chart.settings.refreshInterval = interval),
 }
 
 export default {
