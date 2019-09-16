@@ -1,10 +1,10 @@
 {
-    "/js/vendor.js": "/js/vendor.js?id=f7f6f586420b96e3775e",
-    "/js/frontend.js": "/js/frontend.js?id=80ef66ad7d1fe98e7431",
-    "/css/frontend.css": "/css/frontend.css?id=d959053df8c521e5d7ab",
-    "/css/backend.css": "/css/backend.css?id=9bdcad8e65529f798da3",
-    "/js/backendZone.js": "/js/backendZone.js?id=b7890864a4105574300f",
-    "/js/backendRefresh.js": "/js/backendRefresh.js?id=df196ddeda2cc805b687",
-    "/js/backend.js": "/js/backend.js?id=f4e413eb913a138309bc",
+    "/js/vendor.js": "/js/vendor.js?id=ca87a44a02d5f09966ee",
+    "/js/frontend.js": "/js/frontend.js?id=13aa804dc52d015e558b",
+    "/css/frontend.css": "/css/frontend.css?id=8d924d2faf29f0e532c1",
+    "/css/backend.css": "/css/backend.css?id=cfe6a75a4112cbe14a77",
+    "/js/backendZone.js": "/js/backendZone.js?id=5185d0151bd4898af164",
+    "/js/backendRefresh.js": "/js/backendRefresh.js?id=6e88a455f1299b0170b4",
+    "/js/backend.js": "/js/backend.js?id=d6eb7bcf4843158ad5cf",
     "/js/manifest.js": "/js/manifest.js?id=68cb77cbe266d4262844"
 }
