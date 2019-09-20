@@ -43,16 +43,16 @@
         },
         mounted() {
             console.log("Chart mounted")
-            chartApi.getRefreshInterval((data, err) =>{
-                if(!err){
-                    if(data !== "")
-                        this.$store.dispatch('setRefreshInterval', data)
-                    else
-                        this.$store.dispatch('setRefreshInterval', "M10")
-                }
-                this.initUpdateInterval()
-            })
-            console.log('set updateIntervalCounts')
+            // chartApi.getRefreshInterval((data, err) =>{
+            //     if(!err){
+            //         if(data !== "")
+            //             this.$store.dispatch('setRefreshInterval', data)
+            //         else
+            //             this.$store.dispatch('setRefreshInterval', "M10")
+            //     }
+            //     this.initUpdateInterval()
+            // })
+            // console.log('set updateIntervalCounts')
             chartInit(this.chart, this.$el);
             this.showChart = false;
             

@@ -70,12 +70,12 @@ const actions  = {
             )
             data.jsonHistoryData = response.data.slice()
             
-            response = await chartApi.getZone(
-                this.getters.pair,
-                "true",
-                data.jsonHistoryData[0][5]
-            ) 
-            console.log(response)
+            // response = await chartApi.getZone(
+            //     this.getters.pair,
+            //     "true",
+            //     data.jsonHistoryData[0][5]
+            // ) 
+            // console.log(response)
             // data.jsonZonesData = response.data
 
             console.log(data.jsonHistoryData)
