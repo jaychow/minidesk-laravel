@@ -11,6 +11,7 @@ function chartInit(chart, el) {
     // chart.chart = new Anychart.fromJson(chart_style);
 
     //create new chart object
+    anychart.format.inputDateTimeFormat('yyyy-MM-dd HH:mm:ss');
     chart.historyDataTable = Anychart.data.table();   
     chart.chart = Anychart.stock();
 
@@ -75,8 +76,8 @@ function chartInit(chart, el) {
     //chart perloader init
     chart.preloader = Anychart.ui.preloader();
     chart.preloader.render(el);  
-    chart.chart.container(el);
-    console.log('chartInit');
+    chart.chart.container("chart");
+    console.log('chartInit!');
 
     // init test data
     // Anychart.data.loadCsvFile('https://cdn.anychart.com/csv-data/csco-daily.csv', function (data) {
