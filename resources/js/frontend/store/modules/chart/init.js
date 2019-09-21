@@ -11,6 +11,7 @@ function chartInit(chart, el) {
     // chart.chart = new Anychart.fromJson(chart_style);
 
     //create new chart object
+    anychart.format.inputDateTimeFormat('yyyy-MM-dd HH:mm:ss');
     chart.historyDataTable = Anychart.data.table();   
     chart.chart = Anychart.stock();
 
@@ -23,7 +24,7 @@ function chartInit(chart, el) {
                     .xMinorGrid(false);
 
     // chart position
-    chart.chart.bounds(0, 10, '90%', '100%');
+    chart.chart.bounds(-40, 10, '95%', '100%');
 
     let candle_mapping = chart.historyDataTable.mapAs({
         'open': 2,
@@ -75,8 +76,8 @@ function chartInit(chart, el) {
     //chart perloader init
     chart.preloader = Anychart.ui.preloader();
     chart.preloader.render(el);  
-    chart.chart.container(el);
-    console.log('chartInit');
+    chart.chart.container("chart");
+    console.log('chartInit!');
 
     // init test data
     // Anychart.data.loadCsvFile('https://cdn.anychart.com/csv-data/csco-daily.csv', function (data) {
@@ -85,23 +86,5 @@ function chartInit(chart, el) {
 
     // chart.chart.container('chart').draw();
 }
-
-
-
-function getMinY(data) {
-    if(data.length > 0)
-        return data.reduce((min, p) => p[5] < min ? p[5] : min, data[0][5]);
-    else
-        return;
-}
-
-function getMaxY(data) {
-    if(data.length > 0)
-        return data.reduce((max, p) => p[5] > max ? p[5] : max, data[0][5]);
-    else
-        return;
-}
-
-
 
 export { chartInit };
