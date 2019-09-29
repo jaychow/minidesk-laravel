@@ -50,7 +50,10 @@ body {
 
                         height:100%;
                         #chart-container{
-
+                            div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
+                            // .anychart-control .anychart-plot-controls .anychart-plot-controls-hidden{
+                            //     display: none;
+                            // }
                             height:100%;
                             width: 65%;
                             margin-left: 2%;
