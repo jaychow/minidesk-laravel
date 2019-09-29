@@ -22,9 +22,9 @@ function chartInit(chart, el) {
                     .xGrid(false)
                     .yMinorGrid(false)
                     .xMinorGrid(false);
-
+    
     // chart position
-    chart.chart.bounds(-40, 10, '95%', '100%');
+    chart.chart.bounds(-40, 10, '98%', '100%');
 
     let candle_mapping = chart.historyDataTable.mapAs({
         'open': 2,
@@ -49,8 +49,26 @@ function chartInit(chart, el) {
         line_series: line_series
     };
 
+    //set series color
+    line_series.stroke("2 #8b8dbb");
+    // candlestick_series.normal().fallingFill("#4B4860", 0.3);
+
+    candlestick_series.normal().fallingFill("#FFB735");
+    candlestick_series.normal().fallingStroke("#FFB735");
+    candlestick_series.hovered().fallingFill("#FFB735");
+    candlestick_series.hovered().fallingStroke("#FFB735");
+    candlestick_series.selected().fallingFill("#FFB735");
+    candlestick_series.selected().fallingStroke("#FFB735");
+  
+    candlestick_series.normal().risingFill("#906A96");
+    candlestick_series.normal().risingStroke("#906A96");
+    candlestick_series.hovered().risingFill("#906A96");
+    candlestick_series.hovered().risingStroke("#906A96");
+    candlestick_series.selected().risingFill("#906A96");
+    candlestick_series.selected().risingStroke("#906A96");
     // init legend setting
     chart.historyPlot.legend(true);
+    chart.historyPlot.legend().title().useHtml(true);
     chart.historyPlot.legend().removeAllListeners();
     chart.historyPlot.legend().height(50);
     chart.historyPlot.legend().paginator(false);
@@ -64,6 +82,7 @@ function chartInit(chart, el) {
     setXAxis(chart);
 
     let yAxis = chart.historyPlot.yAxis();
+    // yAxis.stroke({color:'#4B4860'});
     yAxis.labels().fontColor("#8b8dbb");
     setYLabel(chart);
 

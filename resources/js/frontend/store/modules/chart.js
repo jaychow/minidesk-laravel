@@ -18,7 +18,8 @@ const state = {
         data: {}
     },
     homeCurrency: '',
-    foreignCurrency: ''
+    foreignCurrency: '',
+    amountInput : 0
 }
 
 const getters = {
@@ -35,6 +36,7 @@ const getters = {
     tradeType: (state) => (state.chart.settings.tradeType),
     loading: (state) => (state.chart.settings.isLoading),
     refreshInterval: (state) => (state.chart.settings.refreshInterval),
+    amountInput : (state) => (state.amountInput),
 }
 
 const actions  = {
@@ -124,6 +126,9 @@ const actions  = {
     setRefreshInterval: ({commit, dispatch}, interval) => {
         commit('UPDATE_INTERVAL', interval)
     },
+    setAmount: ({commit, dispatch}, amount) => {
+        commit('UPDATE_AMOUNT', amount)        
+    }
 }
 
 const mutations = {
@@ -137,6 +142,7 @@ const mutations = {
     UPDATE_LOADING: (state, loading) => (state.chart.settings.isLoading = loading),
     UPDATE_FLOW: (state, flow) => (state.flow = flow),
     UPDATE_INTERVAL: (state, interval) => (state.chart.settings.refreshInterval = interval),
+    UPDATE_AMOUNT: (state, amount) => (state.amountInput = amount),
 }
 
 export default {

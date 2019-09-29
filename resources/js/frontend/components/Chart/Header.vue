@@ -46,8 +46,10 @@
         },
         methods: {
             setYLabelType(event) {
-                console.log(event.target.value)
-                this.$store.dispatch('setYLabelType', event.target.value)
+                if(event.target.value)
+                    this.$store.dispatch('setYLabelType', event.target.value)
+                else
+                    this.$store.dispatch('setYLabelType', 'user')       
             },
             isDisabled(option) {
                 return option.value === this.chartSettings.yLabelType

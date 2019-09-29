@@ -74,6 +74,11 @@
                 this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
                 if(this.chart.chart){
                     showData(this.chart)
+                    if(this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0")
+                        setYLabel(this.chart, this.amountInput);
+                    else
+                        setYLabel(this.chart);
+                    setYLabelColor(this.chart)
                 }
             },
             chartType: function(){
@@ -82,11 +87,25 @@
             },
             chartYLabelType: function(){
                 this.chart.chartLabelType = this.chartYLabelType;
-                setYLabel(this.chart);
-                setYLabelColor(this.chart);
+                if(this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0")
+                    setYLabel(this.chart, this.amountInput);
+                else
+                    setYLabel(this.chart);
+                setYLabelColor(this.chart)
+            },
+            amountInput: function(){
+                if(this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0")
+                    setYLabel(this.chart, this.amountInput);
+                else
+                    setYLabel(this.chart);
+                setYLabelColor(this.chart)
             },
             tradeType: function(){
                 this.chart.tradeType = this.tradeType;
+                if(this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0")
+                    setYLabel(this.chart, this.amountInput);
+                else
+                    setYLabel(this.chart);
                 setYLabelColor(this.chart);
             },
             loading: function(){
@@ -116,7 +135,8 @@
                 'loading',
                 'homeCurrency', 
                 'foreignCurrency',
-                'refreshInterval'
+                'refreshInterval',
+                'amountInput'
             ])
         },
 
