@@ -7154,256 +7154,7 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-36194a92\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "sidebar" }, [
-    _c("div", { staticClass: "buySellButton-area" }, [
-      _c(
-        "div",
-        { staticClass: "buySellButton", attrs: { id: "buySellButton" } },
-        [
-          _c(
-            "button",
-            {
-              staticClass: "buyButton",
-              attrs: {
-                value: "buy",
-                id: "buyButton",
-                disabled: _vm.tradeType === "buy"
-              },
-              on: { click: _vm.setTrade }
-            },
-            [_vm._v("I WILL NEED"), _c("br"), _vm._v("FOREIGN CURRENCY")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "sellButton",
-              attrs: {
-                value: "sell",
-                id: "sellButton",
-                disabled: _vm.tradeType === "sell"
-              },
-              on: { click: _vm.setTrade }
-            },
-            [_vm._v("I WILL NEED"), _c("br"), _vm._v("HOME CURRENCY")]
-          )
-        ]
-      )
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "amount-area" }, [
-      _c("div", { staticClass: "currency-selector-container" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "pair-list" }, [
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.homeCurrency,
-                  expression: "homeCurrency"
-                }
-              ],
-              staticClass: "currency",
-              attrs: { id: "homeCurrency" },
-              on: {
-                change: [
-                  function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.homeCurrency = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
-                  },
-                  _vm.changeHomeCurrency
-                ]
-              }
-            },
-            [
-              _c(
-                "option",
-                { attrs: { disabled: "", selected: "", value: "" } },
-                [_vm._v("--select--")]
-              ),
-              _vm._v(" "),
-              _vm._l(_vm.currencyItems, function(currencyItem) {
-                return _c("option", { staticClass: "currency-option" }, [
-                  _vm._v(_vm._s(currencyItem.currency))
-                ])
-              })
-            ],
-            2
-          )
-        ]),
-        _vm._v(" "),
-        _vm._m(1),
-        _vm._v(" "),
-        _c("div", { staticClass: "pair-list" }, [
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.foreignCurrency,
-                  expression: "foreignCurrency"
-                }
-              ],
-              staticClass: "currency",
-              attrs: { id: "foreignCurrency" },
-              on: {
-                change: [
-                  function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.foreignCurrency = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
-                  },
-                  _vm.changeForeignCurrency
-                ]
-              }
-            },
-            [
-              _c("option", { attrs: { selected: "", value: "" } }, [
-                _vm._v("--select--")
-              ]),
-              _vm._v(" "),
-              _vm._l(_vm.currencyItems, function(currencyItem) {
-                return _c(
-                  "option",
-                  {
-                    staticClass: "currency-option",
-                    attrs: {
-                      disabled: _vm.homeCurrency === currencyItem.currency
-                    }
-                  },
-                  [_vm._v(_vm._s(currencyItem.currency))]
-                )
-              })
-            ],
-            2
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "trade-input-container" }, [
-        _c("form", { attrs: { id: "tradingTicketForm" } }, [
-          _c("div", { staticClass: "input-group currency-input-container" }, [
-            _c("div", { staticClass: "input-group-prepend" }, [
-              _c("span", { staticClass: "input-group-text" }, [
-                _vm._v(_vm._s(this.amountSymbol))
-              ])
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.amountInput,
-                  expression: "amountInput"
-                }
-              ],
-              staticClass: "amount-input form-control",
-              attrs: {
-                type: "number",
-                id: "transactionAmount",
-                placeholder: "AMOUNT"
-              },
-              domProps: { value: _vm.amountInput },
-              on: {
-                input: [
-                  function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.amountInput = $event.target.value
-                  },
-                  _vm.amountChange
-                ]
-              }
-            })
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "alert-container" }, [
-        _c("div", {
-          class: _vm.alertClass,
-          domProps: { innerHTML: _vm._s(_vm.tradeExplaination) }
-        })
-      ]),
-      _vm._v(" "),
-      _vm._m(2)
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "currency-text" }, [
-      _c("h5", [_vm._v("HOME CURRENCY")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "currency-text" }, [
-      _c("h5", [_vm._v("FOREIGN CURRENCY")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "submit-area" }, [
-      _c(
-        "button",
-        { staticClass: "submitButton", attrs: { id: "submitButton" } },
-        [_vm._v("submit")]
-      )
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-36194a92", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-39bd59ac\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1bca1c6a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -7420,13 +7171,45 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-39bd59ac", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-1bca1c6a", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3a72c5b3\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2304d454\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", {
+    directives: [
+      {
+        name: "show",
+        rawName: "v-show",
+        value: _vm.showChart === true,
+        expression: "showChart === true"
+      }
+    ],
+    staticClass: "chart",
+    attrs: { id: "chart" }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2304d454", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2fd83210\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -7444,46 +7227,96 @@ var render = function() {
           expression: "homeCurrency !== '' && foreignCurrency !== ''"
         }
       ],
-      staticClass: "chart-footer"
+      staticClass: "chart-header"
     },
     [
-      _c(
-        "div",
-        { staticClass: "timescale-area" },
-        _vm._l(_vm.timescaleOptions, function(_timescale) {
-          return _c(
-            "button",
-            {
-              staticClass: "timescaleButton",
-              attrs: {
-                value: _timescale,
-                disabled: _timescale === _vm.chartSettings.timescale
-              },
-              on: { click: _vm.setTimescale }
-            },
-            [_vm._v(_vm._s(_timescale))]
-          )
-        }),
-        0
-      ),
+      _c("div", { staticClass: "currency-title" }, [
+        _vm.tradeType !== "sell"
+          ? _c("div", [
+              _c("p", { attrs: { id: "currencyTitle" } }, [
+                _vm._v(_vm._s(_vm.foreignCurrency + "_" + _vm.homeCurrency))
+              ])
+            ])
+          : _c("div", [
+              _c("p", { attrs: { id: "currencyTitle" } }, [
+                _vm._v(_vm._s(_vm.homeCurrency + "_" + _vm.foreignCurrency))
+              ])
+            ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "price-description" }, [
+        _vm.chartType === "candle"
+          ? _c("div", { staticClass: "descript-candle" }, [
+              _vm.tradeType === "buy"
+                ? _c("div", { staticClass: "descript-candle" }, [
+                    _vm._v(
+                      "\n                Downward price movements of the " +
+                        _vm._s(_vm.foreignCurrency)
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      "\n                are beneficial to you as a buyer and are illustrated"
+                    ),
+                    _c("br"),
+                    _vm._v("\n                in orange.\n            ")
+                  ])
+                : _vm.tradeType === "sell"
+                  ? _c("div", { staticClass: "descript-candle" }, [
+                      _vm._v(
+                        "\n                Downward price movements of the " +
+                          _vm._s(_vm.homeCurrency)
+                      ),
+                      _c("br"),
+                      _vm._v(
+                        "\n                are beneficial to you as a buyer and are illustrated"
+                      ),
+                      _c("br"),
+                      _vm._v("\n                in orange.\n            ")
+                    ])
+                  : _c("div")
+            ])
+          : _vm.chartType === "line"
+            ? _c("div", { staticClass: "descript-line" }, [
+                _vm.tradeType !== "sell"
+                  ? _c("div", [
+                      _vm._v(
+                        "\n                Relative performance of " +
+                          _vm._s(
+                            _vm.foreignCurrency + " to " + _vm.homeCurrency
+                          ) +
+                          "\n            "
+                      )
+                    ])
+                  : _c("div", [
+                      _vm._v(
+                        "\n                Relative performance of " +
+                          _vm._s(
+                            _vm.homeCurrency + " to " + _vm.foreignCurrency
+                          ) +
+                          "\n            "
+                      )
+                    ])
+              ])
+            : _c("div", [_vm._v("non")])
+      ]),
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "candleLine-area", attrs: { id: "candleLineButton" } },
-        _vm._l(_vm.typeOptions, function(_typeTitle, _type) {
-          return _c(
-            "button",
-            {
-              staticClass: "candleLineButton",
-              attrs: {
-                id: _type + "Button",
-                value: _type,
-                disabled: _type === _vm.chartSettings.type
-              },
-              on: { click: _vm.setType }
+        {
+          staticClass: "pricePercentage-area",
+          attrs: { id: "pricePercentageButton" }
+        },
+        _vm._l(_vm.yLabelTypeOptions, function(_option) {
+          return _c("button", {
+            staticClass: "chartAreaButton pricePercentageButton",
+            attrs: {
+              id: _option.value + "Button",
+              value: _option.value,
+              disabled: _vm.isDisabled(_option)
             },
-            [_vm._v(_vm._s(_typeTitle))]
-          )
+            domProps: { innerHTML: _vm._s(_option.label) },
+            on: { click: _vm.setYLabelType }
+          })
         }),
         0
       )
@@ -7496,13 +7329,13 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-3a72c5b3", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-2fd83210", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-407206e8\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-45717028\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -7763,13 +7596,262 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-407206e8", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-45717028", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5ba529a5\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-66db4d5c\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "sidebar" }, [
+    _c("div", { staticClass: "buySellButton-area" }, [
+      _c(
+        "div",
+        { staticClass: "buySellButton", attrs: { id: "buySellButton" } },
+        [
+          _c(
+            "button",
+            {
+              staticClass: "buyButton",
+              attrs: {
+                value: "buy",
+                id: "buyButton",
+                disabled: _vm.tradeType === "buy"
+              },
+              on: { click: _vm.setTrade }
+            },
+            [_vm._v("I WILL NEED"), _c("br"), _vm._v("FOREIGN CURRENCY")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "sellButton",
+              attrs: {
+                value: "sell",
+                id: "sellButton",
+                disabled: _vm.tradeType === "sell"
+              },
+              on: { click: _vm.setTrade }
+            },
+            [_vm._v("I WILL NEED"), _c("br"), _vm._v("HOME CURRENCY")]
+          )
+        ]
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "amount-area" }, [
+      _c("div", { staticClass: "currency-selector-container" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "pair-list" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.homeCurrency,
+                  expression: "homeCurrency"
+                }
+              ],
+              staticClass: "currency",
+              attrs: { id: "homeCurrency" },
+              on: {
+                change: [
+                  function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.homeCurrency = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  },
+                  _vm.changeHomeCurrency
+                ]
+              }
+            },
+            [
+              _c(
+                "option",
+                { attrs: { disabled: "", selected: "", value: "" } },
+                [_vm._v("--select--")]
+              ),
+              _vm._v(" "),
+              _vm._l(_vm.currencyItems, function(currencyItem) {
+                return _c("option", { staticClass: "currency-option" }, [
+                  _vm._v(_vm._s(currencyItem.currency))
+                ])
+              })
+            ],
+            2
+          )
+        ]),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _c("div", { staticClass: "pair-list" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.foreignCurrency,
+                  expression: "foreignCurrency"
+                }
+              ],
+              staticClass: "currency",
+              attrs: { id: "foreignCurrency" },
+              on: {
+                change: [
+                  function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.foreignCurrency = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  },
+                  _vm.changeForeignCurrency
+                ]
+              }
+            },
+            [
+              _c("option", { attrs: { selected: "", value: "" } }, [
+                _vm._v("--select--")
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.currencyItems, function(currencyItem) {
+                return _c(
+                  "option",
+                  {
+                    staticClass: "currency-option",
+                    attrs: {
+                      disabled: _vm.homeCurrency === currencyItem.currency
+                    }
+                  },
+                  [_vm._v(_vm._s(currencyItem.currency))]
+                )
+              })
+            ],
+            2
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "trade-input-container" }, [
+        _c("form", { attrs: { id: "tradingTicketForm" } }, [
+          _c("div", { staticClass: "input-group currency-input-container" }, [
+            _c("div", { staticClass: "input-group-prepend" }, [
+              _c("span", { staticClass: "input-group-text" }, [
+                _vm._v(_vm._s(this.amountSymbol))
+              ])
+            ]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.amountInput,
+                  expression: "amountInput"
+                }
+              ],
+              staticClass: "amount-input form-control",
+              attrs: {
+                type: "number",
+                id: "transactionAmount",
+                placeholder: "AMOUNT"
+              },
+              domProps: { value: _vm.amountInput },
+              on: {
+                input: [
+                  function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.amountInput = $event.target.value
+                  },
+                  _vm.amountChange
+                ]
+              }
+            })
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "alert-container" }, [
+        _c("div", {
+          class: _vm.alertClass,
+          domProps: { innerHTML: _vm._s(_vm.tradeExplaination) }
+        })
+      ]),
+      _vm._v(" "),
+      _vm._m(2)
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "currency-text" }, [
+      _c("h5", [_vm._v("HOME CURRENCY")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "currency-text" }, [
+      _c("h5", [_vm._v("FOREIGN CURRENCY")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "submit-area" }, [
+      _c(
+        "button",
+        { staticClass: "submitButton", attrs: { id: "submitButton" } },
+        [_vm._v("submit")]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-66db4d5c", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-723cf9f4\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -7787,96 +7869,46 @@ var render = function() {
           expression: "homeCurrency !== '' && foreignCurrency !== ''"
         }
       ],
-      staticClass: "chart-header"
+      staticClass: "chart-footer"
     },
     [
-      _c("div", { staticClass: "currency-title" }, [
-        _vm.tradeType !== "sell"
-          ? _c("div", [
-              _c("p", { attrs: { id: "currencyTitle" } }, [
-                _vm._v(_vm._s(_vm.foreignCurrency + "_" + _vm.homeCurrency))
-              ])
-            ])
-          : _c("div", [
-              _c("p", { attrs: { id: "currencyTitle" } }, [
-                _vm._v(_vm._s(_vm.homeCurrency + "_" + _vm.foreignCurrency))
-              ])
-            ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "price-description" }, [
-        _vm.chartType === "candle"
-          ? _c("div", { staticClass: "descript-candle" }, [
-              _vm.tradeType === "buy"
-                ? _c("div", { staticClass: "descript-candle" }, [
-                    _vm._v(
-                      "\n                Downward price movements of the " +
-                        _vm._s(_vm.foreignCurrency)
-                    ),
-                    _c("br"),
-                    _vm._v(
-                      "\n                are beneficial to you as a buyer and are illustrated"
-                    ),
-                    _c("br"),
-                    _vm._v("\n                in orange.\n            ")
-                  ])
-                : _vm.tradeType === "sell"
-                  ? _c("div", { staticClass: "descript-candle" }, [
-                      _vm._v(
-                        "\n                Downward price movements of the " +
-                          _vm._s(_vm.homeCurrency)
-                      ),
-                      _c("br"),
-                      _vm._v(
-                        "\n                are beneficial to you as a buyer and are illustrated"
-                      ),
-                      _c("br"),
-                      _vm._v("\n                in orange.\n            ")
-                    ])
-                  : _c("div")
-            ])
-          : _vm.chartType === "line"
-            ? _c("div", { staticClass: "descript-line" }, [
-                _vm.tradeType !== "sell"
-                  ? _c("div", [
-                      _vm._v(
-                        "\n                Relative performance of " +
-                          _vm._s(
-                            _vm.foreignCurrency + " to " + _vm.homeCurrency
-                          ) +
-                          "\n            "
-                      )
-                    ])
-                  : _c("div", [
-                      _vm._v(
-                        "\n                Relative performance of " +
-                          _vm._s(
-                            _vm.homeCurrency + " to " + _vm.foreignCurrency
-                          ) +
-                          "\n            "
-                      )
-                    ])
-              ])
-            : _c("div", [_vm._v("non")])
-      ]),
+      _c(
+        "div",
+        { staticClass: "timescale-area" },
+        _vm._l(_vm.timescaleOptions, function(_timescale) {
+          return _c(
+            "button",
+            {
+              staticClass: "timescaleButton",
+              attrs: {
+                value: _timescale,
+                disabled: _timescale === _vm.chartSettings.timescale
+              },
+              on: { click: _vm.setTimescale }
+            },
+            [_vm._v(_vm._s(_timescale))]
+          )
+        }),
+        0
+      ),
       _vm._v(" "),
       _c(
         "div",
-        {
-          staticClass: "pricePercentage-area",
-          attrs: { id: "pricePercentageButton" }
-        },
-        _vm._l(_vm.yLabelTypeOptions, function(_option) {
-          return _c("button", {
-            staticClass: "chartAreaButton pricePercentageButton",
-            attrs: {
-              id: _option.value + "Button",
-              value: _option.value,
-              disabled: _vm.isDisabled(_option)
+        { staticClass: "candleLine-area", attrs: { id: "candleLineButton" } },
+        _vm._l(_vm.typeOptions, function(_typeTitle, _type) {
+          return _c(
+            "button",
+            {
+              staticClass: "candleLineButton",
+              attrs: {
+                id: _type + "Button",
+                value: _type,
+                disabled: _type === _vm.chartSettings.type
+              },
+              on: { click: _vm.setType }
             },
-            domProps: { innerHTML: _vm._s(_option.label) },
-            on: { click: _vm.setYLabelType }
-          })
+            [_vm._v(_vm._s(_typeTitle))]
+          )
         }),
         0
       )
@@ -7889,39 +7921,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5ba529a5", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-efd1d4d8\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", {
-    directives: [
-      {
-        name: "show",
-        rawName: "v-show",
-        value: _vm.showChart === true,
-        expression: "showChart === true"
-      }
-    ],
-    staticClass: "chart",
-    attrs: { id: "chart" }
-  })
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-efd1d4d8", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-723cf9f4", module.exports)
   }
 }
 
@@ -21145,7 +21145,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-efd1d4d8\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2304d454\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -21162,7 +21162,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart.vue"
+Component.options.__file = "resources/js/frontend/components/Chart.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -21171,9 +21171,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-efd1d4d8", Component.options)
+    hotAPI.createRecord("data-v-2304d454", Component.options)
   } else {
-    hotAPI.reload("data-v-efd1d4d8", Component.options)
+    hotAPI.reload("data-v-2304d454", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -21193,7 +21193,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/Footer.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3a72c5b3\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-723cf9f4\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -21210,7 +21210,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart\\Footer.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/Footer.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -21219,9 +21219,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-3a72c5b3", Component.options)
+    hotAPI.createRecord("data-v-723cf9f4", Component.options)
   } else {
-    hotAPI.reload("data-v-3a72c5b3", Component.options)
+    hotAPI.reload("data-v-723cf9f4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -21241,7 +21241,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/Header.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5ba529a5\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2fd83210\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -21258,7 +21258,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart\\Header.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/Header.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -21267,9 +21267,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5ba529a5", Component.options)
+    hotAPI.createRecord("data-v-2fd83210", Component.options)
   } else {
-    hotAPI.reload("data-v-5ba529a5", Component.options)
+    hotAPI.reload("data-v-2fd83210", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -21289,7 +21289,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Flow.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-407206e8\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-45717028\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -21306,7 +21306,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Flow.vue"
+Component.options.__file = "resources/js/frontend/components/Flow.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -21315,9 +21315,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-407206e8", Component.options)
+    hotAPI.createRecord("data-v-45717028", Component.options)
   } else {
-    hotAPI.reload("data-v-407206e8", Component.options)
+    hotAPI.reload("data-v-45717028", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -21337,7 +21337,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Minidesk.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-39bd59ac\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1bca1c6a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -21354,7 +21354,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Minidesk.vue"
+Component.options.__file = "resources/js/frontend/components/Minidesk.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -21363,9 +21363,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-39bd59ac", Component.options)
+    hotAPI.createRecord("data-v-1bca1c6a", Component.options)
   } else {
-    hotAPI.reload("data-v-39bd59ac", Component.options)
+    hotAPI.reload("data-v-1bca1c6a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -21385,7 +21385,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Sidebar.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-36194a92\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-66db4d5c\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -21402,7 +21402,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Sidebar.vue"
+Component.options.__file = "resources/js/frontend/components/Sidebar.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -21411,9 +21411,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-36194a92", Component.options)
+    hotAPI.createRecord("data-v-66db4d5c", Component.options)
   } else {
-    hotAPI.reload("data-v-36194a92", Component.options)
+    hotAPI.reload("data-v-66db4d5c", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
