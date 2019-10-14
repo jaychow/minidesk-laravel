@@ -51,7 +51,7 @@ class ChartController extends Controller {
     }
 
     // Get API data from Oanda
-    protected function getFromAPI($type, $utc, $fromTime, $timeRange) {
+    public function getFromAPI($type, $utc, $fromTime, $timeRange) {
         // Use to identify is the currency need to change ?
         $reverseFlag    = 0;
         $sourceCurrency = $type;
@@ -420,7 +420,7 @@ class ChartController extends Controller {
         return $output;
     }
 
-    protected function _getFromTime($timeRange) {
+    public function _getFromTime($timeRange) {
         // Select time scale , each time scale start from open market time
         switch ($timeRange) {
             case "1W":
