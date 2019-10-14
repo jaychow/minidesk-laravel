@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        \App\Console\Commands\CollectAllPrices::class,
     ];
 
     /**
@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('collectAllPrice')->everyMinute()->withoutOverlapping()->sendOutputTo("output-log.log");
     }
 
     /**
