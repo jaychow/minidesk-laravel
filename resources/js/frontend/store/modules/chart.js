@@ -18,7 +18,8 @@ const state = {
         data: {}
     },
     homeCurrency: '',
-    foreignCurrency: ''
+    foreignCurrency: '',
+    amountInput : 0
 }
 
 const getters = {
@@ -29,21 +30,27 @@ const getters = {
     chartSettings: (state) => state.chart.settings,
     homeCurrency: (state) => state.homeCurrency,
     foreignCurrency: (state) => state.foreignCurrency,
-    pair: (state) => (state.homeCurrency + '_' + state.foreignCurrency),
+    pair: (state) => {
+        if(state.chart.settings.tradeType !== "sell")
+            return (state.foreignCurrency + '_' + state.homeCurrency)
+        else
+            return (state.homeCurrency + '_' + state.foreignCurrency)
+    },
     chartType: (state) => (state.chart.settings.type),
     chartYLabelType: (state) => (state.chart.settings.yLabelType),
     tradeType: (state) => (state.chart.settings.tradeType),
     loading: (state) => (state.chart.settings.isLoading),
     refreshInterval: (state) => (state.chart.settings.refreshInterval),
+    amountInput : (state) => (state.amountInput),
 }
 
 const actions  = {
     async fetchChartData({commit}) {
         try {
-            if(!this.getters.homeCurrency) {
+            if(!this.getters.homeCurrency || this.getters.homeCurrency === "") {
                 return
             }
-            if(!this.getters.foreignCurrency) {
+            if(!this.getters.foreignCurrency || this.getters.foreignCurrency === "") {
                 return
             }
             if(!this.getters.chartSettings.timescale) {
@@ -112,7 +119,7 @@ const actions  = {
     },
     setTradeType: ({commit, dispatch}, type) => {
         commit('UPDATE_TRADE_TYPE', type)
-        // dispatch('fetchChartData')
+        dispatch('fetchChartData')
     },
     setLoading: ({commit, dispatch}, loading) => {
         commit('UPDATE_LOADING', loading)
@@ -124,6 +131,9 @@ const actions  = {
     setRefreshInterval: ({commit, dispatch}, interval) => {
         commit('UPDATE_INTERVAL', interval)
     },
+    setAmount: ({commit, dispatch}, amount) => {
+        commit('UPDATE_AMOUNT', amount)        
+    }
 }
 
 const mutations = {
@@ -137,6 +147,7 @@ const mutations = {
     UPDATE_LOADING: (state, loading) => (state.chart.settings.isLoading = loading),
     UPDATE_FLOW: (state, flow) => (state.flow = flow),
     UPDATE_INTERVAL: (state, interval) => (state.chart.settings.refreshInterval = interval),
+    UPDATE_AMOUNT: (state, amount) => (state.amountInput = amount),
 }
 
 export default {

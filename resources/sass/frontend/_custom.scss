@@ -50,7 +50,10 @@ body {
 
                         height:100%;
                         #chart-container{
-
+                            div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
+                            // .anychart-control .anychart-plot-controls .anychart-plot-controls-hidden{
+                            //     display: none;
+                            // }
                             height:100%;
                             width: 65%;
                             margin-left: 2%;
@@ -59,26 +62,62 @@ body {
                             background-color: white;
                             box-shadow:3px 3px 9px #4B4860;
                             .top-area{
-                                height: 6%;
-                                .currency-title {
-                                    margin: 1% 0% 0% 3%;
-                                    width: 67%;
-                                    font-size: 200%;
-                                    display: inline-block;
-                                    text-align: left;
-                                    color: #4B4860;
-                                }
-                                .pricePercentage-area {
-                                    width: 29%;
-                                    // display: inline-flex;
-                                    // flex-wrap: wrap;
-                                    display: inline-block;
-                                    text-align: right;
+                                width: 100%;
+                                height: 13%;
+                                .chart-header{
+                                    width: 100%;
+                                    height: 100%;
+                                    display: flex;
+                                    .currency-title {
+                                        width: 16%;
+                                        height: 100%;
+                                        font-size: 200%;
+                                        display: inline-flex;
+                                        flex-wrap: wrap;
+                                        margin-left: 3%;
+                                        padding-top: 1%;
+                                        text-align: left;
+                                        color: #4B4860;
+                                    }
+                                    .price-description{
+                                        width: 66%;
+                                        // height: 100%;
+                                        margin-top: 1%;
+                                        margin-left: 1%;
+                                        display: inline-flex;
+                                        flex-wrap: wrap;
+                                        font-size:x-small;
+                                        color: #4B4860;
+                                        .descript-candle{
+                                            height: 100%;
+                                            display: flex;
+                                            align-items: unset;
+                                        }
+                                        .descript-line{
+                                            height: 100%;
+                                            display: flex;
+                                            align-items: center;
+                                        }
+                                    }
+                                    .pricePercentage-area {
+                                        margin-top: 1%;
+                                        margin-left: auto;
+                                        width: 18%;
+                                        display: inline-flex;
+                                        justify-content: flex-end;
+                                        flex-wrap: wrap;
+                                        vertical-align: middle;
+                                        text-align: right;
+                                        .pricePercentageButton{
+                                            display: inline-flex;
+                                            text-align: right;
+                                        }
+                                    }
                                 }
                             }
                             .chart-body {
-                                margin-top: 1%;
-                                height:86%;
+                                margin-top: -3%;
+                                height:83.5%;
                                 .chart {
                                     width: 100%;
                                     height: 100%;
@@ -86,7 +125,7 @@ body {
                             }
                             .bottom-area {
                                 width: 100%;
-                                height: 6%;
+                                height: 4%;
                                 .timescale-area {
                                     width: 49%;
                                     margin-left: 2%;

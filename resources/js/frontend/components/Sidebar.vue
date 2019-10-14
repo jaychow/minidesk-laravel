@@ -80,7 +80,7 @@
                     'alert-custom-pass': true,
                     'alert-danger': false
                 },
-                amountSymbol: '$',
+                amountSymbol: '',
                 tradeExplaination : "",
                 amountInput: ""
             }
@@ -114,6 +114,8 @@
                 if(this.amountInput !== ""){
                     this.watchAmount()
                 }
+                // if(this.homeCurrency !== "" || this.foreignCurrency !== "")
+                this.setAmountSymbol()
             },
             watchAmount(){
                 let alertList = []
@@ -125,7 +127,8 @@
                     alertList.push("<b>ForeignCurrency</b>")
 
                 //todo: add tradeDate
-
+                let result = 0.0
+                let s = ""
                 if(alertList.length !== 0){
                     this.alertClass['alert-custom-pass'] = false
                     this.alertClass['alert-danger'] = true
@@ -134,15 +137,23 @@
                     this.alertClass['alert-custom-pass'] = true
                     this.alertClass['alert-danger'] = false                   
                     try {
-                        let result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
-                        let s = "If you transfer today,<br>" + this.amountInput + " " +
-                                 this.homeCurrency + " will"
-                        if(this.tradeType === 'buy')
-                            s += " get"
+                        result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
+
+                        if(this.tradeType === "buy"){
+                            // result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                            s = "If you transfer today,<br>" + this.amountInput + " " + this.homeCurrency + 
+                                " will get you " + result + " " + this.foreignCurrency + "."
+                        }else{
+                            // result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                            s = "If you transfer today,<br>" + this.amountInput + " " + this.foreignCurrency + 
+                                " will get you " + result + " " + this.homeCurrency + "."
+                        }
+                        if(this.amountInput !== "")
+                            this.tradeExplaination = s
                         else
-                            s += " cost"
-                        s += " you " + result + " " + this.foreignCurrency + "."
-                        this.tradeExplaination = s
+                            this.tradeExplaination = ""
+                        this.$store.dispatch('setYLabelType', "user")
+                        this.$store.dispatch('setAmount', this.amountInput);
                     } catch (error) {
                         console.log(error)
                     }
@@ -150,17 +161,26 @@
             },
             amountChange:_.debounce(function () {
                 this.watchAmount()
-            }, 1000)       
-        },
-        computed: {
-            ...mapGetters(['today', 'tradeDate', 'pair', 'tradeType', 'chartData']),
-            homeCurrency: {
-                get () {
-                    return this.$store.getters.homeCurrency
-                },
-                set (currency) {
-                    this.$store.dispatch('setHomeCurrency', currency)
-                    switch(this.homeCurrency){
+            }, 1000),
+            setAmountSymbol(){
+                let targetCurrency = null
+                console.log(this.tradeType)
+                switch(this.tradeType){
+                    case "buy":
+                        targetCurrency = this.homeCurrency
+                        break;
+                    case "sell":
+                        targetCurrency = this.foreignCurrency
+                        break;
+                    default:
+                        targetCurrency = null
+                        break;
+                }
+                
+
+                if(targetCurrency){
+                    console.log("change symbol to", targetCurrency)
+                    switch(targetCurrency){
                         case 'GBP':
                             this.amountSymbol = "£"
                             break;
@@ -174,9 +194,25 @@
                             this.amountSymbol = "€"
                             break;    
                         default:
-                            this.amountSymbol = "$"
+                            this.amountSymbol = ""
                             break;
                     }
+                }else{
+                    this.amountSymbol = ""
+                }
+            }
+
+        },
+        computed: {
+            ...mapGetters(['today', 'tradeDate', 'pair', 'tradeType', 'chartData']),
+            homeCurrency: {
+                get () {
+                    return this.$store.getters.homeCurrency
+                },
+                set (currency) {
+                    this.$store.dispatch('setHomeCurrency', currency)
+                    // if(this.tradeType === "sell")
+                    this.setAmountSymbol()
                 }
             },
             foreignCurrency: {
@@ -185,6 +221,8 @@
                 },
                 set (currency) {
                     this.$store.dispatch('setForeignCurrency', currency)
+                    if(this.tradeType === "buy")
+                        this.setAmountSymbol()
                 }
             },
         },

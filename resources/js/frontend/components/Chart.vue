@@ -67,6 +67,13 @@
                 this.updateIntervalCounts['1Y'] = 60 * 24 * 7 / this.updateCandleInterval // 1W/candle, increase 1 candle every intervals.
                 this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval // 1M/candle, increase 1 candle every intervals.
             },
+            setLabel(){
+                if(this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0")
+                    setYLabel(this.chart, this.amountInput)
+                else
+                    setYLabel(this.chart)
+                setYLabelColor(this.chart)
+            }
         },
         watch: {
             chartData: function() {
@@ -74,6 +81,7 @@
                 this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
                 if(this.chart.chart){
                     showData(this.chart)
+                    this.setLabel()
                 }
             },
             chartType: function(){
@@ -82,12 +90,14 @@
             },
             chartYLabelType: function(){
                 this.chart.chartLabelType = this.chartYLabelType;
-                setYLabel(this.chart);
-                setYLabelColor(this.chart);
+                this.setLabel()
+            },
+            amountInput: function(){
+                this.setLabel()
             },
             tradeType: function(){
                 this.chart.tradeType = this.tradeType;
-                setYLabelColor(this.chart);
+                this.setLabel()
             },
             loading: function(){
                 this.showChart = true;                
@@ -116,7 +126,8 @@
                 'loading',
                 'homeCurrency', 
                 'foreignCurrency',
-                'refreshInterval'
+                'refreshInterval',
+                'amountInput'
             ])
         },
 

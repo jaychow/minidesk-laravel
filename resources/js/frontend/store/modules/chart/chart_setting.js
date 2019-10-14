@@ -30,7 +30,7 @@ function setXAxis(chart){
     // });
 }
 
-function setYLabel(chart){
+function setYLabel(chart, amount){
     let option = chart.chartLabelType;
     let yAxis = chart.historyPlot.yAxis();
     // let controller = chart.historyPlot.annotations();
@@ -84,6 +84,40 @@ function setYLabel(chart){
             });
             break;
         case 'user':
+            if(amount){
+                yAxis.labels().format(function() {
+                    // if(chart.tradeType === "buy")
+                    //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                    // else
+                    //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount / this.value).toFixed(2));
+                });
+                crosshair.yLabel().format(function() {
+                //     if(chart.tradeType === "buy")
+                //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                // else
+                //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount * this.value).toFixed(2));  
+                });
+                indicator.label().format(function(){
+                    // if(chart.tradeType === "buy")
+                    //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                    // else
+                    //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount / this.value).toFixed(2));
+                    
+                });
+            }else{
+                yAxis.labels().format(function() {
+                    return "$" + this.value;
+                });
+                crosshair.yLabel().format(function() {
+                    return "$ " + this.tickValue.toFixed(4);
+                });
+                indicator.label().format(function(){
+                    return "$" + this.value.toFixed(4);
+                });
+            }
             // yAxis.labels().format(function() {
             //     return "$ " + Math.round(((this.value + 100) / 100 * chart.jsonHistoryData[0][5]) * amount).toLocaleString();
             // });
@@ -98,17 +132,21 @@ function setLegend(chart){
     let option = chart.chartType;
     switch(option){
         case 'candle':
+            chart.historyPlot.legend().titleFormat(function(){
+                    var date = anychart.format.dateTime(this.value, "MMM.dd.yyyy");
+                    return "<span style='color:#4B4860;font-weight:600;font-size:16px;'>" +
+                           date + "<br>123</span>"
+                })
+
             chart.series.candlestick_series.legendItem().format( function(e) {
                 var length = chart.jsonHistoryData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
-                        "</span>: <b>O</b> " + Number(this.open).toFixed(4) + " <b>H</b> " + Number(this.high).toFixed(4) + " <b>L</b> " + Number(this.low).toFixed(4) + " <b>C</b> " + Number(this.close).toFixed(4) + "<br/>" +
-                        "<b>Vol</b> " + chart.jsonHistoryData[length - this.index - 1][6].toLocaleString() + " <b>Avg Vol</b> " + chart.jsonHistoryData[length - this.index - 1][7].toLocaleString() +
+                    return "<span style='color:#4B4860;'><b>OPEN</b></span> " + Number(this.open).toFixed(4) + " <b>HIGH</b> " + Number(this.high).toFixed(4) + " <b>LOW</b> " + Number(this.low).toFixed(4) + " <b>CLOSE</b> " + Number(this.close).toFixed(4) + "<br/>" +
+                        "<b>VOLUME</b> " + chart.jsonHistoryData[length - this.index - 1][6].toLocaleString() + " <b>Avg Vol</b> " + chart.jsonHistoryData[length - this.index - 1][7].toLocaleString() +
                         " <b>Delta O-C(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "% <b>Range(L-H)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][9]).toFixed(4) + 
                         " <b>Avg Vol(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][10]).toFixed(2) + "%";
                 } else {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
-                        "</span>: <b>O</b> ------ <b>H</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" +
+                    return "<b>OPEN</b> ------ <b>HIGH</b> ------ <b>L</b> ------ <b>C</b> ------<br/>" +
                         "<b>Vol</b> ------ <b>Avg Vol</b> ------ <b>Delta O-C(%)</b> ------% <b>Range(L-H)</b> ------ <b>Avg Vol(%)</b> ------% ";
                 }
 
@@ -120,12 +158,10 @@ function setLegend(chart){
             chart.series.line_series.legendItem().format( function(e) {
                 var length = chart.jsonHistoryData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
-                        "</span>: <b>Close</b> " + Number(this.value).toFixed(4) + " <b>Delta O-C(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "%";
+                    return "<b>Close</b> " + Number(this.value).toFixed(4) + " <b>Delta O-C(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "%";
 
                 } else {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
-                        "</span>: <b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
+                    return "<b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
                 }
             });
             chart.series.candlestick_series.legendItem(false);
@@ -167,8 +203,8 @@ function getMaxY(data) {
 }
 
 function setYLabelColor(chart){
-    const safeColor = "#0b9ca8";
-    const warningColor = "#a80a47";
+    const safeColor = "#906A96";
+    const warningColor = "#FFB735";
     const defaultColor = "#8b8dbb";
     if(chart.jsonHistoryData.length > 0){     
         let yScale = chart.historyPlot.yScale();
@@ -179,14 +215,20 @@ function setYLabelColor(chart){
         for (var i = 0; i < count; i++) {
             let label = yAxis.labels().getLabel(i);
             label.fontColor(warningColor);         
-            if(chart.tradeType === 'buy'){
+            if(chart.tradeType === 'sell'){
                 if(tickArray[i] > currentValue)
-                    label.fontColor(warningColor);
-                else if(tickArray[i] < currentValue)
                     label.fontColor(safeColor);
+                else if(tickArray[i] < currentValue)
+                    label.fontColor(warningColor);
                 else
                     label.fontColor(defaultColor);
-            }else if(chart.tradeType === 'sell'){
+                // if(tickArray[i] > currentValue)
+                //     label.fontColor(warningColor);
+                // else if(tickArray[i] < currentValue)
+                //     label.fontColor(safeColor);
+                // else
+                //     label.fontColor(defaultColor);
+            }else if(chart.tradeType === 'buy'){
                 if(tickArray[i] > currentValue)
                     label.fontColor(safeColor);
                 else if(tickArray[i] < currentValue)
