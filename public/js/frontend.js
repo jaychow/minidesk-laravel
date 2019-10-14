@@ -5188,6 +5188,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             this.updateIntervalCounts['3M'] = 60 * 24 / this.updateCandleInterval; // 60m*24/candle, increase 1 candle every intervals.
             this.updateIntervalCounts['1Y'] = 60 * 24 * 7 / this.updateCandleInterval; // 1W/candle, increase 1 candle every intervals.
             this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval; // 1M/candle, increase 1 candle every intervals.
+        },
+        setLabel: function setLabel() {
+            if (this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0") Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart, this.amountInput);else Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart);
+            Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["d" /* setYLabelColor */])(this.chart);
         }
     },
     watch: {
@@ -5196,8 +5200,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
             if (this.chart.chart) {
                 Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["e" /* showData */])(this.chart);
-                if (this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0") Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart, this.amountInput);else Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart);
-                Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["d" /* setYLabelColor */])(this.chart);
+                this.setLabel();
             }
         },
         chartType: function chartType() {
@@ -5206,17 +5209,14 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         },
         chartYLabelType: function chartYLabelType() {
             this.chart.chartLabelType = this.chartYLabelType;
-            if (this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0") Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart, this.amountInput);else Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart);
-            Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["d" /* setYLabelColor */])(this.chart);
+            this.setLabel();
         },
         amountInput: function amountInput() {
-            if (this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0") Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart, this.amountInput);else Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart);
-            Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["d" /* setYLabelColor */])(this.chart);
+            this.setLabel();
         },
         tradeType: function tradeType() {
             this.chart.tradeType = this.tradeType;
-            if (this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0") Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart, this.amountInput);else Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart);
-            Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["d" /* setYLabelColor */])(this.chart);
+            this.setLabel();
         },
         loading: function loading() {
             this.showChart = true;
@@ -5326,6 +5326,31 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -5341,14 +5366,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             }, {
                 value: 'user',
                 label: '<i class="fa fa-user"></i>'
-            }]
+            }],
+            centerStyle: 'center'
         };
     },
     mounted: function mounted() {
         console.log('ChartHeader Mounted!');
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['homeCurrency', 'chartSettings', 'foreignCurrency'])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['homeCurrency', 'chartSettings', 'foreignCurrency', 'tradeType', 'chartType'])),
     methods: {
         setYLabelType: function setYLabelType(event) {
             if (event.target.value) this.$store.dispatch('setYLabelType', event.target.value);else this.$store.dispatch('setYLabelType', 'user');
@@ -5709,14 +5735,16 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 this.alertClass['alert-custom-pass'] = true;
                 this.alertClass['alert-danger'] = false;
                 try {
+                    result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2));
+
                     if (this.tradeType === "buy") {
-                        result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2));
-                        s = "If you transfer today,<br>" + this.amountInput + " " + this.foreignCurrency + " will cost you " + result + " " + this.homeCurrency + ".";
+                        // result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                        s = "If you transfer today,<br>" + this.amountInput + " " + this.homeCurrency + " will get you " + result + " " + this.foreignCurrency + ".";
                     } else {
-                        result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2));
-                        s = "If you transfer today,<br>" + this.amountInput + " " + this.homeCurrency + " will cost you " + result + " " + this.foreignCurrency + ".";
+                        // result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                        s = "If you transfer today,<br>" + this.amountInput + " " + this.foreignCurrency + " will get you " + result + " " + this.homeCurrency + ".";
                     }
-                    this.tradeExplaination = s;
+                    if (this.amountInput !== "") this.tradeExplaination = s;else this.tradeExplaination = "";
                     this.$store.dispatch('setYLabelType', "user");
                     this.$store.dispatch('setAmount', this.amountInput);
                 } catch (error) {
@@ -5733,10 +5761,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             console.log(this.tradeType);
             switch (this.tradeType) {
                 case "buy":
-                    targetCurrency = this.foreignCurrency;
+                    targetCurrency = this.homeCurrency;
                     break;
                 case "sell":
-                    targetCurrency = this.homeCurrency;
+                    targetCurrency = this.foreignCurrency;
                     break;
                 default:
                     targetCurrency = null;
@@ -7763,9 +7791,73 @@ var render = function() {
     },
     [
       _c("div", { staticClass: "currency-title" }, [
-        _c("p", { attrs: { id: "currencyTitle" } }, [
-          _vm._v(_vm._s(_vm.homeCurrency))
-        ])
+        _vm.tradeType !== "sell"
+          ? _c("div", [
+              _c("p", { attrs: { id: "currencyTitle" } }, [
+                _vm._v(_vm._s(_vm.foreignCurrency + "_" + _vm.homeCurrency))
+              ])
+            ])
+          : _c("div", [
+              _c("p", { attrs: { id: "currencyTitle" } }, [
+                _vm._v(_vm._s(_vm.homeCurrency + "_" + _vm.foreignCurrency))
+              ])
+            ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "price-description" }, [
+        _vm.chartType === "candle"
+          ? _c("div", { staticClass: "descript-candle" }, [
+              _vm.tradeType === "buy"
+                ? _c("div", { staticClass: "descript-candle" }, [
+                    _vm._v(
+                      "\n                Downward price movements of the " +
+                        _vm._s(_vm.foreignCurrency)
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      "\n                are beneficial to you as a buyer and are illustrated"
+                    ),
+                    _c("br"),
+                    _vm._v("\n                in orange.\n            ")
+                  ])
+                : _vm.tradeType === "sell"
+                  ? _c("div", { staticClass: "descript-candle" }, [
+                      _vm._v(
+                        "\n                Downward price movements of the " +
+                          _vm._s(_vm.homeCurrency)
+                      ),
+                      _c("br"),
+                      _vm._v(
+                        "\n                are beneficial to you as a buyer and are illustrated"
+                      ),
+                      _c("br"),
+                      _vm._v("\n                in orange.\n            ")
+                    ])
+                  : _c("div")
+            ])
+          : _vm.chartType === "line"
+            ? _c("div", { staticClass: "descript-line" }, [
+                _vm.tradeType !== "sell"
+                  ? _c("div", [
+                      _vm._v(
+                        "\n                Relative performance of " +
+                          _vm._s(
+                            _vm.foreignCurrency + " to " + _vm.homeCurrency
+                          ) +
+                          "\n            "
+                      )
+                    ])
+                  : _c("div", [
+                      _vm._v(
+                        "\n                Relative performance of " +
+                          _vm._s(
+                            _vm.homeCurrency + " to " + _vm.foreignCurrency
+                          ) +
+                          "\n            "
+                      )
+                    ])
+              ])
+            : _c("div", [_vm._v("non")])
       ]),
       _vm._v(" "),
       _c(
@@ -21417,7 +21509,7 @@ var getters = {
         return state.foreignCurrency;
     },
     pair: function pair(state) {
-        return state.homeCurrency + '_' + state.foreignCurrency;
+        if (state.chart.settings.tradeType !== "sell") return state.foreignCurrency + '_' + state.homeCurrency;else return state.homeCurrency + '_' + state.foreignCurrency;
     },
     chartType: function chartType(state) {
         return state.chart.settings.type;
@@ -21450,7 +21542,7 @@ var actions = {
                         case 0:
                             _context.prev = 0;
 
-                            if (this.getters.homeCurrency) {
+                            if (!(!this.getters.homeCurrency || this.getters.homeCurrency === "")) {
                                 _context.next = 3;
                                 break;
                             }
@@ -21458,7 +21550,7 @@ var actions = {
                             return _context.abrupt('return');
 
                         case 3:
-                            if (this.getters.foreignCurrency) {
+                            if (!(!this.getters.foreignCurrency || this.getters.foreignCurrency === "")) {
                                 _context.next = 5;
                                 break;
                             }
@@ -21579,7 +21671,7 @@ var actions = {
             dispatch = _ref8.dispatch;
 
         commit('UPDATE_TRADE_TYPE', type);
-        // dispatch('fetchChartData')
+        dispatch('fetchChartData');
     },
     setLoading: function setLoading(_ref9, loading) {
         var commit = _ref9.commit,
@@ -21750,13 +21842,25 @@ function setYLabel(chart, amount) {
         case 'user':
             if (amount) {
                 yAxis.labels().format(function () {
-                    if (chart.tradeType === "buy") return "$" + parseFloat((amount / this.value).toFixed(2));else return "$" + parseFloat((amount * this.value).toFixed(2));
+                    // if(chart.tradeType === "buy")
+                    //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                    // else
+                    //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount / this.value).toFixed(2));
                 });
                 crosshair.yLabel().format(function () {
-                    if (chart.tradeType === "buy") return "$" + parseFloat((amount / this.value).toFixed(2));else return "$" + parseFloat((amount * this.value).toFixed(2));
+                    //     if(chart.tradeType === "buy")
+                    //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                    // else
+                    //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount * this.value).toFixed(2));
                 });
                 indicator.label().format(function () {
-                    if (chart.tradeType === "buy") return "$" + parseFloat((amount / this.value).toFixed(2));else return "$" + parseFloat((amount * this.value).toFixed(2));
+                    // if(chart.tradeType === "buy")
+                    //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                    // else
+                    //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount / this.value).toFixed(2));
                 });
             } else {
                 yAxis.labels().format(function () {
@@ -21802,9 +21906,9 @@ function setLegend(chart) {
             chart.series.line_series.legendItem().format(function (e) {
                 var length = chart.jsonHistoryData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> " + Number(this.value).toFixed(4) + " <b>Delta O-C(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "%";
+                    return "<b>Close</b> " + Number(this.value).toFixed(4) + " <b>Delta O-C(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "%";
                 } else {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index + "</span>: <b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
+                    return "<b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
                 }
             });
             chart.series.candlestick_series.legendItem(false);
@@ -21855,10 +21959,16 @@ function setYLabelColor(chart) {
         for (var i = 0; i < count; i++) {
             var label = yAxis.labels().getLabel(i);
             label.fontColor(warningColor);
-            if (chart.tradeType === 'buy') {
+            if (chart.tradeType === 'sell') {
                 if (tickArray[i] > currentValue) label.fontColor(safeColor);else if (tickArray[i] < currentValue) label.fontColor(warningColor);else label.fontColor(defaultColor);
-            } else if (chart.tradeType === 'sell') {
-                if (tickArray[i] > currentValue) label.fontColor(warningColor);else if (tickArray[i] < currentValue) label.fontColor(safeColor);else label.fontColor(defaultColor);
+                // if(tickArray[i] > currentValue)
+                //     label.fontColor(warningColor);
+                // else if(tickArray[i] < currentValue)
+                //     label.fontColor(safeColor);
+                // else
+                //     label.fontColor(defaultColor);
+            } else if (chart.tradeType === 'buy') {
+                if (tickArray[i] > currentValue) label.fontColor(safeColor);else if (tickArray[i] < currentValue) label.fontColor(warningColor);else label.fontColor(defaultColor);
             } else label.fontColor(defaultColor);
             label.draw();
         }

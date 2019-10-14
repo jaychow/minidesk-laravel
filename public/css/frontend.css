@@ -11589,27 +11589,92 @@ body {
 }
 
 #Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area {
-  height: 6%;
+  width: 100%;
+  height: 13%;
 }
 
-#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .currency-title {
-  margin: 1% 0% 0% 3%;
-  width: 67%;
+#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .chart-header {
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .chart-header .currency-title {
+  width: 16%;
+  height: 100%;
   font-size: 200%;
-  display: inline-block;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin-left: 3%;
+  padding-top: 1%;
   text-align: left;
   color: #4B4860;
 }
 
-#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .pricePercentage-area {
-  width: 29%;
-  display: inline-block;
+#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .chart-header .price-description {
+  width: 66%;
+  margin-top: 1%;
+  margin-left: 1%;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  font-size: x-small;
+  color: #4B4860;
+}
+
+#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .chart-header .price-description .descript-candle {
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: unset;
+      -ms-flex-align: unset;
+          align-items: unset;
+}
+
+#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .chart-header .price-description .descript-line {
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .chart-header .pricePercentage-area {
+  margin-top: 1%;
+  margin-left: auto;
+  width: 18%;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  vertical-align: middle;
+  text-align: right;
+}
+
+#Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .top-area .chart-header .pricePercentage-area .pricePercentageButton {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   text-align: right;
 }
 
 #Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .chart-body {
-  margin-top: 1%;
-  height: 86%;
+  margin-top: -3%;
+  height: 83.5%;
 }
 
 #Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .chart-body .chart {
@@ -11619,7 +11684,7 @@ body {
 
 #Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .bottom-area {
   width: 100%;
-  height: 6%;
+  height: 4%;
 }
 
 #Minidesk .minidesk-flow .bs-stepper .bs-stepper-content #assess-part .minidesk-bottom #chart-container .bottom-area .timescale-area {
