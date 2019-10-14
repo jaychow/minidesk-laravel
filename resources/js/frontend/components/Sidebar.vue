@@ -137,16 +137,21 @@
                     this.alertClass['alert-custom-pass'] = true
                     this.alertClass['alert-danger'] = false                   
                     try {
+                        result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
+
                         if(this.tradeType === "buy"){
-                            result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
-                            s = "If you transfer today,<br>" + this.amountInput + " " + this.foreignCurrency + 
-                                " will cost you " + result + " " + this.homeCurrency + "."
-                        }else{
-                            result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                            // result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
                             s = "If you transfer today,<br>" + this.amountInput + " " + this.homeCurrency + 
-                                " will cost you " + result + " " + this.foreignCurrency + "."
+                                " will get you " + result + " " + this.foreignCurrency + "."
+                        }else{
+                            // result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                            s = "If you transfer today,<br>" + this.amountInput + " " + this.foreignCurrency + 
+                                " will get you " + result + " " + this.homeCurrency + "."
                         }
-                        this.tradeExplaination = s
+                        if(this.amountInput !== "")
+                            this.tradeExplaination = s
+                        else
+                            this.tradeExplaination = ""
                         this.$store.dispatch('setYLabelType', "user")
                         this.$store.dispatch('setAmount', this.amountInput);
                     } catch (error) {
@@ -162,10 +167,10 @@
                 console.log(this.tradeType)
                 switch(this.tradeType){
                     case "buy":
-                        targetCurrency = this.foreignCurrency
+                        targetCurrency = this.homeCurrency
                         break;
                     case "sell":
-                        targetCurrency = this.homeCurrency
+                        targetCurrency = this.foreignCurrency
                         break;
                     default:
                         targetCurrency = null

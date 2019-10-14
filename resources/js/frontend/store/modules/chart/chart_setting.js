@@ -86,22 +86,26 @@ function setYLabel(chart, amount){
         case 'user':
             if(amount){
                 yAxis.labels().format(function() {
-                    if(chart.tradeType === "buy")
-                        return "$" + parseFloat((amount / this.value).toFixed(2));
-                    else
-                        return "$" + parseFloat((amount * this.value).toFixed(2));
+                    // if(chart.tradeType === "buy")
+                    //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                    // else
+                    //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount / this.value).toFixed(2));
                 });
                 crosshair.yLabel().format(function() {
-                    if(chart.tradeType === "buy")
-                    return "$" + parseFloat((amount / this.value).toFixed(2));
-                else
-                    return "$" + parseFloat((amount * this.value).toFixed(2));
+                //     if(chart.tradeType === "buy")
+                //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                // else
+                //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount * this.value).toFixed(2));  
                 });
                 indicator.label().format(function(){
-                    if(chart.tradeType === "buy")
-                        return "$" + parseFloat((amount / this.value).toFixed(2));
-                    else
-                        return "$" + parseFloat((amount * this.value).toFixed(2));
+                    // if(chart.tradeType === "buy")
+                    //     return "$" + parseFloat((amount / this.value).toFixed(2));
+                    // else
+                    //     return "$" + parseFloat((amount * this.value).toFixed(2));
+                    return "$" + parseFloat((amount / this.value).toFixed(2));
+                    
                 });
             }else{
                 yAxis.labels().format(function() {
@@ -154,12 +158,10 @@ function setLegend(chart){
             chart.series.line_series.legendItem().format( function(e) {
                 var length = chart.jsonHistoryData.length;
                 if (length > 0 && this.index < length && this.index > 0) {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
-                        "</span>: <b>Close</b> " + Number(this.value).toFixed(4) + " <b>Delta O-C(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "%";
+                    return "<b>Close</b> " + Number(this.value).toFixed(4) + " <b>Delta O-C(%)</b> " + Number(chart.jsonHistoryData[length - this.index - 1][8]).toFixed(2) + "%";
 
                 } else {
-                    return "<span style='color:#455a64;font-weight:600'>" + this.index +
-                        "</span>: <b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
+                    return "<b>Close</b> ------ <b>Delta O-C(%)</b> ------%";
                 }
             });
             chart.series.candlestick_series.legendItem(false);
@@ -213,18 +215,24 @@ function setYLabelColor(chart){
         for (var i = 0; i < count; i++) {
             let label = yAxis.labels().getLabel(i);
             label.fontColor(warningColor);         
-            if(chart.tradeType === 'buy'){
+            if(chart.tradeType === 'sell'){
                 if(tickArray[i] > currentValue)
                     label.fontColor(safeColor);
                 else if(tickArray[i] < currentValue)
                     label.fontColor(warningColor);
                 else
                     label.fontColor(defaultColor);
-            }else if(chart.tradeType === 'sell'){
+                // if(tickArray[i] > currentValue)
+                //     label.fontColor(warningColor);
+                // else if(tickArray[i] < currentValue)
+                //     label.fontColor(safeColor);
+                // else
+                //     label.fontColor(defaultColor);
+            }else if(chart.tradeType === 'buy'){
                 if(tickArray[i] > currentValue)
-                    label.fontColor(warningColor);
-                else if(tickArray[i] < currentValue)
                     label.fontColor(safeColor);
+                else if(tickArray[i] < currentValue)
+                    label.fontColor(warningColor);
                 else
                     label.fontColor(defaultColor);
             }else
