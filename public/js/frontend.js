@@ -5106,7 +5106,7 @@ module.exports = __webpack_require__("./node_modules/anychart/dist/js/anychart-b
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart.vue":
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/Chart.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5158,8 +5158,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 "H1": 60
             },
             updateCandleInterval: 1,
-            updateIntervalCounts: {},
-            showChart: true
+            updateIntervalCounts: {}
+            // showChart: true
         };
     },
     mounted: function mounted() {
@@ -5236,7 +5236,16 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         }
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapGetters */])(['chartSettings', 'chartData', 'chartType', 'chartYLabelType', 'tradeType', 'loading', 'homeCurrency', 'foreignCurrency', 'refreshInterval', 'amountInput']))
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapGetters */])(['chartSettings', 'chartData', 'chartType', 'chartYLabelType', 'tradeType', 'loading', 'homeCurrency', 'foreignCurrency', 'refreshInterval', 'amountInput']), {
+        showChart: {
+            get: function get() {
+                return this.$store.getters.showMainChart;
+            },
+            set: function set(show) {
+                this.$store.dispatch('setShowMainChart', show);
+            }
+        }
+    })
 
 });
 
@@ -5287,7 +5296,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         console.log('ChartFooter Mounted!');
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['chartSettings', 'homeCurrency', 'foreignCurrency'])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['chartSettings', 'homeCurrency', 'foreignCurrency', 'showMainChart'])),
     methods: {
         setTimescale: function setTimescale(event) {
             this.$store.dispatch('setChartTimescale', event.target.value);
@@ -5308,6 +5317,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+//
 //
 //
 //
@@ -5374,7 +5384,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         console.log('ChartHeader Mounted!');
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['homeCurrency', 'chartSettings', 'foreignCurrency', 'tradeType', 'chartType'])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['homeCurrency', 'chartSettings', 'foreignCurrency', 'tradeType', 'chartType', 'showMainChart', 'chartTitle'])),
     methods: {
         setYLabelType: function setYLabelType(event) {
             if (event.target.value) this.$store.dispatch('setYLabelType', event.target.value);else this.$store.dispatch('setYLabelType', 'user');
@@ -5383,6 +5393,50 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             return option.value === this.chartSettings.yLabelType;
         }
     }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_anychart__ = __webpack_require__("./node_modules/anychart/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_anychart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_anychart__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: "info-select-list",
+    data: function data() {
+        return {
+            formatPrice: function formatPrice(price) {
+                price = parseFloat(price);
+                return price.toFixed(4);
+            }
+        };
+    },
+
+    method: {},
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapGetters */])(['infoPagesData']))
 });
 
 /***/ }),
@@ -5397,12 +5451,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bs_stepper___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_bs_stepper__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Chart_Header__ = __webpack_require__("./resources/js/frontend/components/Chart/Header.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Chart_Header___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Chart_Header__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart__ = __webpack_require__("./resources/js/frontend/components/Chart.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Chart__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart_Chart__ = __webpack_require__("./resources/js/frontend/components/Chart/Chart.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart_Chart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Chart_Chart__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Sidebar__ = __webpack_require__("./resources/js/frontend/components/Sidebar.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Sidebar___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__Sidebar__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Chart_Footer__ = __webpack_require__("./resources/js/frontend/components/Chart/Footer.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Chart_Footer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__Chart_Footer__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__InfoPage__ = __webpack_require__("./resources/js/frontend/components/InfoPage.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__InfoPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__InfoPage__);
 //
 //
 //
@@ -5480,6 +5536,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
 
 
 
@@ -5492,9 +5549,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     components: {
         ChartHeader: __WEBPACK_IMPORTED_MODULE_2__Chart_Header___default.a,
-        Chart: __WEBPACK_IMPORTED_MODULE_3__Chart___default.a,
+        Chart: __WEBPACK_IMPORTED_MODULE_3__Chart_Chart___default.a,
         Sidebar: __WEBPACK_IMPORTED_MODULE_4__Sidebar___default.a,
-        ChartFooter: __WEBPACK_IMPORTED_MODULE_5__Chart_Footer___default.a
+        ChartFooter: __WEBPACK_IMPORTED_MODULE_5__Chart_Footer___default.a,
+        InfoPage: __WEBPACK_IMPORTED_MODULE_6__InfoPage___default.a
     },
     mounted: function mounted() {
         this.stepper = new __WEBPACK_IMPORTED_MODULE_1_bs_stepper___default.a(this.$refs.stepper);
@@ -5533,21 +5591,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Minidesk.vue":
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/InfoPage.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Chart_Header__ = __webpack_require__("./resources/js/frontend/components/Chart/Header.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Chart_Header___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Chart_Header__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Chart__ = __webpack_require__("./resources/js/frontend/components/Chart.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Chart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Chart__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Sidebar__ = __webpack_require__("./resources/js/frontend/components/Sidebar.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Sidebar___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Sidebar__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart_Footer__ = __webpack_require__("./resources/js/frontend/components/Chart/Footer.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chart_Footer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Chart_Footer__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Flow__ = __webpack_require__("./resources/js/frontend/components/Flow.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Flow___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__Flow__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__("./node_modules/babel-runtime/regenerator/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_anychart__ = __webpack_require__("./node_modules/anychart/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_anychart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_anychart__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__api_chart__ = __webpack_require__("./resources/js/frontend/api/chart.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Chart_Header__ = __webpack_require__("./resources/js/frontend/components/Chart/Header.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Chart_Header___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__Chart_Header__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Chart_Chart__ = __webpack_require__("./resources/js/frontend/components/Chart/Chart.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Chart_Chart___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__Chart_Chart__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Chart_Footer__ = __webpack_require__("./resources/js/frontend/components/Chart/Footer.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Chart_Footer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__Chart_Footer__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Chart_InfoSelectList__ = __webpack_require__("./resources/js/frontend/components/Chart/InfoSelectList.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Chart_InfoSelectList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__Chart_InfoSelectList__);
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 //
 //
 //
@@ -5572,6 +5640,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+
+
+
 
 
 
@@ -5580,12 +5653,185 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    name: "infopage",
     components: {
-        ChartHeader: __WEBPACK_IMPORTED_MODULE_0__Chart_Header___default.a,
-        Chart: __WEBPACK_IMPORTED_MODULE_1__Chart___default.a,
-        Sidebar: __WEBPACK_IMPORTED_MODULE_2__Sidebar___default.a,
-        ChartFooter: __WEBPACK_IMPORTED_MODULE_3__Chart_Footer___default.a,
-        Flow: __WEBPACK_IMPORTED_MODULE_4__Flow___default.a
+        ChartHeader: __WEBPACK_IMPORTED_MODULE_4__Chart_Header___default.a,
+        Chart: __WEBPACK_IMPORTED_MODULE_5__Chart_Chart___default.a,
+        ChartFooter: __WEBPACK_IMPORTED_MODULE_6__Chart_Footer___default.a,
+        InfoSelectList: __WEBPACK_IMPORTED_MODULE_7__Chart_InfoSelectList___default.a
+    },
+    data: function data() {
+        return {};
+    },
+    mounted: function () {
+        var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee() {
+            var result, mainCurrency, currencyList, selectList, infoPair, infoPagesPriceData, infoPagesData;
+            return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
+                while (1) {
+                    switch (_context.prev = _context.next) {
+                        case 0:
+                            console.log("Info-pages mounted!");
+                            _context.next = 3;
+                            return this.getInfoList();
+
+                        case 3:
+                            result = _context.sent;
+                            mainCurrency = result["main-currency"];
+                            currencyList = result["info-list"];
+                            selectList = [];
+                            infoPair = [];
+
+                            currencyList.forEach(function (currency) {
+                                if (currency !== mainCurrency) {
+                                    infoPair.push(mainCurrency + "_" + currency);
+                                    selectList.push(currency);
+                                }
+                            });
+                            _context.next = 11;
+                            return this.getInfoPages(infoPair);
+
+                        case 11:
+                            infoPagesPriceData = _context.sent;
+                            infoPagesData = {
+                                mainCurrency: mainCurrency,
+                                selectList: selectList,
+                                infoPair: infoPair,
+                                infoPagesPriceData: infoPagesPriceData
+                            };
+
+                            this.$store.dispatch('setinfoPagesData', infoPagesData);
+                            console.log(infoPagesPriceData['USD_GBP'].slice());
+                            this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice());
+                            this.$store.dispatch('setChartTitle', selectList[0]);
+                            this.$store.dispatch('setChartTimescale', "1M");
+
+                        case 18:
+                        case 'end':
+                            return _context.stop();
+                    }
+                }
+            }, _callee, this);
+        }));
+
+        function mounted() {
+            return _ref.apply(this, arguments);
+        }
+
+        return mounted;
+    }(),
+
+    methods: {
+        getInfoList: function () {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee2() {
+                var resp, ret;
+                return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                _context2.next = 2;
+                                return __WEBPACK_IMPORTED_MODULE_3__api_chart__["a" /* default */].getInfoList();
+
+                            case 2:
+                                resp = _context2.sent;
+                                ret = resp.data;
+                                return _context2.abrupt('return', ret);
+
+                            case 5:
+                            case 'end':
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
+
+            function getInfoList() {
+                return _ref2.apply(this, arguments);
+            }
+
+            return getInfoList;
+        }(),
+        getInfoPages: function () {
+            var _ref3 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee3(infoPair) {
+                var resp, ret;
+                return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                _context3.next = 2;
+                                return __WEBPACK_IMPORTED_MODULE_3__api_chart__["a" /* default */].getInfoPages(infoPair);
+
+                            case 2:
+                                resp = _context3.sent;
+                                ret = resp.data;
+
+                                console.log("ret");
+                                return _context3.abrupt('return', ret);
+
+                            case 6:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function getInfoPages(_x) {
+                return _ref3.apply(this, arguments);
+            }
+
+            return getInfoPages;
+        }()
+    },
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["b" /* mapGetters */])(['infoPagesData']))
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Minidesk.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Flow__ = __webpack_require__("./resources/js/frontend/components/Flow.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Flow___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Flow__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+// import ChartHeader from "./Chart/Header"
+// import Chart from "./Chart/Chart"
+// import Sidebar from "./Sidebar"
+// import ChartFooter from "./Chart/Footer"
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    components: {
+        // ChartHeader,
+        // Chart,
+        // Sidebar,
+        // ChartFooter,
+        Flow: __WEBPACK_IMPORTED_MODULE_0__Flow___default.a
     }
 });
 
@@ -7154,6 +7400,63 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-174ef21a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "info-select-list" },
+    _vm._l(_vm.infoPagesData.selectList, function(currency, i) {
+      return _c("div", { staticClass: "select-info" }, [
+        _c("div", { staticClass: "info-title" }, [
+          _vm._v(" " + _vm._s(currency) + " ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "mini-chart" }, [_vm._v(" MINICHART ")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "now-price-button" }, [
+          _c(
+            "button",
+            {
+              staticClass: "submitButton",
+              attrs: { id: "info-select-button" }
+            },
+            [
+              _vm._v(
+                " " +
+                  _vm._s(
+                    _vm.formatPrice(
+                      _vm.infoPagesData.infoPagesPriceData[
+                        _vm.infoPagesData.infoPair[i]
+                      ][0][5]
+                    )
+                  ) +
+                  " "
+              )
+            ]
+          )
+        ])
+      ])
+    }),
+    0
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-174ef21a", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1bca1c6a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7177,7 +7480,7 @@ if (false) {
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2304d454\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-237b967a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Chart.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -7203,7 +7506,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-2304d454", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-237b967a", module.exports)
   }
 }
 
@@ -7223,25 +7526,15 @@ var render = function() {
         {
           name: "show",
           rawName: "v-show",
-          value: _vm.homeCurrency !== "" && _vm.foreignCurrency !== "",
-          expression: "homeCurrency !== '' && foreignCurrency !== ''"
+          value: _vm.showMainChart !== false,
+          expression: "showMainChart !== false"
         }
       ],
       staticClass: "chart-header"
     },
     [
       _c("div", { staticClass: "currency-title" }, [
-        _vm.tradeType !== "sell"
-          ? _c("div", [
-              _c("p", { attrs: { id: "currencyTitle" } }, [
-                _vm._v(_vm._s(_vm.foreignCurrency + "_" + _vm.homeCurrency))
-              ])
-            ])
-          : _c("div", [
-              _c("p", { attrs: { id: "currencyTitle" } }, [
-                _vm._v(_vm._s(_vm.homeCurrency + "_" + _vm.foreignCurrency))
-              ])
-            ])
+        _c("div", [_vm._v(_vm._s(_vm.chartTitle))])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "price-description" }, [
@@ -7865,8 +8158,8 @@ var render = function() {
         {
           name: "show",
           rawName: "v-show",
-          value: _vm.homeCurrency !== "" && _vm.foreignCurrency !== "",
-          expression: "homeCurrency !== '' && foreignCurrency !== ''"
+          value: _vm.showMainChart !== false,
+          expression: "showMainChart !== false"
         }
       ],
       staticClass: "chart-footer"
@@ -7922,6 +8215,54 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-723cf9f4", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-926a1a52\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/InfoPage.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "info-page", attrs: { id: "info-page" } }, [
+    _c(
+      "div",
+      { staticClass: "chart-container", attrs: { id: "chart-container" } },
+      [
+        _c("div", { staticClass: "top-area" }, [_c("ChartHeader")], 1),
+        _vm._v(" "),
+        _c("div", { staticClass: "chart-body" }, [_c("Chart")], 1),
+        _vm._v(" "),
+        _c("div", { staticClass: "bottom-area" }, [_c("ChartFooter")], 1)
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", { attrs: { id: "user-panel" } }, [
+      _c(
+        "div",
+        { staticClass: "info-list-container" },
+        [
+          _c("div", { staticClass: "select-title" }, [
+            _vm._v(" SELECT CURRENCY")
+          ]),
+          _vm._v(" "),
+          _c("InfoSelectList")
+        ],
+        1
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-926a1a52", module.exports)
   }
 }
 
@@ -21065,6 +21406,55 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         }
 
         return getTable;
+    }(),
+    getInfoList: function () {
+        var _ref2 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee2() {
+            return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee2$(_context2) {
+                while (1) {
+                    switch (_context2.prev = _context2.next) {
+                        case 0:
+                            return _context2.abrupt('return', Object(__WEBPACK_IMPORTED_MODULE_1__api__["a" /* default */])().get('/chart/getInfoList'));
+
+                        case 1:
+                        case 'end':
+                            return _context2.stop();
+                    }
+                }
+            }, _callee2, this);
+        }));
+
+        function getInfoList() {
+            return _ref2.apply(this, arguments);
+        }
+
+        return getInfoList;
+    }(),
+    getInfoPages: function () {
+        var _ref3 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee3(infoPairList) {
+            return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee3$(_context3) {
+                while (1) {
+                    switch (_context3.prev = _context3.next) {
+                        case 0:
+                            return _context3.abrupt('return', Object(__WEBPACK_IMPORTED_MODULE_1__api__["a" /* default */])().get('/chart/getInfoPages', {
+                                params: {
+                                    infoPairList: infoPairList,
+                                    utc: 0
+                                }
+                            }));
+
+                        case 1:
+                        case 'end':
+                            return _context3.stop();
+                    }
+                }
+            }, _callee3, this);
+        }));
+
+        function getInfoPages(_x5) {
+            return _ref3.apply(this, arguments);
+        }
+
+        return getInfoPages;
     }()
 });
 
@@ -21108,6 +21498,8 @@ window.JQuery = __webpack_require__("./node_modules/jquery/dist/jquery.js");
  */
 __WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('minidesk', __webpack_require__("./resources/js/frontend/components/Minidesk.vue"));
 
+__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('debug', __webpack_require__("./resources/js/frontend/components/InfoPage.vue"));
+
 // const files = require.context('./', true, /\.vue$/i)
 
 // files.keys().map(key => {
@@ -21137,15 +21529,15 @@ var app = new __WEBPACK_IMPORTED_MODULE_2_vue___default.a({
 
 /***/ }),
 
-/***/ "./resources/js/frontend/components/Chart.vue":
+/***/ "./resources/js/frontend/components/Chart/Chart.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */
-var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart.vue")
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/Chart.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2304d454\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-237b967a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Chart.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -21162,7 +21554,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/js/frontend/components/Chart.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/Chart.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -21171,9 +21563,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2304d454", Component.options)
+    hotAPI.createRecord("data-v-237b967a", Component.options)
   } else {
-    hotAPI.reload("data-v-2304d454", Component.options)
+    hotAPI.reload("data-v-237b967a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -21281,6 +21673,54 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/js/frontend/components/Chart/InfoSelectList.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-174ef21a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/frontend/components/Chart/InfoSelectList.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-174ef21a", Component.options)
+  } else {
+    hotAPI.reload("data-v-174ef21a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/js/frontend/components/Flow.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -21318,6 +21758,54 @@ if (false) {(function () {
     hotAPI.createRecord("data-v-45717028", Component.options)
   } else {
     hotAPI.reload("data-v-45717028", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/js/frontend/components/InfoPage.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/InfoPage.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-926a1a52\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/InfoPage.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/frontend/components/InfoPage.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-926a1a52", Component.options)
+  } else {
+    hotAPI.reload("data-v-926a1a52", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -21477,12 +21965,20 @@ var state = {
             utc: -(new Date().getTimezoneOffset() / 60),
             tradeType: "",
             isLoading: false,
-            today: new Date()
+            today: new Date(),
+            showChart: true
         },
-        data: {}
+        data: {},
+        chartTitle: ""
     },
     homeCurrency: '',
     foreignCurrency: '',
+    infoPagesData: {
+        mainCurrency: "",
+        selectList: [],
+        infoPair: [],
+        infoPagesPriceData: {}
+    },
     amountInput: 0
 };
 
@@ -21528,6 +22024,15 @@ var getters = {
     },
     amountInput: function amountInput(state) {
         return state.amountInput;
+    },
+    showMainChart: function showMainChart(state) {
+        return state.chart.settings.showChart;
+    },
+    chartTitle: function chartTitle(state) {
+        return state.chart.chartTitle;
+    },
+    infoPagesData: function infoPagesData(state) {
+        return state.infoPagesData;
     }
 };
 
@@ -21602,24 +22107,24 @@ var actions = {
                             // data.jsonZonesData = response.data
 
                             console.log(data.jsonHistoryData);
-
                             commit('UPDATE_CHART_DATA', data);
+                            commit('UPDATE_CHART_TITLE', this.getters.pair);
                             commit('UPDATE_LOADING', false);
-                            _context.next = 24;
+                            _context.next = 25;
                             break;
 
-                        case 21:
-                            _context.prev = 21;
+                        case 22:
+                            _context.prev = 22;
                             _context.t0 = _context['catch'](0);
 
                             console.error(_context.t0);
 
-                        case 24:
+                        case 25:
                         case 'end':
                             return _context.stop();
                     }
                 }
-            }, _callee, this, [[0, 21]]);
+            }, _callee, this, [[0, 22]]);
         }));
 
         function fetchChartData(_x) {
@@ -21629,74 +22134,94 @@ var actions = {
         return fetchChartData;
     }(),
 
-    setHomeCurrency: function setHomeCurrency(_ref3, currency) {
+    setInfoPage: function setInfoPage(_ref3, dataIn) {
         var commit = _ref3.commit,
             dispatch = _ref3.dispatch;
+
+        var data = {};
+        data.jsonHistoryData = dataIn.slice();
+        commit('UPDATE_CHART_DATA', data);
+    },
+    setHomeCurrency: function setHomeCurrency(_ref4, currency) {
+        var commit = _ref4.commit,
+            dispatch = _ref4.dispatch;
 
         commit('UPDATE_HOME_CURRENCY', currency);
         if (state.foreignCurrency !== '' && state.homeCurrency !== '' && state.homeCurrency !== state.foreignCurrency) dispatch('fetchChartData');
     },
-    setForeignCurrency: function setForeignCurrency(_ref4, currency) {
-        var commit = _ref4.commit,
-            dispatch = _ref4.dispatch;
+    setForeignCurrency: function setForeignCurrency(_ref5, currency) {
+        var commit = _ref5.commit,
+            dispatch = _ref5.dispatch;
 
         commit('UPDATE_FOREIGN_CURRENCY', currency);
         if (state.homeCurrency !== '' && state.foreignCurrency !== '' && state.homeCurrency !== state.foreignCurrency) dispatch('fetchChartData');
     },
-    setChartTimescale: function setChartTimescale(_ref5, timescale) {
-        var commit = _ref5.commit,
-            dispatch = _ref5.dispatch;
+    setChartTimescale: function setChartTimescale(_ref6, timescale) {
+        var commit = _ref6.commit,
+            dispatch = _ref6.dispatch;
 
         console.log('setChartTimescale');
         commit('UPDATE_CHART_TIMESCALE', timescale);
         dispatch('fetchChartData');
     },
-    setChartType: function setChartType(_ref6, type) {
-        var commit = _ref6.commit,
-            dispatch = _ref6.dispatch;
+    setChartType: function setChartType(_ref7, type) {
+        var commit = _ref7.commit,
+            dispatch = _ref7.dispatch;
 
         console.log('setChartType');
         commit('UPDATE_CHART_TYPE', type);
         // dispatch('fetchChartData')
     },
-    setYLabelType: function setYLabelType(_ref7, type) {
-        var commit = _ref7.commit,
-            dispatch = _ref7.dispatch;
+    setYLabelType: function setYLabelType(_ref8, type) {
+        var commit = _ref8.commit,
+            dispatch = _ref8.dispatch;
 
         commit('UPDATE_CHART_Y_LABEL_TYPE', type);
         // dispatch('fetchChartData')
     },
-    setTradeType: function setTradeType(_ref8, type) {
-        var commit = _ref8.commit,
-            dispatch = _ref8.dispatch;
+    setTradeType: function setTradeType(_ref9, type) {
+        var commit = _ref9.commit,
+            dispatch = _ref9.dispatch;
 
         commit('UPDATE_TRADE_TYPE', type);
         dispatch('fetchChartData');
     },
-    setLoading: function setLoading(_ref9, loading) {
-        var commit = _ref9.commit,
-            dispatch = _ref9.dispatch;
+    setLoading: function setLoading(_ref10, loading) {
+        var commit = _ref10.commit,
+            dispatch = _ref10.dispatch;
 
         commit('UPDATE_LOADING', loading);
         // dispatch('fetchChartData')
     },
-    setFlow: function setFlow(_ref10, flow) {
-        var commit = _ref10.commit,
-            dispatch = _ref10.dispatch;
+    setFlow: function setFlow(_ref11, flow) {
+        var commit = _ref11.commit;
 
         commit('UPDATE_FLOW', flow);
     },
-    setRefreshInterval: function setRefreshInterval(_ref11, interval) {
-        var commit = _ref11.commit,
-            dispatch = _ref11.dispatch;
+    setRefreshInterval: function setRefreshInterval(_ref12, interval) {
+        var commit = _ref12.commit;
 
         commit('UPDATE_INTERVAL', interval);
     },
-    setAmount: function setAmount(_ref12, amount) {
-        var commit = _ref12.commit,
-            dispatch = _ref12.dispatch;
+    setAmount: function setAmount(_ref13, amount) {
+        var commit = _ref13.commit;
 
         commit('UPDATE_AMOUNT', amount);
+    },
+    setShowMainChart: function setShowMainChart(_ref14, show) {
+        var commit = _ref14.commit;
+
+        commit('UPDATE_SHOWMAINCHART', show);
+    },
+    setChartTitle: function setChartTitle(_ref15, title) {
+        var commit = _ref15.commit;
+
+        commit('UPDATE_CHART_TITLE', title);
+    },
+    setinfoPagesData: function setinfoPagesData(_ref16, infoPagesData) {
+        var commit = _ref16.commit;
+
+        commit('UPDATE_INFO_PAGES_DATA', infoPagesData);
     }
 };
 
@@ -21733,6 +22258,15 @@ var mutations = {
     },
     UPDATE_AMOUNT: function UPDATE_AMOUNT(state, amount) {
         return state.amountInput = amount;
+    },
+    UPDATE_SHOWMAINCHART: function UPDATE_SHOWMAINCHART(state, show) {
+        return state.chart.settings.showChart = show;
+    },
+    UPDATE_CHART_TITLE: function UPDATE_CHART_TITLE(state, title) {
+        return state.chart.chartTitle = title;
+    },
+    UPDATE_INFO_PAGES_DATA: function UPDATE_INFO_PAGES_DATA(state, infoPagesData) {
+        return state.infoPagesData = infoPagesData;
     }
 };
 
@@ -21956,22 +22490,25 @@ function setYLabelColor(chart) {
         var tickArray = yScale.ticks().get();
         var currentValue = chart.jsonHistoryData[0][5];
         var count = yAxis.labels().getLabelsCount();
-        for (var i = 0; i < count; i++) {
-            var label = yAxis.labels().getLabel(i);
-            label.fontColor(warningColor);
-            if (chart.tradeType === 'sell') {
-                if (tickArray[i] > currentValue) label.fontColor(safeColor);else if (tickArray[i] < currentValue) label.fontColor(warningColor);else label.fontColor(defaultColor);
-                // if(tickArray[i] > currentValue)
-                //     label.fontColor(warningColor);
-                // else if(tickArray[i] < currentValue)
-                //     label.fontColor(safeColor);
-                // else
-                //     label.fontColor(defaultColor);
-            } else if (chart.tradeType === 'buy') {
-                if (tickArray[i] > currentValue) label.fontColor(safeColor);else if (tickArray[i] < currentValue) label.fontColor(warningColor);else label.fontColor(defaultColor);
-            } else label.fontColor(defaultColor);
-            label.draw();
-        }
+        try {
+            for (var i = 0; i < count; i++) {
+                var label = yAxis.labels().getLabel(i);
+                if (chart.tradeType === 'sell') {
+                    if (tickArray[i] > currentValue) label.fontColor(safeColor);else if (tickArray[i] < currentValue) label.fontColor(warningColor);else label.fontColor(defaultColor);
+                    // if(tickArray[i] > currentValue)
+                    //     label.fontColor(warningColor);
+                    // else if(tickArray[i] < currentValue)
+                    //     label.fontColor(safeColor);
+                    // else
+                    //     label.fontColor(defaultColor);
+                } else if (chart.tradeType === 'buy') {
+                    if (tickArray[i] > currentValue) label.fontColor(safeColor);else if (tickArray[i] < currentValue) label.fontColor(warningColor);else label.fontColor(defaultColor);
+                } else {
+                    label.fontColor(defaultColor);
+                }
+                label.draw();
+            }
+        } catch (e) {}
     }
 }
 
