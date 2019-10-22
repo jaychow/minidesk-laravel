@@ -80,16 +80,18 @@
     import Stepper from 'bs-stepper'
 
     import ChartHeader from "./Chart/Header"
-    import Chart from "./Chart"
+    import Chart from "./Chart/Chart"
     import Sidebar from "./Sidebar"
     import ChartFooter from "./Chart/Footer"
+    import InfoPage from "./InfoPage"
 
     export default {
         components: {
             ChartHeader,
             Chart,
             Sidebar,
-            ChartFooter
+            ChartFooter,
+            InfoPage
         },
         mounted() {
             this.stepper = new Stepper(this.$refs.stepper)  

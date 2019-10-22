@@ -13,12 +13,20 @@ const state = {
             utc: - (new Date().getTimezoneOffset() / 60),
             tradeType: "",
             isLoading: false,
-            today: new Date()
+            today: new Date(),
+            showChart: true
         },
-        data: {}
+        data: {},
+        chartTitle: "",
     },
     homeCurrency: '',
     foreignCurrency: '',
+    infoPagesData: {
+        mainCurrency: "",
+        selectList: [],
+        infoPair: [],
+        infoPagesPriceData: {}    
+    },
     amountInput : 0
 }
 
@@ -41,7 +49,10 @@ const getters = {
     tradeType: (state) => (state.chart.settings.tradeType),
     loading: (state) => (state.chart.settings.isLoading),
     refreshInterval: (state) => (state.chart.settings.refreshInterval),
-    amountInput : (state) => (state.amountInput),
+    amountInput: (state) => (state.amountInput),
+    showMainChart: (state) => (state.chart.settings.showChart),
+    chartTitle: (state) => (state.chart.chartTitle),
+    infoPagesData: (state) => (state.infoPagesData),
 }
 
 const actions  = {
@@ -86,12 +97,17 @@ const actions  = {
             // data.jsonZonesData = response.data
 
             console.log(data.jsonHistoryData)
-
             commit('UPDATE_CHART_DATA', data)
+            commit('UPDATE_CHART_TITLE', this.getters.pair)
             commit('UPDATE_LOADING', false)
         } catch (err) {
             console.error(err)
         }
+    },
+    setInfoPage: ({commit, dispatch}, dataIn) => {
+        let data = {}
+        data.jsonHistoryData = dataIn.slice()
+        commit('UPDATE_CHART_DATA', data)
     },
     setHomeCurrency: ({commit, dispatch}, currency) => {
         commit('UPDATE_HOME_CURRENCY', currency)
@@ -125,14 +141,23 @@ const actions  = {
         commit('UPDATE_LOADING', loading)
         // dispatch('fetchChartData')
     },
-    setFlow: ({commit, dispatch}, flow) =>{
+    setFlow: ({commit}, flow) =>{
         commit('UPDATE_FLOW', flow)
     },
-    setRefreshInterval: ({commit, dispatch}, interval) => {
+    setRefreshInterval: ({commit}, interval) => {
         commit('UPDATE_INTERVAL', interval)
     },
-    setAmount: ({commit, dispatch}, amount) => {
+    setAmount: ({commit}, amount) => {
         commit('UPDATE_AMOUNT', amount)        
+    },
+    setShowMainChart: ({commit}, show) =>{
+        commit('UPDATE_SHOWMAINCHART', show)
+    },
+    setChartTitle: ({commit}, title) =>{
+        commit('UPDATE_CHART_TITLE', title)
+    },
+    setinfoPagesData: ({commit}, infoPagesData) =>{
+        commit('UPDATE_INFO_PAGES_DATA', infoPagesData)
     }
 }
 
@@ -148,6 +173,9 @@ const mutations = {
     UPDATE_FLOW: (state, flow) => (state.flow = flow),
     UPDATE_INTERVAL: (state, interval) => (state.chart.settings.refreshInterval = interval),
     UPDATE_AMOUNT: (state, amount) => (state.amountInput = amount),
+    UPDATE_SHOWMAINCHART: (state, show) => (state.chart.settings.showChart = show),
+    UPDATE_CHART_TITLE: (state, title) => (state.chart.chartTitle = title),
+    UPDATE_INFO_PAGES_DATA: (state, infoPagesData) => (state.infoPagesData = infoPagesData),
 }
 
 export default {
