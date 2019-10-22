@@ -11,5 +11,16 @@ export default {
                 interval: interval
             }
         })
+    },
+    async getInfoList(){
+        return api().get('/chart/getInfoList')
+    },
+    async getInfoPages(infoPairList){
+        return api().get('/chart/getInfoPages', {
+            params: {
+                infoPairList: infoPairList,
+                utc: 0,
+            }
+        })
     }
 }

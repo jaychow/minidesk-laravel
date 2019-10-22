@@ -24,6 +24,11 @@ class ChartController extends Controller {
         return view('frontend.chart');
     }
 
+    public function debug()
+    {
+        return view('frontend.debug');
+    }
+
     // Check API data is exist or not ?
     protected function dataCheck($type, $timeRange, $fromTime) {
         $toTime   = date("Y-m-d");
@@ -608,5 +613,41 @@ class ChartController extends Controller {
         }
 
         return false;
+    }
+    
+    public function getInfoList()
+    {
+        /* to-do: get from DB */
+        $mainCurrency = "USD";
+        $infoList = ["USD", "GBP", "CAD"];
+        /* to-do: get from DB */
+
+        $output = [ 
+            "main-currency" => $mainCurrency,
+            "info-list" => $infoList,
+        ];
+        return response()->json($output);
+    }
+
+    public function getInfoPages(Request $request)
+    {
+        $infoPairList = $request->get('infoPairList');
+        $utc = ($request->get('utc') == '') ? - 8 : $request->get('utc');
+
+        $timeRange = "1M";
+        $fromTime = $this->_getFromTime($timeRange);
+        $output = [];
+        foreach($infoPairList as $infoPair){
+            $exist = $this->dataCheck($infoPair, $timeRange, $fromTime);
+            if ($exist) {
+                // Get data from Database
+                $data = $this->getFromModel($infoPair, $fromTime, $timeRange);
+            } else {
+                // Call Oanda API
+                $data = $this->getFromAPI($infoPair, $utc, $fromTime, $timeRange);
+            }
+            $output[$infoPair] = $data;
+        }
+        return response()->json($output);
     }
 }
