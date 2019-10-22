@@ -1,8 +1,9 @@
 <template>
-    <div class="chart-header" v-show="homeCurrency !== '' && foreignCurrency !== ''">
+    <div class="chart-header" v-show="showMainChart !== false">
         <div class="currency-title">
-            <div v-if="tradeType !== 'sell'"><p id="currencyTitle">{{ foreignCurrency + "_" + homeCurrency }}</p></div>
-            <div v-else><p id="currencyTitle">{{ homeCurrency + "_" + foreignCurrency }}</p></div>
+            <!-- <div v-if="tradeType !== 'sell'"><p id="currencyTitle">{{ foreignCurrency + "_" + homeCurrency }}</p></div>
+            <div v-else><p id="currencyTitle">{{ homeCurrency + "_" + foreignCurrency }}</p></div> -->
+            <div>{{ chartTitle }}</div>
         </div>
         <div class="price-description">
             <div v-if="chartType === 'candle'" class="descript-candle">
@@ -68,7 +69,7 @@
             console.log('ChartHeader Mounted!')
         },
         computed: {
-            ...mapGetters(['homeCurrency', 'chartSettings', 'foreignCurrency', 'tradeType', 'chartType'])
+            ...mapGetters(['homeCurrency', 'chartSettings', 'foreignCurrency', 'tradeType', 'chartType', 'showMainChart', 'chartTitle'])
         },
         methods: {
             setYLabelType(event) {

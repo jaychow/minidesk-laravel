@@ -5,9 +5,9 @@
 <script>
     import Anychart from 'anychart'
     import { mapGetters, mapActions } from 'vuex'
-    import chartApi from '../api/chart'
-    import { chartInit } from '../store/modules/chart/init.js'
-    import { setChartMapping, setXAxis, setYLabel, showData, setYLabelColor } from '../store/modules/chart/chart_setting.js'
+    import chartApi from '../../api/chart'
+    import { chartInit } from '../../store/modules/chart/init.js'
+    import { setChartMapping, setXAxis, setYLabel, showData, setYLabelColor } from '../../store/modules/chart/chart_setting.js'
     export default {
         name: 'chart',
         data() {
@@ -38,7 +38,7 @@
                 },
                 updateCandleInterval: 1,
                 updateIntervalCounts: {},
-                showChart: true
+                // showChart: true
             }
         },
         mounted() {
@@ -128,7 +128,15 @@
                 'foreignCurrency',
                 'refreshInterval',
                 'amountInput'
-            ])
+            ]),
+            showChart: {
+                get () {
+                    return this.$store.getters.showMainChart
+                },
+                set (show) {
+                    this.$store.dispatch('setShowMainChart', show)
+                }
+            },
         },
 
     }
