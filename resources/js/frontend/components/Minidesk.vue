@@ -23,19 +23,19 @@
     </div>
 </template>
 <script>
-    import ChartHeader from "./Chart/Header"
-    import Chart from "./Chart"
-    import Sidebar from "./Sidebar"
-    import ChartFooter from "./Chart/Footer"
+    // import ChartHeader from "./Chart/Header"
+    // import Chart from "./Chart/Chart"
+    // import Sidebar from "./Sidebar"
+    // import ChartFooter from "./Chart/Footer"
     import Flow from "./Flow"
     
     export default {
         components: {
-            ChartHeader,
-            Chart,
-            Sidebar,
-            ChartFooter,
-            Flow
+            // ChartHeader,
+            // Chart,
+            // Sidebar,
+            // ChartFooter,
+            Flow,
         }
     }
 
