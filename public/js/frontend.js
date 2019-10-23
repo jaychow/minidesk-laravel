@@ -5420,6 +5420,19 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -5429,8 +5442,21 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     data: function data() {
         return {
             formatPrice: function formatPrice(price) {
+                var digit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
+
                 price = parseFloat(price);
-                return price.toFixed(4);
+                return price.toFixed(digit);
+            },
+            formatChange: function formatChange(priceChange, priceRange) {
+                var changeDigit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 3;
+                var rangeDigit = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 3;
+
+                var change = parseFloat(priceChange).toFixed(changeDigit);
+                var range = parseFloat(priceRange).toFixed(rangeDigit);
+                var s = "";
+                if (change >= 0) s = "+" + change.toString() + "%";else s = change.toString() + "%";
+                s += " " + range.toString();
+                return s;
             }
         };
     },
@@ -5639,9 +5665,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
-//
-//
-//
 
 
 
@@ -5665,7 +5688,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     },
     mounted: function () {
         var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee() {
-            var result, mainCurrency, currencyList, selectList, infoPair, infoPagesPriceData, infoPagesData;
+            var result, mainCurrency, currencyList, descriptList, selectList, infoPair, infoPagesPriceData, infoPagesData;
             return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
@@ -5678,6 +5701,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                             result = _context.sent;
                             mainCurrency = result["main-currency"];
                             currencyList = result["info-list"];
+                            descriptList = result["descript-list"]; //price description => region&unit  e.g. USD: {region: "UNITED STATES OF AMERICA", unit: "DOLLAR"}
+
                             selectList = [];
                             infoPair = [];
 
@@ -5687,20 +5712,20 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                     selectList.push(currency);
                                 }
                             });
-                            _context.next = 11;
+                            _context.next = 12;
                             return this.getInfoPages(infoPair);
 
-                        case 11:
+                        case 12:
                             infoPagesPriceData = _context.sent;
                             infoPagesData = {
                                 mainCurrency: mainCurrency,
                                 selectList: selectList,
+                                descriptList: descriptList,
                                 infoPair: infoPair,
                                 infoPagesPriceData: infoPagesPriceData
                             };
 
                             this.$store.dispatch('setinfoPagesData', infoPagesData);
-                            console.log(infoPagesPriceData['USD_GBP'].slice());
                             this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice());
                             this.$store.dispatch('setChartTitle', selectList[0]);
                             this.$store.dispatch('setChartTimescale', "1M");
@@ -7413,32 +7438,64 @@ var render = function() {
     _vm._l(_vm.infoPagesData.selectList, function(currency, i) {
       return _c("div", { staticClass: "select-info" }, [
         _c("div", { staticClass: "info-title" }, [
-          _vm._v(" " + _vm._s(currency) + " ")
+          _c("div", { staticClass: "currency-title" }, [
+            _vm._v(_vm._s(currency) + " ")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "currency-descript" }, [
+            _c("div", { staticClass: "region" }, [
+              _vm._v(_vm._s(_vm.infoPagesData.descriptList[currency]["region"]))
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "unit" }, [
+              _vm._v(_vm._s(_vm.infoPagesData.descriptList[currency]["unit"]))
+            ])
+          ])
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "mini-chart" }, [_vm._v(" MINICHART ")]),
         _vm._v(" "),
-        _c("div", { staticClass: "now-price-button" }, [
-          _c(
-            "button",
-            {
-              staticClass: "submitButton",
-              attrs: { id: "info-select-button" }
-            },
-            [
-              _vm._v(
-                " " +
-                  _vm._s(
-                    _vm.formatPrice(
-                      _vm.infoPagesData.infoPagesPriceData[
-                        _vm.infoPagesData.infoPair[i]
-                      ][0][5]
-                    )
-                  ) +
-                  " "
-              )
-            ]
-          )
+        _c("div", { staticClass: "now-price-area" }, [
+          _c("div", { staticClass: "now-price-button" }, [
+            _c(
+              "button",
+              {
+                staticClass: "submitButton",
+                attrs: { id: "info-select-button" }
+              },
+              [
+                _vm._v(
+                  " " +
+                    _vm._s(
+                      _vm.formatPrice(
+                        _vm.infoPagesData.infoPagesPriceData[
+                          _vm.infoPagesData.infoPair[i]
+                        ][0][5]
+                      )
+                    ) +
+                    " "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "now-price-change" }, [
+            _vm._v(
+              "\n                " +
+                _vm._s(
+                  _vm.formatChange(
+                    _vm.infoPagesData.infoPagesPriceData[
+                      _vm.infoPagesData.infoPair[i]
+                    ][0][8],
+                    _vm.infoPagesData.infoPagesPriceData[
+                      _vm.infoPagesData.infoPair[i]
+                    ][0][9],
+                    3
+                  )
+                ) +
+                "\n            "
+            )
+          ])
         ])
       ])
     }),

@@ -13591,20 +13591,42 @@ body {
 
 #user-panel .info-list-container .info-select-list .select-info .info-title {
   margin-left: 5%;
-  font-size: 150%;
-  width: 38%;
+  width: 35%;
+  height: 100%;
+  color: #4B4760;
+}
+
+#user-panel .info-list-container .info-select-list .select-info .info-title .currency-title {
+  height: 40%;
+  font-size: 160%;
+}
+
+#user-panel .info-list-container .info-select-list .select-info .info-title .currency-descript {
+  height: 60%;
+  font-size: 65%;
 }
 
 #user-panel .info-list-container .info-select-list .select-info .mini-chart {
   width: 30%;
 }
 
-#user-panel .info-list-container .info-select-list .select-info .now-price-button {
-  width: 26%;
+#user-panel .info-list-container .info-select-list .select-info .now-price-area {
+  width: 28%;
+  height: 100%;
 }
 
-#info-select-button {
+#user-panel .info-list-container .info-select-list .select-info .now-price-area .now-price-button {
+  height: 50%;
+}
+
+#user-panel .info-list-container .info-select-list .select-info .now-price-area .now-price-button #info-select-button {
   width: 100%;
+}
+
+#user-panel .info-list-container .info-select-list .select-info .now-price-area .now-price-change {
+  height: 40%;
+  text-align: center;
+  color: #4B4860;
 }
 
 .submitButton {
