@@ -13246,6 +13246,10 @@ body {
   height: 100%;
 }
 
+div.anychart-control button[title="Expand/Collapse plot"] {
+  display: none;
+}
+
 #chart-container {
   height: 100%;
   width: 65%;
@@ -13254,10 +13258,6 @@ body {
   background-color: white;
   -webkit-box-shadow: 3px 3px 9px #4B4860;
           box-shadow: 3px 3px 9px #4B4860;
-}
-
-#chart-container div.anychart-control button[title="Expand/Collapse plot"] {
-  display: none;
 }
 
 #chart-container .top-area {
@@ -13591,7 +13591,7 @@ body {
 
 #user-panel .info-list-container .info-select-list .select-info .info-title {
   margin-left: 5%;
-  width: 35%;
+  width: 33%;
   height: 100%;
   color: #4B4760;
 }
@@ -13606,8 +13606,9 @@ body {
   font-size: 65%;
 }
 
-#user-panel .info-list-container .info-select-list .select-info .mini-chart {
-  width: 30%;
+#user-panel .info-list-container .info-select-list .select-info .minichart {
+  width: 32%;
+  height: 100%;
 }
 
 #user-panel .info-list-container .info-select-list .select-info .now-price-area {

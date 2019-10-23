@@ -5440,29 +5440,69 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "info-select-list",
     data: function data() {
-        return {
-            formatPrice: function formatPrice(price) {
-                var digit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
-
-                price = parseFloat(price);
-                return price.toFixed(digit);
-            },
-            formatChange: function formatChange(priceChange, priceRange) {
-                var changeDigit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 3;
-                var rangeDigit = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 3;
-
-                var change = parseFloat(priceChange).toFixed(changeDigit);
-                var range = parseFloat(priceRange).toFixed(rangeDigit);
-                var s = "";
-                if (change >= 0) s = "+" + change.toString() + "%";else s = change.toString() + "%";
-                s += " " + range.toString();
-                return s;
-            }
-        };
+        return {};
     },
 
-    method: {},
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapGetters */])(['infoPagesData']))
+    methods: {
+        formatPrice: function formatPrice(price) {
+            var digit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
+
+            price = parseFloat(price);
+            return price.toFixed(digit);
+        },
+        formatChange: function formatChange(priceChange, priceRange) {
+            var changeDigit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 3;
+            var rangeDigit = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 3;
+
+            var change = parseFloat(priceChange).toFixed(changeDigit);
+            var range = parseFloat(priceRange).toFixed(rangeDigit);
+            var s = "";
+            if (change >= 0) s = "+" + change.toString() + "%";else s = change.toString() + "%";
+            s += " " + range.toString();
+            return s;
+        },
+        minichartClass: function minichartClass(index) {
+            var c = "minichart_" + index;
+            return c;
+        },
+        draw: function draw() {
+            this.$nextTick(function () {
+                for (var i = 0; i < this.infoPagesData.selectList.length; i++) {
+                    console.log(this.$refs.minichart[i]);
+                    console.log("draw " + i);
+                    var historyDataTable = __WEBPACK_IMPORTED_MODULE_0_anychart___default.a.data.table();
+                    var chart = __WEBPACK_IMPORTED_MODULE_0_anychart___default.a.stock();
+                    chart.tooltip(false);
+                    chart.scroller().enabled(false);
+                    chart.bounds("-50%", "-10%", '150%', '100%');
+                    chart.crosshair(false);
+                    var historyPlot = chart.plot(0);
+                    historyPlot.xAxis(false);
+                    historyPlot.yAxis(false);
+                    historyPlot.height('100%').width('100%');
+
+                    historyPlot.legend(false);
+
+                    var line_mapping = historyDataTable.mapAs({
+                        'value': 5
+                    });
+                    var line_series = historyPlot.line(line_mapping);
+                    line_series.id("line");
+                    line_series.stroke("1 #8b8dbb");
+                    historyDataTable.addData(this.infoPagesData.infoPagesPriceData[this.infoPagesData.infoPair[i]]);
+                    chart.container("minichart_" + i);
+
+                    chart.draw();
+                }
+            });
+        }
+    },
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapGetters */])(['infoPagesData'])),
+    watch: {
+        infoPagesData: function infoPagesData() {
+            this.draw();
+        }
+    }
 });
 
 /***/ }),
@@ -7453,7 +7493,12 @@ var render = function() {
           ])
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "mini-chart" }, [_vm._v(" MINICHART ")]),
+        _c("div", {
+          ref: "minichart",
+          refInFor: true,
+          staticClass: "minichart",
+          attrs: { id: _vm.minichartClass(i) }
+        }),
         _vm._v(" "),
         _c("div", { staticClass: "now-price-area" }, [
           _c("div", { staticClass: "now-price-button" }, [
