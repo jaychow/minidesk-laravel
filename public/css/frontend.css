@@ -13630,6 +13630,14 @@ div.anychart-control button[title="Expand/Collapse plot"] {
   color: #4B4860;
 }
 
+.anychart-credits-text {
+  display: none;
+}
+
+.anychart-credits-logo {
+  display: none;
+}
+
 .submitButton {
   background-color: white;
   color: #8b8dbb;
