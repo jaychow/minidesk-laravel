@@ -359,22 +359,42 @@ body {
                 align-items: center;
                 .info-title{
                     margin-left: 5%;
-                    font-size: 150%;
-                    width: 38%;
+                    width: 35%;
+                    height: 100%;
+                    color: #4B4760;
+                    .currency-title{
+                        height: 40%;
+                        font-size: 160%;
+                    }
+                    .currency-descript{
+                        height: 60%;
+                        font-size: 65%;
+                    }
                 }
                 .mini-chart{
                     width: 30%;
                 }
-                .now-price-button{
-                    width: 26%;
+                .now-price-area{
+                    width: 28%;
+                    height: 100%;
+                    .now-price-button{
+                        #info-select-button{
+                            width: 100%;
+                        }
+                        height: 50%;
+                    }
+                    .now-price-change{
+                        height: 40%;
+                        text-align: center;
+                        color: #4B4860;
+                    }
                 }
+                
             }
         }
     }
 }
-#info-select-button{
-    width: 100%;
-}
+
 .submitButton{
     background-color: white;
     color: #8b8dbb;

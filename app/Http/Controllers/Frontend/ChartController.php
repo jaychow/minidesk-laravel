@@ -620,11 +620,26 @@ class ChartController extends Controller {
         /* to-do: get from DB */
         $mainCurrency = "USD";
         $infoList = ["USD", "GBP", "CAD"];
+        $descript = [
+            "USD" => [
+                "region" => "UNITED STATES OF AMERICA",
+                "unit" => "DOLLAR"
+            ],
+            "GBP" => [
+                "region" => "UNITED KINGDOM'S",
+                "unit" => "GREAT BRITISH POUND"
+            ],
+            "CAD" => [
+                "region" => "CANADA",
+                "unit" => "DOLLAR"
+            ]
+        ];
         /* to-do: get from DB */
 
         $output = [ 
             "main-currency" => $mainCurrency,
             "info-list" => $infoList,
+            "descript-list" => $descript
         ];
         return response()->json($output);
     }

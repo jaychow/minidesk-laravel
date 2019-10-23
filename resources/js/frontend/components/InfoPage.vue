@@ -14,10 +14,7 @@
         <div id="user-panel">
             <div class="info-list-container">
                 <div class="select-title"> SELECT CURRENCY</div>
-                <InfoSelectList></InfoSelectList>
-
-                    <!-- {{ selectList }} -->
-
+                    <InfoSelectList></InfoSelectList>
                 </div>
             </div>
         </div>
@@ -51,7 +48,7 @@ export default {
         var result = await this.getInfoList()
         var mainCurrency = result["main-currency"]
         var currencyList = result["info-list"]
-
+        var descriptList = result["descript-list"]   //price description => region&unit  e.g. USD: {region: "UNITED STATES OF AMERICA", unit: "DOLLAR"}
         var selectList = []
         var infoPair = []
         currencyList.forEach(currency => {
@@ -66,11 +63,11 @@ export default {
         var infoPagesData = {
             mainCurrency: mainCurrency,
             selectList: selectList,
+            descriptList: descriptList,
             infoPair: infoPair,
             infoPagesPriceData: infoPagesPriceData         
         }
         this.$store.dispatch('setinfoPagesData', infoPagesData)
-        console.log(infoPagesPriceData['USD_GBP'].slice());
         this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice())
         this.$store.dispatch('setChartTitle', selectList[0])
         this.$store.dispatch('setChartTimescale', "1M")
