@@ -1,4 +1,4 @@
-webpackJsonp([1],{
+webpackJsonp([0],{
 
 /***/ "./node_modules/anychart/dist/js/anychart-bundle.min.js":
 /***/ (function(module, exports) {
@@ -5676,6 +5676,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Chart_Footer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__Chart_Footer__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Chart_InfoSelectList__ = __webpack_require__("./resources/js/frontend/components/Chart/InfoSelectList.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Chart_InfoSelectList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__Chart_InfoSelectList__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__store_modules_getLocation_js__ = __webpack_require__("./resources/js/frontend/store/modules/getLocation.js");
 
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -5715,6 +5716,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "infopage",
     components: {
@@ -5734,10 +5737,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                     switch (_context.prev = _context.next) {
                         case 0:
                             console.log("Info-pages mounted!");
-                            _context.next = 3;
+                            console.log(__WEBPACK_IMPORTED_MODULE_8__store_modules_getLocation_js__["a" /* default */].ipLookUp());
+                            _context.next = 4;
                             return this.getInfoList();
 
-                        case 3:
+                        case 4:
                             result = _context.sent;
                             mainCurrency = result["main-currency"];
                             currencyList = result["info-list"];
@@ -5752,10 +5756,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                     selectList.push(currency);
                                 }
                             });
-                            _context.next = 12;
+                            _context.next = 13;
                             return this.getInfoPages(infoPair);
 
-                        case 12:
+                        case 13:
                             infoPagesPriceData = _context.sent;
                             infoPagesData = {
                                 mainCurrency: mainCurrency,
@@ -5770,7 +5774,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                             this.$store.dispatch('setChartTitle', selectList[0]);
                             this.$store.dispatch('setChartTimescale', "1M");
 
-                        case 18:
+                        case 19:
                         case 'end':
                             return _context.stop();
                     }
@@ -22630,6 +22634,7 @@ function setYLabelColor(chart) {
 
 // import chart_style from './chart_style';
 
+
 var utcOffset = new Date().getTimezoneOffset();
 
 function chartInit(chart, el) {
@@ -22717,7 +22722,9 @@ function chartInit(chart, el) {
 
     //chart perloader init
     chart.preloader = __WEBPACK_IMPORTED_MODULE_0_anychart___default.a.ui.preloader();
-    chart.preloader.render(el);
+    chart.preloader.render();
+    document.getElementsByClassName('anychart-loader-rotating-plane')[0].innerHTML = '\n        <img src="img/frontend/hedgedesk.gif"\n        style="max-width:100%;\n        max-height:100%;">\n        ';
+    // chart.preloader.render(el);  
     chart.chart.container("chart");
     console.log('chartInit!');
 
@@ -22730,6 +22737,41 @@ function chartInit(chart, el) {
 }
 
 
+
+/***/ }),
+
+/***/ "./resources/js/frontend/store/modules/getLocation.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__api_api__ = __webpack_require__("./resources/js/frontend/api/api.js");
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    getByNav: function getByNav() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function success(position) {
+                console.log('latitude', position.coords.latitude, 'longitude', position.coords.longitude);
+            }, function error(error_message) {
+                // for when getting location results in an error
+                console.error('An error has occured while retrieving location', error_message);
+            });
+        } else {
+            console.log('geolocation is not enabled on this browser');
+        }
+    },
+    ipLookUp: function ipLookUp(callback) {
+        $.ajax('http://ip-api.com/json').then(function success(response) {
+            // console.log('User\'s Location Data is ', response);
+            // console.log('User\'s Country', response.country);
+            callback(response);
+        }, function fail(data, status) {
+            // console.log('Request failed.  Returned status of',
+            // status);
+            callback(status);
+        });
+    }
+});
 
 /***/ }),
 
