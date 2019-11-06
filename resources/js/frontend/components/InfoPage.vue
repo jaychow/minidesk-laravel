@@ -31,6 +31,8 @@ import Chart from "./Chart/Chart"
 import ChartFooter from "./Chart/Footer"
 import InfoSelectList from "./Chart/InfoSelectList"
 
+import location from "../store/modules/getLocation.js"
+
 export default {
     name: "infopage",
     components: {
@@ -45,6 +47,7 @@ export default {
     },
     async mounted(){
         console.log("Info-pages mounted!")
+        console.log(location.ipLookUp())
         var result = await this.getInfoList()
         var mainCurrency = result["main-currency"]
         var currencyList = result["info-list"]
