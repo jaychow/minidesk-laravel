@@ -2,6 +2,7 @@ import Anychart from 'anychart';
 import { setChartMapping, setXAxis, setYLabel} from './chart_setting.js'
 // import chart_style from './chart_style';
 
+
 const utcOffset = new Date().getTimezoneOffset();
 
 function chartInit(chart, el) {
@@ -94,7 +95,13 @@ function chartInit(chart, el) {
 
     //chart perloader init
     chart.preloader = Anychart.ui.preloader();
-    chart.preloader.render(el);  
+    chart.preloader.render();
+    document.getElementsByClassName('anychart-loader-rotating-plane')[0].innerHTML = `
+        <img src="img/frontend/hedgedesk.gif"
+        style="max-width:100%;
+        max-height:100%;">
+        `;
+    // chart.preloader.render(el);  
     chart.chart.container("chart");
     console.log('chartInit!');
 
