@@ -13657,6 +13657,28 @@ div.anychart-control button[title="Expand/Collapse plot"] {
   outline: none;
 }
 
+.slide-fade-enter-active {
+  -webkit-transition-delay: 1.6s;
+          transition-delay: 1.6s;
+  -webkit-transition: all .8s ease;
+  transition: all .8s ease;
+}
+
+.slide-fade-leave-active {
+  -webkit-transition: opacity .5s;
+  transition: opacity .5s;
+}
+
+.slide-fade-enter {
+  -webkit-transform: translateX(10px);
+          transform: translateX(10px);
+  opacity: 0;
+}
+
+.slide-fade-leave {
+  opacity: 0;
+}
+
 .anychart-loader {
   background-color: rgba(255, 255, 255, 0.5);
   position: absolute;
