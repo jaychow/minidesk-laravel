@@ -96,11 +96,7 @@ function chartInit(chart, el) {
     //chart perloader init
     chart.preloader = Anychart.ui.preloader();
     chart.preloader.render();
-    document.getElementsByClassName('anychart-loader-rotating-plane')[0].innerHTML = `
-        <img src="img/frontend/hedgedesk.gif"
-        style="max-width:100%;
-        max-height:100%;">
-        `;
+    setPreloader();
     // chart.preloader.render(el);  
     chart.chart.container("chart");
     console.log('chartInit!');
@@ -113,4 +109,11 @@ function chartInit(chart, el) {
     // chart.chart.container('chart').draw();
 }
 
-export { chartInit };
+function setPreloader(){
+    document.getElementsByClassName('anychart-loader-rotating-plane')[0].innerHTML = `
+        <img src="img/frontend/hedgedesk.gif"
+        style="max-width:100%;
+        max-height:100%;">
+        `;
+}
+export { chartInit, setPreloader };

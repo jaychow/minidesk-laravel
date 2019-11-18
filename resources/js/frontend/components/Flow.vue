@@ -42,25 +42,16 @@
             <!-- your steps content here -->
             <!-- <div id="assess-part" class="content" role="tabpanel" aria-labelledby="assess-part-trigger" style="display:false"></div> -->
             <div id="assess-part" class="content" role="tabpanel" aria-labelledby="assess-part-trigger">  
-                <div class="minidesk-bottom" aria-labelledby="logins-part-trigger">
-                    <div class="chart-container" id="chart-container">
-                        <div class="top-area">
-                            <ChartHeader></ChartHeader>
-                        </div>
-                        <div class="chart-body">
-                            <Chart></Chart>
-                        </div>
-                        <div class="bottom-area">
-                            <ChartFooter></ChartFooter>
-                        </div>
-                    </div>
+                <FlowAccess></FlowAccess>
+            </div>
+            <div id="analyze-part" class="content" role="tabpanel" aria-labelledby="analyze-part-trigger">
+                <!-- <div class="minidesk-bottom" aria-labelledby="assess-part-trigger">
+                    <MainChart></MainChart>
                     <div id="user-panel">
                         <Sidebar></Sidebar>
                     </div>
-                </div>
-            </div>
-            <div id="analyze-part" class="content" role="tabpanel" aria-labelledby="analyze-part-trigger">
-                ANALYZE-PAGE-CONTENT
+                </div> -->
+                <!-- <FlowAccess></FlowAccess> -->
             </div>
             <div id="hedge-part" class="content" role="tabpanel" aria-labelledby="hedge-part-trigger">
                 HEDGE-PAGE-CONTENT                
@@ -78,20 +69,19 @@
 <script>
     import {mapGetters} from 'vuex'
     import Stepper from 'bs-stepper'
-
-    import ChartHeader from "./Chart/Header"
-    import Chart from "./Chart/Chart"
+    import MainChart from "./Chart/MainChart"
     import Sidebar from "./Sidebar"
-    import ChartFooter from "./Chart/Footer"
+
     import InfoPage from "./InfoPage"
+
+    import FlowAccess from "./FlowAccess"
 
     export default {
         components: {
-            ChartHeader,
-            Chart,
             Sidebar,
-            ChartFooter,
-            InfoPage
+            MainChart,
+            InfoPage,
+            FlowAccess
         },
         mounted() {
             this.stepper = new Stepper(this.$refs.stepper)  
@@ -99,7 +89,7 @@
         data(){
             return {
                 stepper: null,
-                flow: "ASSESS",
+                // flow: "ASSESS",
 
                 debug_index: 1,
             }
@@ -114,7 +104,7 @@
             }
         },
         computed: {
-            // ...mapGetters(['flow']),
+            ...mapGetters(['flow']),
         },
         watch: {
             flow(){

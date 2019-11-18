@@ -12,11 +12,7 @@
             </div>
         </div>
         <div id="user-panel">
-            <div class="info-list-container">
-                <div class="select-title"> SELECT CURRENCY</div>
-                    <InfoSelectList></InfoSelectList>
-                </div>
-            </div>
+            <InfoSelectList></InfoSelectList>
         </div>
     </div>
 </template>
