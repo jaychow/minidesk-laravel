@@ -2,7 +2,10 @@ import axios from 'axios'
 import chartApi from '../../api/chart'
 
 const state = {
-    flow: "ASSESS",
+    flow: {
+        type: "ASSESS",
+        subflow: 0
+    },
     chart: {
         settings: {
             pair: '',
@@ -27,13 +30,19 @@ const state = {
         infoPair: [],
         infoPagesPriceData: {}    
     },
-    amountInput : 0
+    amount : {
+        symbol: "$",
+        targetSymbol: "$",
+        price: ""
+    },
+    assessFormData: {},
+    message: ""
 }
 
 const getters = {
     flow: (state) => state.flow,
-    today: (state) => state.chart.settings.today,
-    tradeDate: (state) => (state.chart.settings.today.toISOString().substr(0,10)),
+    today: () => new Date(),
+    tradeDate: (state) => (new Date().toISOString().substr(0,10)),
     chartData:  (state) => state.chart.data,
     chartSettings: (state) => state.chart.settings,
     homeCurrency: (state) => state.homeCurrency,
@@ -49,10 +58,11 @@ const getters = {
     tradeType: (state) => (state.chart.settings.tradeType),
     loading: (state) => (state.chart.settings.isLoading),
     refreshInterval: (state) => (state.chart.settings.refreshInterval),
-    amountInput: (state) => (state.amountInput),
+    amount: (state) => (state.amount),
     showMainChart: (state) => (state.chart.settings.showChart),
     chartTitle: (state) => (state.chart.chartTitle),
     infoPagesData: (state) => (state.infoPagesData),
+    message: (state) => (state.message)
 }
 
 const actions  = {
@@ -98,7 +108,9 @@ const actions  = {
 
             console.log(data.jsonHistoryData)
             commit('UPDATE_CHART_DATA', data)
-            commit('UPDATE_CHART_TITLE', this.getters.pair)
+            // commit('UPDATE_CHART_TITLE', this.getters.pair)
+            commit('UPDATE_CHART_TITLE', this.getters.homeCurrency)
+
             commit('UPDATE_LOADING', false)
         } catch (err) {
             console.error(err)
@@ -158,6 +170,9 @@ const actions  = {
     },
     setinfoPagesData: ({commit}, infoPagesData) =>{
         commit('UPDATE_INFO_PAGES_DATA', infoPagesData)
+    },
+    setMessage: ({commit}, message) =>{
+        commit('UPDATE_MESSAGE', message)
     }
 }
 
@@ -172,10 +187,11 @@ const mutations = {
     UPDATE_LOADING: (state, loading) => (state.chart.settings.isLoading = loading),
     UPDATE_FLOW: (state, flow) => (state.flow = flow),
     UPDATE_INTERVAL: (state, interval) => (state.chart.settings.refreshInterval = interval),
-    UPDATE_AMOUNT: (state, amount) => (state.amountInput = amount),
+    UPDATE_AMOUNT: (state, amount) => (state.amount = amount),
     UPDATE_SHOWMAINCHART: (state, show) => (state.chart.settings.showChart = show),
     UPDATE_CHART_TITLE: (state, title) => (state.chart.chartTitle = title),
     UPDATE_INFO_PAGES_DATA: (state, infoPagesData) => (state.infoPagesData = infoPagesData),
+    UPDATE_MESSAGE: (state, message) => (state.message = message),
 }
 
 export default {

@@ -68,8 +68,9 @@
                 this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval // 1M/candle, increase 1 candle every intervals.
             },
             setLabel(){
-                if(this.chartYLabelType === "user" && this.amountInput !== "" && this.amountInput !== "0")
-                    setYLabel(this.chart, this.amountInput)
+                console.log(this.amount)
+                if(this.chartYLabelType === "user" && this.amount.price !== "" && this.amount.price != 0)
+                    setYLabel(this.chart, this.amount.price)
                 else
                     setYLabel(this.chart)
                 setYLabelColor(this.chart)
@@ -92,8 +93,11 @@
                 this.chart.chartLabelType = this.chartYLabelType;
                 this.setLabel()
             },
-            amountInput: function(){
-                this.setLabel()
+            amount: {
+                deep: true,
+                handler(){
+                    this.setLabel()
+                }
             },
             tradeType: function(){
                 this.chart.tradeType = this.tradeType;
@@ -127,7 +131,7 @@
                 'homeCurrency', 
                 'foreignCurrency',
                 'refreshInterval',
-                'amountInput'
+                'amount'
             ]),
             showChart: {
                 get () {

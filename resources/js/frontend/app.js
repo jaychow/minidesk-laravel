@@ -24,7 +24,7 @@ window.JQuery = require('jquery');
  */
 Vue.component('minidesk', require('./components/Minidesk.vue'));
 
-Vue.component('debug', require('./components/InfoPage.vue'));
+Vue.component('debug', require('./components/DebugPage.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 

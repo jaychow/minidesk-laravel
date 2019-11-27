@@ -92,7 +92,6 @@ export default {
         async getInfoPages(infoPair) {
             var resp = await chartApi.getInfoPages(infoPair)
             var ret = resp.data
-            console.log("ret")
             return ret
         },
         selectInfo(currency){
@@ -105,11 +104,15 @@ export default {
             }
             this.$store.dispatch('setInfoPage', targetData)
             this.$store.dispatch('setChartTitle', currency)
-            this.$parent.flow = "Sidebar"
+            this.$store.dispatch('setHomeCurrency', currency)
+            var f = this.flow
+            f.subflow = 1
+            this.$store.dispatch('setFlow', f)
+            
         }
     },
     computed: {
-        ...mapGetters(['infoPagesData'])
+        ...mapGetters(['infoPagesData', 'homeCurrency', 'flow'])
     },
     watch:{
         infoPagesData: function(){
@@ -118,6 +121,7 @@ export default {
     },
     async mounted(){
         console.log("Info-pages mounted!")
+        this.$store.dispatch('setForeignCurrency', "")
         var result = await this.getInfoList()
         var mainCurrency = result["main-currency"]
         var currencyList = result["info-list"]
@@ -141,9 +145,22 @@ export default {
             infoPagesPriceData: infoPagesPriceData         
         }
         this.$store.dispatch('setinfoPagesData', infoPagesDataTemp)
-        this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice())
-        this.$store.dispatch('setChartTitle', selectList[0])
-        this.$store.dispatch('setChartTimescale', "1M")
+        try{
+            if(this.homeCurrency !== ""){
+                this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_'+this.homeCurrency].slice())
+                this.$store.dispatch('setChartTitle', this.homeCurrency)
+                this.$store.dispatch('setChartTimescale', "1M")
+            }else{
+                this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice())
+                this.$store.dispatch('setChartTitle', "GBP")
+                this.$store.dispatch('setChartTimescale', "1M")
+            }
+        }catch(error){
+            this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice())
+            this.$store.dispatch('setChartTitle', "GBP")
+            this.$store.dispatch('setChartTimescale', "1M")
+        }
+
     },
 }
 </script>

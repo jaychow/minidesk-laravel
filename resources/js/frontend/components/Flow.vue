@@ -45,13 +45,7 @@
                 <FlowAccess></FlowAccess>
             </div>
             <div id="analyze-part" class="content" role="tabpanel" aria-labelledby="analyze-part-trigger">
-                <!-- <div class="minidesk-bottom" aria-labelledby="assess-part-trigger">
-                    <MainChart></MainChart>
-                    <div id="user-panel">
-                        <Sidebar></Sidebar>
-                    </div>
-                </div> -->
-                <!-- <FlowAccess></FlowAccess> -->
+                ANALYZE-PAGE-CONTENT 
             </div>
             <div id="hedge-part" class="content" role="tabpanel" aria-labelledby="hedge-part-trigger">
                 HEDGE-PAGE-CONTENT                
@@ -70,17 +64,11 @@
     import {mapGetters} from 'vuex'
     import Stepper from 'bs-stepper'
     import MainChart from "./Chart/MainChart"
-    import Sidebar from "./Sidebar"
-
-    import InfoPage from "./InfoPage"
-
     import FlowAccess from "./FlowAccess"
 
     export default {
         components: {
-            Sidebar,
             MainChart,
-            InfoPage,
             FlowAccess
         },
         mounted() {
@@ -96,27 +84,27 @@
         },
         methods:{
             setFlow: function(){
-                if(this.debug_index <= 5)
-                    this.debug_index += 1
-                else
-                    this.debug_index = 1
-                this.stepper.to(this.debug_index)
+                var f = this.flow
+                f.subflow = 0
+                this.$store.dispatch('setFlow', f)
             }
         },
         computed: {
             ...mapGetters(['flow']),
         },
         watch: {
-            flow(){
-                const stepList = ['ASSESS', 'ANALYZE', 'HEDGE', 'SAVE', 'MANAGE']
-                try {
-                    let index = stepList.indexOf(this.flow)
-                    this.stepper.to(index+1)
-                } catch (error) {
-                    console.log(error)
-                    this.stepper.to(1)
-                }
-                
+            flow: {  
+                handler(val){
+                    const stepList = ['ASSESS', 'ANALYZE', 'HEDGE', 'SAVE', 'MANAGE']
+                    try {
+                        var index = stepList.indexOf(val.type)
+                        this.stepper.to(index+1)
+                    } catch (error) {
+                        console.log(error)
+                        this.stepper.to(1)
+                    }
+                },
+                deep: true,
             }
         }
     }

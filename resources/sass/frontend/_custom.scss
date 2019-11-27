@@ -258,7 +258,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
             background-color: white;
             border-radius: 0px 0px 10px 10px;
             box-shadow:3px 3px 9px #4B4860;
-            padding-top: 8%;
+            // padding-top: 8%;
             .currency-selector-container{
                 height: 40%;
                 width: 50%;
@@ -280,9 +280,9 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                 }     
             }
             .trade-input-container{              
-                height: 30%;
+                height: 10%;
                 width: 100%;
-                padding-top: 8%;
+                // padding-top: 8%;
                 .input-group{
                     width: 50%;
                     height: 6%;
@@ -316,7 +316,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                 width: 85%;
                 margin: 0 auto;
                 margin-bottom: 5%;
-                margin-top: -5%;
+                // margin-top: -5%;
             }
             .submit-area {
                 text-align: center;
@@ -384,8 +384,117 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                 
             }
         }
+        .transfer-type-container{  
+            padding-top: 20%;   
+            .transfer-title{
+                margin-top: 2%;
+                font-size: 125%;
+                color: #000000;
+            }
+            
+            .transfer-button-list{
+                padding-top: 5%;
+                color: #4B4860;
+                .submit-area{
+                    padding-top: 2%;
+                    .submitButton{
+                        width: 60%;
+                        text-align: center;
+                    }
+                    .submitButton.submit-time{
+                        width: 25%;
+                        text-align: center;
+                    }
+                    .submitButton.submit-recurring{
+                        width: 80%;
+                    }
+                }
+            }
+            .transfer-button-list.recurring-button-list{
+                width: 50%;
+            }
+            .trade-input-container{              
+                height: 30%;
+                width: 100%;
+                padding-top: 2%;
+                .input-group{
+                    width: 50%;
+                    height: 6%;
+                    text-align:center;
+                    margin: 0 auto;
+                    border: 2px solid #8b8dbb;
+                    background-color: white;
+                    border-radius: 0.5rem;
+                    outline: none;
+                    .input-group-prepend{
+                        border: none;
+                        outline: 0;
+                        .input-group-text{
+                            border: none;
+                            background-color: transparent;
+                        }
+                    }
+                    .amount-input{
+                        border-color: transparent;
+                        outline: 0 none;                            
+                    }
+                    .form-control:focus {
+                        border-color: transparent;
+                        box-shadow: none;
+                    }
+                }
+                .input-group.date-input-container{
+                    width: 60%;
+                }
+                .input-group-select{
+                    text-align:center;
+                    margin: 0 auto;
+                    border: 2px solid #8b8dbb;
+                    background-color: white;
+                    border-radius: 0.5rem;
+                    outline: none;
+                }
+                .input-group-select:focus{
+                    outline: none;
+                }
+                
+            }
+            text-align: center;
+            // height: 50%;
+        }
+        .transfer-type-container.multi-transfer,
+        .transfer-type-container.recurring-transfer{
+            text-align: center;
+            padding-top: 0%;
+            margin-top:-15%;
+            height: 70%;
+            .submitButton:disabled{
+                background-color: #8b8dbb;
+                outline: none;
+                color: white;
+            }
+            .trade-input-container{
+                height: 10%;
+            } 
+            .view-by-button-list{
+                height: 10%;
+            }
+            .trade-list-container{
+                height: 70%;
+                .ps-container{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+        .title-content{
+            text-align: center;
+        }
+
     }
 }
+
+
 
 .anychart-credits-text {
     display: none;
@@ -412,7 +521,12 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
     background-color: #c7c9fc;
     outline: none;
 }
-
+.submitButton:focus{
+    outline: none;
+}
+.transfer-type-container:focus {
+    outline: none;
+}
 .slide-fade-enter-active {
     transition-delay: 1.6s;
     transition: all .8s ease;
@@ -429,7 +543,21 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
     opacity: 0;
 }
 
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
 
+// .previous-side-bar{
+//     margin-top: -5%;
+// }
+.submit-previous{
+    width: 10%;
+    margin-top: 5%;
+    margin-left: 2%;
+}
 
 .anychart-loader{ 
     background-color:rgba(255,255,255,.5); //loading animation background

@@ -1,6 +1,6 @@
 <template>
     <div class="chart-footer" v-show="showMainChart !== false">
-        <div class="timescale-area">
+        <div class="timescale-area" v-show="flow.type === 'ASSESS' && flow.subflow !== 0">
             <button v-for="_timescale in timescaleOptions"
                     class="timescaleButton"
                     :value="_timescale"
@@ -40,9 +40,14 @@
         },
         mounted() {
             console.log('ChartFooter Mounted!')
+            var loaded = [];
+            var components = this.$options.components;
+            for (var key in components) {
+                loaded.push(key);
+            }
         },
         computed: {
-            ...mapGetters(['chartSettings', 'homeCurrency', 'foreignCurrency', 'showMainChart'])
+            ...mapGetters(['chartSettings', 'homeCurrency', 'foreignCurrency', 'showMainChart', 'flow'])
         },
         methods: {
             setTimescale(event) {

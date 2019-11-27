@@ -8,6 +8,9 @@
         </div>
 
         <div class="amount-area">
+            <div class="previous-side-bar">
+                <PreviousButton/>
+            </div>       
             <div class="currency-selector-container">
                 <div class="currency-text">
                     <h5>HOME CURRENCY</h5>
@@ -28,45 +31,39 @@
                     </select>
                 </div>  
             </div>
-            <div class="trade-input-container">
-                <form id="tradingTicketForm">
-                    <div class="input-group currency-input-container">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">{{ this.amountSymbol }}</span>
-                        </div>
-                        <input type="number" id="transactionAmount" 
-                            class="amount-input form-control" placeholder="AMOUNT"
-                            v-model="amountInput"
-                            @input="amountChange"
-                            >
+            <form id="tradingTicketForm">
+                <AmountInput/>
+            </form>
+            <transition name="fade">
+                <div class="alert-container">
+                    <div :class="alertClass" v-html="tradeExplaination">
                     </div>
-                    <!-- <div class="input-group date-input-container">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Date</span>
-                        </div>
-                        <input type="date" name="tradeDate" id="tradeDate" class="form-control"
-                            placeholder="MM/DD/YYYY">
-                    </div> -->
-                </form>
-            </div>
-            
-            <div class="alert-container">
-                <div :class="alertClass" v-html="tradeExplaination">
                 </div>
-            </div>
-            <div class="submit-area">
-                <button class="submitButton" id="submitButton">submit</button>
-            </div>           
+            </transition>
+            <transition name="fade">     
+                <div class="submit-area" v-show="showSubmit=== true" >
+                    <button class="submitButton" id="submitButton" @click="amountSubmit">submit</button>
+                </div>   
+            </transition>        
         </div>
     </div>
 </template>
 <script>
     import {mapGetters} from 'vuex'
     import _ from 'lodash'
+    import PreviousButton from "./PreviousButton"
+    import AmountInput from "./AmountInput"
     export default {
         mounted() {
             console.log('Sidebar Mounted!')
             this.initTradeDate()
+            if(this.amount.price != 0){
+                this.watchAmount()
+            }
+        },
+        components: {
+            PreviousButton,
+            AmountInput
         },
         data() {
             return {
@@ -82,7 +79,7 @@
                 },
                 amountSymbol: '',
                 tradeExplaination : "",
-                amountInput: ""
+                showSubmit: false,
             }
         },
         methods:{
@@ -110,8 +107,9 @@
                 return this.$store.getters.homeCurrency !== ''
             },
             setTrade(e){
-                this.$store.dispatch('setTradeType', e.target.value)          
-                if(this.amountInput !== ""){
+                this.$store.dispatch('setTradeType', e.target.value) 
+       
+                if(this.amount.price != 0){
                     this.watchAmount()
                 }
                 // if(this.homeCurrency !== "" || this.foreignCurrency !== "")
@@ -133,30 +131,36 @@
                     this.alertClass['alert-custom-pass'] = false
                     this.alertClass['alert-danger'] = true
                     this.tradeExplaination = "Please set " + alertList.join(", ") + " first!"
+                    return false
                 }else{
                     this.alertClass['alert-custom-pass'] = true
                     this.alertClass['alert-danger'] = false                   
                     try {
-                        result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
+                        result = parseFloat((this.amount.price / this.chartData.jsonHistoryData[0][5]).toFixed(2))
 
                         if(this.tradeType === "buy"){
                             // result = parseFloat((this.amountInput / this.chartData.jsonHistoryData[0][5]).toFixed(2))
-                            s = "If you transfer today,<br>" + this.amountInput + " " + this.homeCurrency + 
+                            s = "If you transfer today,<br>" + this.amount.price + " " + this.homeCurrency + 
                                 " will get you " + result + " " + this.foreignCurrency + "."
                         }else{
                             // result = parseFloat((this.amountInput * this.chartData.jsonHistoryData[0][5]).toFixed(2))
-                            s = "If you transfer today,<br>" + this.amountInput + " " + this.foreignCurrency + 
+                            s = "If you transfer today,<br>" + this.amount.price + " " + this.foreignCurrency + 
                                 " will get you " + result + " " + this.homeCurrency + "."
                         }
-                        if(this.amountInput !== "")
+                        if(this.amount.price !== ""  && this.amount.price >= 0)
                             this.tradeExplaination = s
                         else
                             this.tradeExplaination = ""
+                        console.log(this.amount)
                         this.$store.dispatch('setYLabelType', "user")
-                        this.$store.dispatch('setAmount', this.amountInput);
+
+                        this.showSubmit = true
+                        return true
                     } catch (error) {
                         console.log(error)
                     }
+                    this.showSubmit = false
+                    return false
                 }
             },
             amountChange:_.debounce(function () {
@@ -176,35 +180,57 @@
                         targetCurrency = null
                         break;
                 }
-                
-
                 if(targetCurrency){
                     console.log("change symbol to", targetCurrency)
-                    switch(targetCurrency){
-                        case 'GBP':
-                            this.amountSymbol = "£"
-                            break;
-                        case 'USD':
-                            this.amountSymbol = "$"
-                            break;
-                        case 'CAD':
-                            this.amountSymbol = "$"
-                            break;
-                        case 'EUR':
-                            this.amountSymbol = "€"
-                            break;    
-                        default:
-                            this.amountSymbol = ""
-                            break;
-                    }
+                    this.amountSymbol = this.getSymbol(targetCurrency)
                 }else{
                     this.amountSymbol = ""
                 }
-            }
+            },
+            amountSubmit(event){
+                if(this.watchAmount()){
+                    var f = this.flow
+                    f.subflow = 2
 
+                    var tradeCurrency = null
+                    switch(this.tradeType){
+                        case "buy":
+                            tradeCurrency = this.foreignCurrency
+                            break;
+                        case "sell":
+                            tradeCurrency = this.homeCurrency
+                            break;
+                        default:
+                            tradeCurrency = null
+                            break;
+                    }
+                    var tradeSymbol = this.getSymbol(tradeCurrency)
+                    var a = {
+                        symbol: this.amountSymbol,
+                        targetSymbol: tradeSymbol,
+                        price: this.amount.price
+                    }
+                    this.$store.dispatch('setAmount', a);
+                    this.$store.dispatch('setFlow', f)
+                }
+            },
+            getSymbol(targetCurrency){
+                switch(targetCurrency){
+                    case 'GBP':
+                        return "£"
+                    case 'USD':
+                        return "$"
+                    case 'CAD':
+                        return "$"
+                    case 'EUR':
+                        return "€"   
+                    default:
+                        return ""
+                }
+            }
         },
         computed: {
-            ...mapGetters(['today', 'tradeDate', 'pair', 'tradeType', 'chartData']),
+            ...mapGetters(['today', 'tradeDate', 'pair', 'tradeType', 'chartData', 'flow', 'amount']),
             homeCurrency: {
                 get () {
                     return this.$store.getters.homeCurrency
@@ -228,8 +254,14 @@
         },
         watch: {
             chartData(){
-                if(this.amountInput !== "")
+                if(this.amount.price != 0)
                     this.watchAmount()
+            },
+            amount: {
+                deep: true,
+                handler(){
+                    this.watchAmount()
+                }
             }
         }
     }
