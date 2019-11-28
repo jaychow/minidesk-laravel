@@ -64,7 +64,7 @@
             }
         },
         mounted() {
-            console.log('ChartHeader Mounted!')
+
         },
         computed: {
             ...mapGetters(['homeCurrency', 'chartSettings', 'foreignCurrency', 'tradeType', 'chartType', 'showMainChart', 'chartTitle'])

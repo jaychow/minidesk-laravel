@@ -214,7 +214,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
     }
 }
 #user-panel{
-
+    overflow: auto;
     width: 32%;
     height: 100%;
     margin:auto;
@@ -480,7 +480,8 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                 height: 10%;
             }
             .trade-list-container{
-                height: 70%;
+                height: 60%;
+                margin-bottom: 5%;
                 .ps-container{
                     width: 100%;
                     height: 100%;

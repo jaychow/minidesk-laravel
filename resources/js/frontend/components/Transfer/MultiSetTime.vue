@@ -22,11 +22,13 @@
             
             <div class="trade-list-container">
                 <vue-custom-scrollbar class="scroll-area"  :settings="settings">
-                    <div v-for="i in transfersCnt"> {{ i }} <br><br></div>
+                    <div v-for="i in transfersCnt"> {{ getIndexString(i) + " TRANSFER" }} <br><br></div>
                 </vue-custom-scrollbar>
                 
             </div>
-            
+            <div class="submit-area" >
+                <button class="submitButton" id="submitButton" >submit</button>
+            </div>  
         </div>
 
         
@@ -67,6 +69,24 @@ export default {
         setView(e){
             this.viewOption = e.target.value
         },
+        getIndexString(i){
+            var s = ""
+            switch (i) {
+                case 1:
+                    s = "1ST"
+                    break;
+                case 2:
+                    s = "2ND"
+                    break;  
+                case 3:
+                    s = "3RD"  
+                    break;  
+                default:
+                    s = i + "TH"
+                    break;
+            }
+            return s
+        }
     },
     computed: {
         ...mapGetters(['amount']),

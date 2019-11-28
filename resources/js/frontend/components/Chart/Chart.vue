@@ -42,7 +42,6 @@
             }
         },
         mounted() {
-            console.log("Chart mounted")
             // chartApi.getRefreshInterval((data, err) =>{
             //     if(!err){
             //         if(data !== "")
@@ -55,8 +54,6 @@
             // console.log('set updateIntervalCounts')
             chartInit(this.chart, this.$el);
             this.showChart = false;
-            
-            console.log('finish chart init');
         },
         methods: {
             initUpdateInterval() {
@@ -68,7 +65,6 @@
                 this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval // 1M/candle, increase 1 candle every intervals.
             },
             setLabel(){
-                console.log(this.amount)
                 if(this.chartYLabelType === "user" && this.amount.price !== "" && this.amount.price != 0)
                     setYLabel(this.chart, this.amount.price)
                 else
@@ -77,12 +73,15 @@
             }
         },
         watch: {
-            chartData: function() {
-                this.showChart = true;
-                this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
-                if(this.chart.chart){
-                    showData(this.chart)
-                    this.setLabel()
+            chartData:{
+                deep:true,
+                handler(){
+                    this.showChart = true;
+                    this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
+                    if(this.chart.chart){
+                        showData(this.chart)
+                        this.setLabel()
+                    }
                 }
             },
             chartType: function(){

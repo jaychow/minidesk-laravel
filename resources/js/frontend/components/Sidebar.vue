@@ -54,8 +54,11 @@
     import PreviousButton from "./PreviousButton"
     import AmountInput from "./AmountInput"
     export default {
+        created(){
+            if(!this.tradeType || this.tradeType === "")
+                this.$store.dispatch('setTradeType', "buy") 
+        },
         mounted() {
-            console.log('Sidebar Mounted!')
             this.initTradeDate()
             if(this.amount.price != 0){
                 this.watchAmount()
@@ -88,9 +91,7 @@
                     min :this.tradeDate
                 })
             },
-            changeHomeCurrency: function(e) {
-                console.log("changing home currency to: " + e.target.value)
-                
+            changeHomeCurrency: function(e) {            
                 if(this.homeCurrency === this.foreignCurrency) {
                     this.$store.dispatch('setForeignCurrency', '')
                 }
@@ -101,7 +102,6 @@
                     this.$store.dispatch('setForeignCurrency', '')
                     return
                 }
-                console.log("changing foreign currency to: " + e.target.value)
             },
             foreignChangeAllowed() {
                 return this.$store.getters.homeCurrency !== ''
@@ -151,7 +151,6 @@
                             this.tradeExplaination = s
                         else
                             this.tradeExplaination = ""
-                        console.log(this.amount)
                         this.$store.dispatch('setYLabelType', "user")
 
                         this.showSubmit = true
@@ -168,7 +167,6 @@
             }, 1000),
             setAmountSymbol(){
                 let targetCurrency = null
-                console.log(this.tradeType)
                 switch(this.tradeType){
                     case "buy":
                         targetCurrency = this.homeCurrency
@@ -181,7 +179,6 @@
                         break;
                 }
                 if(targetCurrency){
-                    console.log("change symbol to", targetCurrency)
                     this.amountSymbol = this.getSymbol(targetCurrency)
                 }else{
                     this.amountSymbol = ""

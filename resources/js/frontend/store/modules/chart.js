@@ -22,7 +22,7 @@ const state = {
         data: {},
         chartTitle: "",
     },
-    homeCurrency: '',
+    homeCurrency: 'USD',
     foreignCurrency: '',
     infoPagesData: {
         mainCurrency: "",
@@ -106,10 +106,10 @@ const actions  = {
             // console.log(response)
             // data.jsonZonesData = response.data
 
-            console.log(data.jsonHistoryData)
+            // console.log(data.jsonHistoryData)
             commit('UPDATE_CHART_DATA', data)
             // commit('UPDATE_CHART_TITLE', this.getters.pair)
-            commit('UPDATE_CHART_TITLE', this.getters.homeCurrency)
+            // commit('UPDATE_CHART_TITLE', this.getters.foreignCurrency)
 
             commit('UPDATE_LOADING', false)
         } catch (err) {
@@ -118,11 +118,12 @@ const actions  = {
     },
     setInfoPage: ({commit, dispatch}, dataIn) => {
         let data = {}
-        data.jsonHistoryData = dataIn.slice()
+        data.jsonHistoryData = dataIn
         commit('UPDATE_CHART_DATA', data)
     },
     setHomeCurrency: ({commit, dispatch}, currency) => {
         commit('UPDATE_HOME_CURRENCY', currency)
+
         if(state.foreignCurrency !== '' && state.homeCurrency !== '' && state.homeCurrency!== state.foreignCurrency)
             dispatch('fetchChartData')
     },
@@ -130,6 +131,9 @@ const actions  = {
         commit('UPDATE_FOREIGN_CURRENCY', currency)
         if(state.homeCurrency !== '' && state.foreignCurrency !== '' && state.homeCurrency!== state.foreignCurrency)
             dispatch('fetchChartData')
+    },
+    setPair:({commit, dispatch}, pair) => {
+        commit('UPDATE_PAIR', pair)
     },
     setChartTimescale: ({commit, dispatch}, timescale) => {
         console.log('setChartTimescale')
@@ -180,6 +184,7 @@ const mutations = {
     UPDATE_CHART_DATA: (state, data) => (state.chart.data = data),
     UPDATE_HOME_CURRENCY: (state, currency) => (state.homeCurrency = currency),
     UPDATE_FOREIGN_CURRENCY: (state, currency) => (state.foreignCurrency = currency),
+    UPDATE_PAIR: (state, pair) => (state.chart.settings.pair = pair),
     UPDATE_CHART_TIMESCALE: (state, timescale) => (state.chart.settings.timescale = timescale),
     UPDATE_CHART_TYPE: (state, type) => (state.chart.settings.type = type),
     UPDATE_CHART_Y_LABEL_TYPE: (state, type) => (state.chart.settings.yLabelType = type),

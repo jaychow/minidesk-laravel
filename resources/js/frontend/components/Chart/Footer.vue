@@ -39,7 +39,6 @@
             }
         },
         mounted() {
-            console.log('ChartFooter Mounted!')
             var loaded = [];
             var components = this.$options.components;
             for (var key in components) {
