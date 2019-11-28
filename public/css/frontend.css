@@ -13423,6 +13423,7 @@ div.anychart-control button[title="Expand/Collapse plot"] {
 }
 
 #user-panel {
+  overflow: auto;
   width: 32%;
   height: 100%;
   margin: auto;
@@ -13747,7 +13748,8 @@ div.anychart-control button[title="Expand/Collapse plot"] {
 
 #user-panel .info-list-container .transfer-type-container.multi-transfer .trade-list-container,
 #user-panel .info-list-container .transfer-type-container.recurring-transfer .trade-list-container {
-  height: 70%;
+  height: 60%;
+  margin-bottom: 5%;
 }
 
 #user-panel .info-list-container .transfer-type-container.multi-transfer .trade-list-container .ps-container,

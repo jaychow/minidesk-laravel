@@ -5220,7 +5220,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         };
     },
     mounted: function mounted() {
-        console.log("Chart mounted");
         // chartApi.getRefreshInterval((data, err) =>{
         //     if(!err){
         //         if(data !== "")
@@ -5233,8 +5232,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         // console.log('set updateIntervalCounts')
         Object(__WEBPACK_IMPORTED_MODULE_3__store_modules_chart_init_js__["a" /* chartInit */])(this.chart, this.$el);
         this.showChart = false;
-
-        console.log('finish chart init');
     },
 
     methods: {
@@ -5247,18 +5244,20 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             this.updateIntervalCounts['5Y'] = 60 * 24 * 31 / this.updateCandleInterval; // 1M/candle, increase 1 candle every intervals.
         },
         setLabel: function setLabel() {
-            console.log(this.amount);
             if (this.chartYLabelType === "user" && this.amount.price !== "" && this.amount.price != 0) Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart, this.amount.price);else Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["c" /* setYLabel */])(this.chart);
             Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["d" /* setYLabelColor */])(this.chart);
         }
     },
     watch: {
-        chartData: function chartData() {
-            this.showChart = true;
-            this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
-            if (this.chart.chart) {
-                Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["e" /* showData */])(this.chart);
-                this.setLabel();
+        chartData: {
+            deep: true,
+            handler: function handler() {
+                this.showChart = true;
+                this.chart.jsonHistoryData = this.chartData.jsonHistoryData;
+                if (this.chart.chart) {
+                    Object(__WEBPACK_IMPORTED_MODULE_4__store_modules_chart_chart_setting_js__["e" /* showData */])(this.chart);
+                    this.setLabel();
+                }
             }
         },
         chartType: function chartType() {
@@ -5354,7 +5353,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         };
     },
     mounted: function mounted() {
-        console.log('ChartFooter Mounted!');
         var loaded = [];
         var components = this.$options.components;
         for (var key in components) {
@@ -5444,9 +5442,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             centerStyle: 'center'
         };
     },
-    mounted: function mounted() {
-        console.log('ChartHeader Mounted!');
-    },
+    mounted: function mounted() {},
 
     computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['homeCurrency', 'chartSettings', 'foreignCurrency', 'tradeType', 'chartType', 'showMainChart', 'chartTitle'])),
     methods: {
@@ -5511,7 +5507,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "info-select-list",
     data: function data() {
-        return {};
+        return {
+            title: "GBP"
+        };
     },
 
     methods: {
@@ -5623,26 +5621,34 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             return getInfoPages;
         }(),
         selectInfo: function selectInfo(currency) {
-            var showTarget = "USD_" + currency;
+            var showTarget = currency + "_USD";
             var targetData = [];
             try {
                 targetData = this.infoPagesData.infoPagesPriceData[showTarget].slice();
             } catch (error) {
-                targetData = this.infoPagesData.infoPagesPriceData['USD_GBP'].slice();
+                targetData = this.infoPagesData.infoPagesPriceData['GBP_USD'].slice();
             }
             this.$store.dispatch('setInfoPage', targetData);
+            // this.$store.dispatch('setPair', this.foreignCurrency + '_USD')  
             this.$store.dispatch('setChartTitle', currency);
-            this.$store.dispatch('setHomeCurrency', currency);
+            // this.$store.dispatch('setHomeCurrency', "USD")
+            this.$store.dispatch('setForeignCurrency', currency);
             var f = this.flow;
             f.subflow = 1;
             this.$store.dispatch('setFlow', f);
         }
     },
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["b" /* mapGetters */])(['infoPagesData', 'homeCurrency', 'flow'])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["b" /* mapGetters */])(['infoPagesData', 'foreignCurrency', 'flow'])),
     watch: {
         infoPagesData: function infoPagesData() {
             this.draw();
         }
+    },
+    created: function created() {
+        console.log(this.foreignCurrency);
+        if (this.foreignCurrency && this.foreignCurrency !== "") this.title = this.foreignCurrency;else this.title = "GBP";
+        this.$store.dispatch('setForeignCurrency', "");
+        this.$store.dispatch('setChartTimescale', "1M");
     },
     mounted: function () {
         var _ref3 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee3() {
@@ -5651,12 +5657,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 while (1) {
                     switch (_context3.prev = _context3.next) {
                         case 0:
-                            console.log("Info-pages mounted!");
-                            this.$store.dispatch('setForeignCurrency', "");
-                            _context3.next = 4;
+                            _context3.next = 2;
                             return this.getInfoList();
 
-                        case 4:
+                        case 2:
                             result = _context3.sent;
                             mainCurrency = result["main-currency"];
                             currencyList = result["info-list"];
@@ -5667,14 +5671,14 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
                             currencyList.forEach(function (currency) {
                                 if (currency !== mainCurrency) {
-                                    infoPair.push(mainCurrency + "_" + currency);
+                                    infoPair.push(currency + "_" + mainCurrency);
                                     selectList.push(currency);
                                 }
                             });
-                            _context3.next = 13;
+                            _context3.next = 11;
                             return this.getInfoPages(infoPair);
 
-                        case 13:
+                        case 11:
                             infoPagesPriceData = _context3.sent;
                             infoPagesDataTemp = {
                                 mainCurrency: mainCurrency,
@@ -5685,23 +5689,21 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                             };
 
                             this.$store.dispatch('setinfoPagesData', infoPagesDataTemp);
-                            try {
-                                if (this.homeCurrency !== "") {
-                                    this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_' + this.homeCurrency].slice());
-                                    this.$store.dispatch('setChartTitle', this.homeCurrency);
-                                    this.$store.dispatch('setChartTimescale', "1M");
-                                } else {
-                                    this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice());
-                                    this.$store.dispatch('setChartTitle', "GBP");
-                                    this.$store.dispatch('setChartTimescale', "1M");
-                                }
-                            } catch (error) {
-                                this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice());
+                            // try{
+                            if (this.title !== "") {
+                                this.$store.dispatch('setChartTitle', this.title);
+                                this.$store.dispatch('setInfoPage', infoPagesPriceData[this.title + '_USD'].slice());
+                            } else {
                                 this.$store.dispatch('setChartTitle', "GBP");
-                                this.$store.dispatch('setChartTimescale', "1M");
+                                this.$store.dispatch('setInfoPage', infoPagesPriceData['GBP_USD'].slice());
                             }
+                            // }catch(error){
+                            //     this.$store.dispatch('setInfoPage', infoPagesPriceData['GBP_USD'].slice())
+                            //     this.$store.dispatch('setChartTitle', "GBP")
+                            //     this.$store.dispatch('setChartTimescale', "1M")
+                            // }
 
-                        case 17:
+                        case 15:
                         case 'end':
                             return _context3.stop();
                     }
@@ -6267,8 +6269,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    created: function created() {
+        if (!this.tradeType || this.tradeType === "") this.$store.dispatch('setTradeType', "buy");
+    },
     mounted: function mounted() {
-        console.log('Sidebar Mounted!');
         this.initTradeDate();
         if (this.amount.price != 0) {
             this.watchAmount();
@@ -6301,8 +6305,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         },
 
         changeHomeCurrency: function changeHomeCurrency(e) {
-            console.log("changing home currency to: " + e.target.value);
-
             if (this.homeCurrency === this.foreignCurrency) {
                 this.$store.dispatch('setForeignCurrency', '');
             }
@@ -6313,7 +6315,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 this.$store.dispatch('setForeignCurrency', '');
                 return;
             }
-            console.log("changing foreign currency to: " + e.target.value);
         },
         foreignChangeAllowed: function foreignChangeAllowed() {
             return this.$store.getters.homeCurrency !== '';
@@ -6355,7 +6356,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                         s = "If you transfer today,<br>" + this.amount.price + " " + this.foreignCurrency + " will get you " + result + " " + this.homeCurrency + ".";
                     }
                     if (this.amount.price !== "" && this.amount.price >= 0) this.tradeExplaination = s;else this.tradeExplaination = "";
-                    console.log(this.amount);
                     this.$store.dispatch('setYLabelType', "user");
 
                     this.showSubmit = true;
@@ -6373,7 +6373,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         }, 1000),
         setAmountSymbol: function setAmountSymbol() {
             var targetCurrency = null;
-            console.log(this.tradeType);
             switch (this.tradeType) {
                 case "buy":
                     targetCurrency = this.homeCurrency;
@@ -6386,7 +6385,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                     break;
             }
             if (targetCurrency) {
-                console.log("change symbol to", targetCurrency);
                 this.amountSymbol = this.getSymbol(targetCurrency);
             } else {
                 this.amountSymbol = "";
@@ -6520,6 +6518,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
 
 
 
@@ -6554,6 +6554,24 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     methods: {
         setView: function setView(e) {
             this.viewOption = e.target.value;
+        },
+        getIndexString: function getIndexString(i) {
+            var s = "";
+            switch (i) {
+                case 1:
+                    s = "1ST";
+                    break;
+                case 2:
+                    s = "2ND";
+                    break;
+                case 3:
+                    s = "3RD";
+                    break;
+                default:
+                    s = i + "TH";
+                    break;
+            }
+            return s;
         }
     },
     computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['amount'])),
@@ -9780,7 +9798,9 @@ var render = function() {
               { staticClass: "scroll-area", attrs: { settings: _vm.settings } },
               _vm._l(_vm.transfersCnt, function(i) {
                 return _c("div", [
-                  _vm._v(" " + _vm._s(i) + " "),
+                  _vm._v(
+                    " " + _vm._s(_vm.getIndexString(i) + " TRANSFER") + " "
+                  ),
                   _c("br"),
                   _c("br")
                 ])
@@ -9789,13 +9809,28 @@ var render = function() {
             )
           ],
           1
-        )
+        ),
+        _vm._v(" "),
+        _vm._m(0)
       ])
     ],
     1
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "submit-area" }, [
+      _c(
+        "button",
+        { staticClass: "submitButton", attrs: { id: "submitButton" } },
+        [_vm._v("submit")]
+      )
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -23446,9 +23481,7 @@ var app = new __WEBPACK_IMPORTED_MODULE_2_vue___default.a({
   data: function data() {
     return {};
   },
-  created: function created() {
-    console.log("App created");
-  },
+  created: function created() {},
 
   methods: {},
   computed: {}
@@ -24434,7 +24467,7 @@ var state = {
         data: {},
         chartTitle: ""
     },
-    homeCurrency: '',
+    homeCurrency: 'USD',
     foreignCurrency: '',
     infoPagesData: {
         mainCurrency: "",
@@ -24578,27 +24611,27 @@ var actions = {
                             // console.log(response)
                             // data.jsonZonesData = response.data
 
-                            console.log(data.jsonHistoryData);
+                            // console.log(data.jsonHistoryData)
                             commit('UPDATE_CHART_DATA', data);
                             // commit('UPDATE_CHART_TITLE', this.getters.pair)
-                            commit('UPDATE_CHART_TITLE', this.getters.homeCurrency);
+                            // commit('UPDATE_CHART_TITLE', this.getters.foreignCurrency)
 
                             commit('UPDATE_LOADING', false);
-                            _context.next = 25;
+                            _context.next = 23;
                             break;
 
-                        case 22:
-                            _context.prev = 22;
+                        case 20:
+                            _context.prev = 20;
                             _context.t0 = _context['catch'](0);
 
                             console.error(_context.t0);
 
-                        case 25:
+                        case 23:
                         case 'end':
                             return _context.stop();
                     }
                 }
-            }, _callee, this, [[0, 22]]);
+            }, _callee, this, [[0, 20]]);
         }));
 
         function fetchChartData(_x) {
@@ -24613,7 +24646,7 @@ var actions = {
             dispatch = _ref3.dispatch;
 
         var data = {};
-        data.jsonHistoryData = dataIn.slice();
+        data.jsonHistoryData = dataIn;
         commit('UPDATE_CHART_DATA', data);
     },
     setHomeCurrency: function setHomeCurrency(_ref4, currency) {
@@ -24621,6 +24654,7 @@ var actions = {
             dispatch = _ref4.dispatch;
 
         commit('UPDATE_HOME_CURRENCY', currency);
+
         if (state.foreignCurrency !== '' && state.homeCurrency !== '' && state.homeCurrency !== state.foreignCurrency) dispatch('fetchChartData');
     },
     setForeignCurrency: function setForeignCurrency(_ref5, currency) {
@@ -24630,75 +24664,81 @@ var actions = {
         commit('UPDATE_FOREIGN_CURRENCY', currency);
         if (state.homeCurrency !== '' && state.foreignCurrency !== '' && state.homeCurrency !== state.foreignCurrency) dispatch('fetchChartData');
     },
-    setChartTimescale: function setChartTimescale(_ref6, timescale) {
+    setPair: function setPair(_ref6, pair) {
         var commit = _ref6.commit,
             dispatch = _ref6.dispatch;
+
+        commit('UPDATE_PAIR', pair);
+    },
+    setChartTimescale: function setChartTimescale(_ref7, timescale) {
+        var commit = _ref7.commit,
+            dispatch = _ref7.dispatch;
 
         console.log('setChartTimescale');
         commit('UPDATE_CHART_TIMESCALE', timescale);
         dispatch('fetchChartData');
     },
-    setChartType: function setChartType(_ref7, type) {
-        var commit = _ref7.commit,
-            dispatch = _ref7.dispatch;
+    setChartType: function setChartType(_ref8, type) {
+        var commit = _ref8.commit,
+            dispatch = _ref8.dispatch;
 
         console.log('setChartType');
         commit('UPDATE_CHART_TYPE', type);
         // dispatch('fetchChartData')
     },
-    setYLabelType: function setYLabelType(_ref8, type) {
-        var commit = _ref8.commit,
-            dispatch = _ref8.dispatch;
+    setYLabelType: function setYLabelType(_ref9, type) {
+        var commit = _ref9.commit,
+            dispatch = _ref9.dispatch;
 
         commit('UPDATE_CHART_Y_LABEL_TYPE', type);
         // dispatch('fetchChartData')
     },
-    setTradeType: function setTradeType(_ref9, type) {
-        var commit = _ref9.commit,
-            dispatch = _ref9.dispatch;
+    setTradeType: function setTradeType(_ref10, type) {
+        var commit = _ref10.commit,
+            dispatch = _ref10.dispatch;
 
         commit('UPDATE_TRADE_TYPE', type);
         dispatch('fetchChartData');
     },
-    setLoading: function setLoading(_ref10, loading) {
-        var commit = _ref10.commit,
-            dispatch = _ref10.dispatch;
+    setLoading: function setLoading(_ref11, loading) {
+        var commit = _ref11.commit,
+            dispatch = _ref11.dispatch;
 
         commit('UPDATE_LOADING', loading);
         // dispatch('fetchChartData')
     },
-    setFlow: function setFlow(_ref11, flow) {
-        var commit = _ref11.commit;
+    setFlow: function setFlow(_ref12, flow) {
+        var commit = _ref12.commit;
 
         commit('UPDATE_FLOW', flow);
     },
-    setRefreshInterval: function setRefreshInterval(_ref12, interval) {
-        var commit = _ref12.commit;
+    setRefreshInterval: function setRefreshInterval(_ref13, interval) {
+        var commit = _ref13.commit;
 
         commit('UPDATE_INTERVAL', interval);
     },
-    setAmount: function setAmount(_ref13, amount) {
-        var commit = _ref13.commit;
+    setAmount: function setAmount(_ref14, amount) {
+        var commit = _ref14.commit;
 
         commit('UPDATE_AMOUNT', amount);
     },
-    setShowMainChart: function setShowMainChart(_ref14, show) {
-        var commit = _ref14.commit;
+    setShowMainChart: function setShowMainChart(_ref15, show) {
+        var commit = _ref15.commit;
 
         commit('UPDATE_SHOWMAINCHART', show);
     },
-    setChartTitle: function setChartTitle(_ref15, title) {
-        var commit = _ref15.commit;
+    setChartTitle: function setChartTitle(_ref16, title) {
+        var commit = _ref16.commit;
 
         commit('UPDATE_CHART_TITLE', title);
     },
-    setinfoPagesData: function setinfoPagesData(_ref16, infoPagesData) {
-        var commit = _ref16.commit;
+    setinfoPagesData: function setinfoPagesData(_ref17, infoPagesData) {
+        var commit = _ref17.commit;
 
         commit('UPDATE_INFO_PAGES_DATA', infoPagesData);
     },
-    setMessage: function setMessage(_ref17, message) {
-        var commit = _ref17.commit;
+    setMessage: function setMessage(_ref18, message) {
+        var commit = _ref18.commit;
 
         commit('UPDATE_MESSAGE', message);
     }
@@ -24713,6 +24753,9 @@ var mutations = {
     },
     UPDATE_FOREIGN_CURRENCY: function UPDATE_FOREIGN_CURRENCY(state, currency) {
         return state.foreignCurrency = currency;
+    },
+    UPDATE_PAIR: function UPDATE_PAIR(state, pair) {
+        return state.chart.settings.pair = pair;
     },
     UPDATE_CHART_TIMESCALE: function UPDATE_CHART_TIMESCALE(state, timescale) {
         return state.chart.settings.timescale = timescale;
