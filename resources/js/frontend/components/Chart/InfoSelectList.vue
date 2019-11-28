@@ -32,7 +32,7 @@ export default {
     name: "info-select-list",
     data(){
         return{
-            
+            title: "GBP"
         }
     },
     methods:{
@@ -95,16 +95,18 @@ export default {
             return ret
         },
         selectInfo(currency){
-            var showTarget = "USD_" + currency
+            var showTarget = currency + "_USD" 
             var targetData = []
             try {
                 targetData = this.infoPagesData.infoPagesPriceData[showTarget].slice()
             } catch (error) {
-                targetData = this.infoPagesData.infoPagesPriceData['USD_GBP'].slice()
+                targetData = this.infoPagesData.infoPagesPriceData['GBP_USD'].slice()
             }
             this.$store.dispatch('setInfoPage', targetData)
+            // this.$store.dispatch('setPair', this.foreignCurrency + '_USD')  
             this.$store.dispatch('setChartTitle', currency)
-            this.$store.dispatch('setHomeCurrency', currency)
+            // this.$store.dispatch('setHomeCurrency', "USD")
+            this.$store.dispatch('setForeignCurrency', currency)
             var f = this.flow
             f.subflow = 1
             this.$store.dispatch('setFlow', f)
@@ -112,16 +114,23 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['infoPagesData', 'homeCurrency', 'flow'])
+        ...mapGetters(['infoPagesData', 'foreignCurrency', 'flow'])
     },
     watch:{
         infoPagesData: function(){
             this.draw()
         }
     },
-    async mounted(){
-        console.log("Info-pages mounted!")
+    created(){
+        console.log(this.foreignCurrency)
+        if(this.foreignCurrency && this.foreignCurrency !== "")
+            this.title = this.foreignCurrency
+        else
+            this.title = "GBP"
         this.$store.dispatch('setForeignCurrency', "")
+        this.$store.dispatch('setChartTimescale', "1M")  
+    },
+    async mounted(){
         var result = await this.getInfoList()
         var mainCurrency = result["main-currency"]
         var currencyList = result["info-list"]
@@ -130,7 +139,7 @@ export default {
         var infoPair = []
         currencyList.forEach(currency => {
             if(currency !== mainCurrency){
-                infoPair.push(mainCurrency + "_" + currency)
+                infoPair.push(currency + "_" + mainCurrency)
                 selectList.push(currency)
             }
             
@@ -145,21 +154,19 @@ export default {
             infoPagesPriceData: infoPagesPriceData         
         }
         this.$store.dispatch('setinfoPagesData', infoPagesDataTemp)
-        try{
-            if(this.homeCurrency !== ""){
-                this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_'+this.homeCurrency].slice())
-                this.$store.dispatch('setChartTitle', this.homeCurrency)
-                this.$store.dispatch('setChartTimescale', "1M")
+        // try{
+            if(this.title !== ""){         
+                this.$store.dispatch('setChartTitle', this.title)
+                this.$store.dispatch('setInfoPage', infoPagesPriceData[this.title+'_USD'].slice())              
             }else{
-                this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice())
                 this.$store.dispatch('setChartTitle', "GBP")
-                this.$store.dispatch('setChartTimescale', "1M")
+                this.$store.dispatch('setInfoPage', infoPagesPriceData['GBP_USD'].slice())
             }
-        }catch(error){
-            this.$store.dispatch('setInfoPage', infoPagesPriceData['USD_GBP'].slice())
-            this.$store.dispatch('setChartTitle', "GBP")
-            this.$store.dispatch('setChartTimescale', "1M")
-        }
+        // }catch(error){
+        //     this.$store.dispatch('setInfoPage', infoPagesPriceData['GBP_USD'].slice())
+        //     this.$store.dispatch('setChartTitle', "GBP")
+        //     this.$store.dispatch('setChartTimescale', "1M")
+        // }
 
     },
 }
