@@ -13430,6 +13430,7 @@ div.anychart-control button[title="Expand/Collapse plot"] {
   height: 100%;
   margin: auto;
   padding-left: 2%;
+  overflow: hidden;
   background-color: transparent;
 }
 
@@ -13546,7 +13547,7 @@ div.anychart-control button[title="Expand/Collapse plot"] {
 
 #user-panel .sidebar .amount-area .alert-container {
   text-align: left;
-  height: 15%;
+  height: 14%;
   width: 85%;
   margin: 0 auto;
   margin-bottom: 5%;
@@ -13636,7 +13637,7 @@ div.anychart-control button[title="Expand/Collapse plot"] {
 }
 
 #user-panel .info-list-container .transfer-type-container .transfer-title {
-  margin-top: 2%;
+  padding-top: 2%;
   font-size: 125%;
   color: #000000;
 }
@@ -13674,55 +13675,6 @@ div.anychart-control button[title="Expand/Collapse plot"] {
   padding-top: 2%;
 }
 
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group {
-  width: 50%;
-  height: 6%;
-  text-align: center;
-  margin: 0 auto;
-  border: 2px solid #8b8dbb;
-  background-color: white;
-  border-radius: 0.5rem;
-  outline: none;
-}
-
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group .input-group-prepend {
-  border: none;
-  outline: 0;
-}
-
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group .input-group-prepend .input-group-text {
-  border: none;
-  background-color: transparent;
-}
-
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group .amount-input {
-  border-color: transparent;
-  outline: 0 none;
-}
-
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group .form-control:focus {
-  border-color: transparent;
-  -webkit-box-shadow: none;
-          box-shadow: none;
-}
-
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group.date-input-container {
-  width: 60%;
-}
-
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group-select {
-  text-align: center;
-  margin: 0 auto;
-  border: 2px solid #8b8dbb;
-  background-color: white;
-  border-radius: 0.5rem;
-  outline: none;
-}
-
-#user-panel .info-list-container .transfer-type-container .trade-input-container .input-group-select:focus {
-  outline: none;
-}
-
 #user-panel .info-list-container .transfer-type-container.multi-transfer,
 #user-panel .info-list-container .transfer-type-container.recurring-transfer {
   text-align: center;
@@ -13740,28 +13692,80 @@ div.anychart-control button[title="Expand/Collapse plot"] {
 
 #user-panel .info-list-container .transfer-type-container.multi-transfer .trade-input-container,
 #user-panel .info-list-container .transfer-type-container.recurring-transfer .trade-input-container {
-  height: 10%;
+  height: 8%;
 }
 
-#user-panel .info-list-container .transfer-type-container.multi-transfer .view-by-button-list,
-#user-panel .info-list-container .transfer-type-container.recurring-transfer .view-by-button-list {
-  height: 10%;
+#user-panel .info-list-container .transfer-type-container.multi-transfer .multi-trans,
+#user-panel .info-list-container .transfer-type-container.recurring-transfer .multi-trans {
+  height: 70%;
 }
 
-#user-panel .info-list-container .transfer-type-container.multi-transfer .trade-list-container,
-#user-panel .info-list-container .transfer-type-container.recurring-transfer .trade-list-container {
-  height: 60%;
-  margin-bottom: 5%;
-}
-
-#user-panel .info-list-container .transfer-type-container.multi-transfer .trade-list-container .ps-container,
-#user-panel .info-list-container .transfer-type-container.recurring-transfer .trade-list-container .ps-container {
+#user-panel .info-list-container .transfer-type-container.multi-transfer .multi-trans .ps-container,
+#user-panel .info-list-container .transfer-type-container.recurring-transfer .multi-trans .ps-container {
   width: 100%;
-  height: 100%;
+  height: 80%;
+}
+
+#user-panel .info-list-container .transfer-type-container.multi-transfer .alert-container,
+#user-panel .info-list-container .transfer-type-container.recurring-transfer .alert-container {
+  text-align: left;
+  height: 14%;
+  width: 85%;
+  margin: 0 auto;
+  margin-bottom: 5%;
 }
 
 #user-panel .info-list-container .title-content {
   text-align: center;
+}
+
+.input-group {
+  width: 50%;
+  height: 6%;
+  text-align: center;
+  margin: 0 auto;
+  border: 2px solid #8b8dbb;
+  background-color: white;
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+.input-group .input-group-prepend {
+  border: none;
+  outline: 0;
+}
+
+.input-group .input-group-prepend .input-group-text {
+  border: none;
+  background-color: transparent;
+}
+
+.input-group .amount-input {
+  border-color: transparent;
+  outline: 0 none;
+}
+
+.input-group .form-control:focus {
+  border-color: transparent;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.input-group.date-input-container {
+  width: 60%;
+}
+
+.input-group-select {
+  text-align: center;
+  margin: 0 auto;
+  border: 2px solid #8b8dbb;
+  background-color: white;
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+.input-group-select:focus {
+  outline: none;
 }
 
 .anychart-credits-text {
