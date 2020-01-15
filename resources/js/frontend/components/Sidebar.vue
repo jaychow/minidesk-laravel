@@ -31,9 +31,11 @@
                     </select>
                 </div>  
             </div>
-            <form id="tradingTicketForm">
-                <AmountInput/>
-            </form>
+            <!-- <form id="tradingTicketForm"> -->
+                <div class="tradeingTicketForm" id="tradingTicketForm" v-on:keyup.enter="amountChange">
+                    <AmountInput/>
+                </div>
+            <!-- </form> -->
             <transition name="fade">
                 <CustomAlert/>
             </transition>
@@ -165,6 +167,7 @@
                 this.watchAmount()
             }, 1000),
             setAmountSymbol(){
+
                 let targetCurrency = null
                 switch(this.tradeType){
                     case "buy":
@@ -185,6 +188,7 @@
             },
             amountSubmit(event){
                 if(this.watchAmount()){
+                    this.setAmountSymbol()
                     var f = this.flow
                     f.subflow = 2
 

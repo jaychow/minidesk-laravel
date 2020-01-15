@@ -42,7 +42,8 @@ const state = {
         class: "",
         msgs: ""
     },
-    tradeDateArr: []
+    transCnt: 1,
+    tradeDateArr: [],
 }
 
 const getters = {
@@ -70,7 +71,8 @@ const getters = {
     chartTitle: (state) => (state.chart.chartTitle),
     infoPagesData: (state) => (state.infoPagesData),
     message: (state) => (state.message),
-    alert: (state) => state.alert
+    alert: (state) => state.alert,
+    transCnt: (state) => state.transCnt
 }
 
 const actions  = {
@@ -193,6 +195,9 @@ const actions  = {
         console.log(tradeDates)
         commit('UPDATE_TRADE_DATES', tradeDates)
     },
+    setTransCnt: ({commit}, transCnt) => {
+        commit('UPDATE_TRANS_CNTS', transCnt)
+    }
 }
 
 const mutations = {
@@ -214,6 +219,7 @@ const mutations = {
     UPDATE_MESSAGE: (state, message) => (state.message = message),
     UPDATE_ALERT: (state, alert) => (state.alert = alert),
     UPDATE_TRADE_DATES: (state, tradeDates) => (state.tradeDateArr = tradeDates),
+    UPDATE_TRANS_CNTS: (state, transCnt) => (state.transCnt = transCnt),
 }
 
 export default {

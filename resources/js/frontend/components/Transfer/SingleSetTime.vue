@@ -10,15 +10,15 @@
                 TRANSFER DATE
             </div>
             <div class="trade-input-container">
-                <!-- <div class="input-group date-input-container">
+                <div class="input-group date-input-container">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Date</span>
                     </div>
                     <input type="date" name="tradeDate" id="tradeDate" class="form-control"
                         placeholder="MM/DD/YYYY" :value="myDate && myDate.toISOString().split('T')[0]"
                         @input="myDate = $event.target.valueAsDate">
-                </div> -->
-                <DatePicker/>
+                </div>
+                
                 <transition name="fade">
                     <CustomAlert/>
                 </transition>

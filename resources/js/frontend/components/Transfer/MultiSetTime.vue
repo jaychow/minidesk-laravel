@@ -11,34 +11,15 @@
                 <select v-model="transfersCnt" class="input-group-select">
                     <option v-for="i in transferLimits" v-bind:value="i"> {{ i }} </option>
                 </select>
-            </div>
-            <div class="transfer-title">VIEW BY</div>
-            <div class="view-by-button-list">
-                <div class="submit-area">
-                    <button value="OFTOTAL" class="submitButton" id="submitButton" :disabled="this.viewOption === `OFTOTAL`" @click="setView">% OF TOTAL</button>
-                    <button value="VALUE" class="submitButton" id="submitButton" :disabled="this.viewOption === `VALUE`" @click="setView">$ VALUE</button>
-                </div> 
-            </div>
-            
-            <div class="trade-list-container">
-                <vue-custom-scrollbar class="scroll-area"  :settings="settings">
-                    <div v-for="i in transfersCnt" :id="i"> 
-                        <div class="trade-input-container">
-                            {{ getIndexString(i) + " TRANSFER" }}
-                            <!-- <div :id="'dateCnt' + i"> -->
-                                <DatePicker/>
-                            <!-- </div> -->
-                        </div>
-                    </div>
-                </vue-custom-scrollbar>
-                
-            </div>
+            </div>     
+            <MultiTransInput/>
+            <transition name="fade">
+                <CustomAlert/>
+            </transition>
             <div class="submit-area" >
                 <button class="submitButton" id="submitButton" >submit</button>
             </div>  
-        </div>
-
-        
+        </div> 
     </div>
 </template>
 
@@ -46,16 +27,15 @@
 import { mapGetters, mapActions } from 'vuex'
 import PreviousButton from "../PreviousButton"
 import AmountInput from "../AmountInput"
-import vueCustomScrollbar from 'vue-custom-scrollbar'
-import DatePicker from '../DatePicker'
-// import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
+import MultiTransInput from '../MultiTransInput'
+import CustomAlert from "../CustomAlert"
 export default {
     name: "multi-set-time",
     components: {
         PreviousButton,
         AmountInput,
-        vueCustomScrollbar,
-        DatePicker
+        MultiTransInput,
+        CustomAlert,
     },
     mounted(){
         // const container = document.querySelector('.trade-list-container')
@@ -66,12 +46,6 @@ export default {
             transfersCnt: 1,
             transferLimits: 10,  //???
             viewOption: "",
-            settings: {
-                tagname: "div",
-                suppressScrollX: true,
-                suppressScrollY: false,
-                maxScrollbarLength: 60
-            }
         }
     },
     methods:{
@@ -101,18 +75,9 @@ export default {
         ...mapGetters(['amount']),
     },
     watch: {
-        // transfersCnt(){
-        //     console.log(this.transfersCnt)
-        // }
+        transfersCnt(){
+            this.$store.dispatch('setTransCnt', this.transfersCnt);
+        }
     }
 }
 </script>
-<style >
-.scroll-area {
-  position: relative;
-  margin: auto;
-  width: 600px;
-  height: 400px;
-  overflow:scroll;
-}
-</style>
