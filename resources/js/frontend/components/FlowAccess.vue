@@ -22,6 +22,7 @@
     import RecurringChoose from "./Transfer/RecurringChoose"
     import RecurringRange from "./Transfer/RecurringRange"
     import RecurringSet from "./Transfer/RecurringSet"
+    import SingleConfirm from "./Transfer/SingleConfirm"
 
     export default {
         components: {
@@ -34,7 +35,8 @@
             MultiSetTime,
             RecurringChoose,
             RecurringRange,
-            RecurringSet
+            RecurringSet,
+            SingleConfirm
         },
         mounted() {
             
@@ -43,7 +45,8 @@
             return {
                 subflow: "InfoSelectList",
                 subflow_ls: ["InfoSelectList", "Sidebar", "TransferType", "SingleChooseTime", 
-                            "SingleSetTime", "MultiSetTime", "RecurringChoose", "RecurringRange", "RecurringSet"]
+                            "SingleSetTime", "MultiSetTime", "RecurringChoose", "RecurringRange", 
+                            "RecurringSet", "SingleConfirm"]
             }
         },
         methods:{

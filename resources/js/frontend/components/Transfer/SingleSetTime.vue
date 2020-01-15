@@ -10,16 +10,21 @@
                 TRANSFER DATE
             </div>
             <div class="trade-input-container">
-                <div class="input-group date-input-container">
+                <!-- <div class="input-group date-input-container">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Date</span>
                     </div>
                     <input type="date" name="tradeDate" id="tradeDate" class="form-control"
-                        placeholder="MM/DD/YYYY" :value="date">
-                </div>
+                        placeholder="MM/DD/YYYY" :value="myDate && myDate.toISOString().split('T')[0]"
+                        @input="myDate = $event.target.valueAsDate">
+                </div> -->
+                <DatePicker/>
+                <transition name="fade">
+                    <CustomAlert/>
+                </transition>
                 <div class="transfer-button-list">
                     <div class="submit-area">
-                        <button class="submitButton submit-time" id="singleTransfer">SUBMIT</button>
+                        <button class="submitButton submit-time" id="singleTransfer" @click="nextFlow()">SUBMIT</button>
                     </div> 
                 </div>
             </div>
@@ -31,29 +36,48 @@
 import { mapGetters, mapActions } from 'vuex'
 import PreviousButton from "../PreviousButton"
 import AmountInput from "../AmountInput"
+import CustomAlert from "../CustomAlert"
+import DatePicker from "../DatePicker"
 export default {
     name: "single-set-time",
     components: {
         PreviousButton,
-        AmountInput
+        AmountInput,
+        CustomAlert,
+        DatePicker
     },
     data(){
         return{
-            date: ""
+            myDate: "",
+            tradeExplaination: "123"
         }
     },
     methods: {
-        
+        nextFlow(){
+            console.log(this.myDate)
+            console.log(this.amount)
+            if(this.isAllowed()){
+                var f = this.flow
+                f.subflow = 9
+                this.$store.dispatch('setFlow', f)
+            }    
+        },
+        isAllowed(){
+            if(this.myDate !== "" && this.amount.price != 0 && this.amount.price !== "")
+                return true
+            else
+                return false
+        }
     },
     mounted(){
         if(this.message === "tradeToday")
             {
-                this.date = this.today.getFullYear() + '-' + ('0' + (this.today.getMonth() + 1)).slice(-2) + '-' + ('0' + this.today.getDate()).slice(-2);
-                console.log(this.date)
+                // this.myDate = this.today.getFullYear() + '-' + ('0' + (this.today.getMonth() + 1)).slice(-2) + '-' + ('0' + this.today.getDate()).slice(-2);
+                this.myDate = this.today
             }
     },
     computed: {
-        ...mapGetters(['tradeType', 'flow', 'today', "message"]),
+        ...mapGetters(['tradeType', 'flow', 'today', "message", "amount"]),
     }
 }
 </script>

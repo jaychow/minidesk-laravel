@@ -33,16 +33,23 @@ const state = {
     amount : {
         symbol: "$",
         targetSymbol: "$",
-        price: ""
+        price: "",
+        prices: []
     },
     assessFormData: {},
-    message: ""
+    message: "",
+    alert:{
+        class: "",
+        msgs: ""
+    },
+    tradeDateArr: []
 }
 
 const getters = {
     flow: (state) => state.flow,
     today: () => new Date(),
     tradeDate: (state) => (new Date().toISOString().substr(0,10)),
+    tradeDateArr: (state) => state.tradeDateArr,
     chartData:  (state) => state.chart.data,
     chartSettings: (state) => state.chart.settings,
     homeCurrency: (state) => state.homeCurrency,
@@ -62,7 +69,8 @@ const getters = {
     showMainChart: (state) => (state.chart.settings.showChart),
     chartTitle: (state) => (state.chart.chartTitle),
     infoPagesData: (state) => (state.infoPagesData),
-    message: (state) => (state.message)
+    message: (state) => (state.message),
+    alert: (state) => state.alert
 }
 
 const actions  = {
@@ -177,7 +185,14 @@ const actions  = {
     },
     setMessage: ({commit}, message) =>{
         commit('UPDATE_MESSAGE', message)
-    }
+    },
+    setAlert: ({commit}, alert) => {
+        commit('UPDATE_ALERT', alert)
+    },
+    setTradeDates: ({commit}, tradeDates) => {
+        console.log(tradeDates)
+        commit('UPDATE_TRADE_DATES', tradeDates)
+    },
 }
 
 const mutations = {
@@ -197,6 +212,8 @@ const mutations = {
     UPDATE_CHART_TITLE: (state, title) => (state.chart.chartTitle = title),
     UPDATE_INFO_PAGES_DATA: (state, infoPagesData) => (state.infoPagesData = infoPagesData),
     UPDATE_MESSAGE: (state, message) => (state.message = message),
+    UPDATE_ALERT: (state, alert) => (state.alert = alert),
+    UPDATE_TRADE_DATES: (state, tradeDates) => (state.tradeDateArr = tradeDates),
 }
 
 export default {

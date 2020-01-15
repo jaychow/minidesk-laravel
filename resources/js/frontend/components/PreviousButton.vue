@@ -27,6 +27,9 @@ export default {
                     case 8:
                         f.subflow = 6
                         break
+                    case 9:
+                        f.subflow = 4
+                        break
                     default:
                         f.subflow = f.subflow - 1
                         break

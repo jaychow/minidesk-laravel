@@ -35,10 +35,7 @@
                 <AmountInput/>
             </form>
             <transition name="fade">
-                <div class="alert-container">
-                    <div :class="alertClass" v-html="tradeExplaination">
-                    </div>
-                </div>
+                <CustomAlert/>
             </transition>
             <transition name="fade">     
                 <div class="submit-area" v-show="showSubmit=== true" >
@@ -53,10 +50,13 @@
     import _ from 'lodash'
     import PreviousButton from "./PreviousButton"
     import AmountInput from "./AmountInput"
+    import CustomAlert from "./CustomAlert"
     export default {
         created(){
-            if(!this.tradeType || this.tradeType === "")
+            if(!this.tradeType || this.tradeType === ""){
                 this.$store.dispatch('setTradeType', "buy") 
+                this.setAmountSymbol()
+            }       
         },
         mounted() {
             this.initTradeDate()
@@ -66,7 +66,8 @@
         },
         components: {
             PreviousButton,
-            AmountInput
+            AmountInput,
+            CustomAlert
         },
         data() {
             return {
@@ -75,13 +76,7 @@
                     {currency: 'USD'},
                     {currency: 'CAD'}
                 ],
-                alertClass: {
-                    'alert': true,
-                    'alert-custom-pass': true,
-                    'alert-danger': false
-                },
                 amountSymbol: '',
-                tradeExplaination : "",
                 showSubmit: false,
             }
         },
@@ -127,14 +122,16 @@
                 //todo: add tradeDate
                 let result = 0.0
                 let s = ""
+                var alert = {
+                    class: "common",
+                    msg: ""
+                }
                 if(alertList.length !== 0){
-                    this.alertClass['alert-custom-pass'] = false
-                    this.alertClass['alert-danger'] = true
-                    this.tradeExplaination = "Please set " + alertList.join(", ") + " first!"
+                    alert.msg = "Please set " + alertList.join(", ") + " first!"
+                    this.$store.dispatch('setAlert', alert)
                     return false
                 }else{
-                    this.alertClass['alert-custom-pass'] = true
-                    this.alertClass['alert-danger'] = false                   
+                    alert.class = "danger"                 
                     try {
                         result = parseFloat((this.amount.price / this.chartData.jsonHistoryData[0][5]).toFixed(2))
 
@@ -148,9 +145,11 @@
                                 " will get you " + result + " " + this.homeCurrency + "."
                         }
                         if(this.amount.price !== ""  && this.amount.price >= 0)
-                            this.tradeExplaination = s
+                            alert.msg = s
                         else
-                            this.tradeExplaination = ""
+                            alert.msg = ""
+                        this.$store.dispatch('setAlert', alert)
+                        
                         this.$store.dispatch('setYLabelType', "user")
 
                         this.showSubmit = true
@@ -201,12 +200,15 @@
                             tradeCurrency = null
                             break;
                     }
+                    
                     var tradeSymbol = this.getSymbol(tradeCurrency)
+                    console.log(tradeSymbol)
                     var a = {
                         symbol: this.amountSymbol,
                         targetSymbol: tradeSymbol,
                         price: this.amount.price
                     }
+                    console.log(a)
                     this.$store.dispatch('setAmount', a);
                     this.$store.dispatch('setFlow', f)
                 }

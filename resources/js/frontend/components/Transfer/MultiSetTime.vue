@@ -22,7 +22,14 @@
             
             <div class="trade-list-container">
                 <vue-custom-scrollbar class="scroll-area"  :settings="settings">
-                    <div v-for="i in transfersCnt"> {{ getIndexString(i) + " TRANSFER" }} <br><br></div>
+                    <div v-for="i in transfersCnt" :id="i"> 
+                        <div class="trade-input-container">
+                            {{ getIndexString(i) + " TRANSFER" }}
+                            <!-- <div :id="'dateCnt' + i"> -->
+                                <DatePicker/>
+                            <!-- </div> -->
+                        </div>
+                    </div>
                 </vue-custom-scrollbar>
                 
             </div>
@@ -40,13 +47,15 @@ import { mapGetters, mapActions } from 'vuex'
 import PreviousButton from "../PreviousButton"
 import AmountInput from "../AmountInput"
 import vueCustomScrollbar from 'vue-custom-scrollbar'
+import DatePicker from '../DatePicker'
 // import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
 export default {
     name: "multi-set-time",
     components: {
         PreviousButton,
         AmountInput,
-        vueCustomScrollbar
+        vueCustomScrollbar,
+        DatePicker
     },
     mounted(){
         // const container = document.querySelector('.trade-list-container')
@@ -92,9 +101,9 @@ export default {
         ...mapGetters(['amount']),
     },
     watch: {
-        transfersCnt(){
-            console.log(this.transfersCnt)
-        }
+        // transfersCnt(){
+        //     console.log(this.transfersCnt)
+        // }
     }
 }
 </script>
