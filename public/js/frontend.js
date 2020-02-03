@@ -6336,8 +6336,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     data: function data() {
         return {
             cnt: 1,
-            viewOption: "VALUE",
-            tradeInputs: this.initTradInput(1),
+            viewAmount: [],
             settings: {
                 tagname: "div",
                 suppressScrollX: true,
@@ -6346,22 +6345,31 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             }
         };
     },
-    mounted: function mounted() {
-        this.cnt = 1;
-        console.log(this.amount.symbol);
-        // this.initTradInput()
-    },
+    mounted: function mounted() {},
 
     watch: {
-        transCnt: function transCnt() {
-            console.log("add " + this.transCnt);
-            this.cnt = this.transCnt;
-            this.tradeInputs = this.initTradInput(this.cnt);
+        amount: {
+            handler: function handler() {
+                this.setAmountView();
+            },
+
+            deep: true
+        },
+        tradeInputs: {
+            handler: function handler() {
+                this.setAmountView();
+            },
+
+            deep: true
+        },
+        multiTransView: function multiTransView() {
+            this.setAmountView();
         }
     },
     methods: {
         setView: function setView(e) {
-            this.viewOption = e.target.value;
+            // this.viewOption = e.target.value
+            this.$store.dispatch('setMultiTransView', e.target.value);
         },
         getIndexString: function getIndexString(i) {
             var s = "";
@@ -6381,35 +6389,46 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             }
             return s;
         },
-        initTradInput: function initTradInput(cnt) {
-            var tradeInputs = [];
-            console.log("init cnt " + cnt);
-
-            for (var i = 0; i < cnt; i++) {
-                tradeInputs.push({
-                    tradeDate: "",
-                    tradeAmount: ""
-                });
-            }
-            return tradeInputs;
-        },
         getDateValue: function getDateValue(i) {
             return this.tradeInputs[i - 1].tradeDate && this.tradeInputs[i - 1].tradeDate.toISOString().split('T')[0];
         },
         getAmountValue: function getAmountValue(i) {
-            return this.tradeInputs[i - 1].tradeAmount;
+            // if(this.multiTransView == "VALUE")
+            return this.viewAmount[i - 1];
+            // else
+            //     return parseFloat(((this.tradeInputs[i-1].tradeAmount / this.amount.price) * 100).toFixed(4)).toString();
         },
         setDateValue: function setDateValue(i, tradeDate) {
             this.tradeInputs[i - 1].tradeDate = tradeDate;
+            this.$store.dispatch('setTradeInputs', this.tradeInputs);
         },
         setAmountValue: function setAmountValue(i, value) {
             this.tradeInputs[i - 1].tradeAmount = value;
+            this.$store.dispatch('setTradeInputs', this.tradeInputs);
         },
         getSymbol: function getSymbol() {
-            if (this.viewOption === "OFTOTAL") return "%";else return this.amount.symbol;
+            if (this.multiTransView === "OFTOTAL") return "%";else return this.amount.symbol;
+        },
+        setAmountView: function setAmountView() {
+            this.viewAmount = [];
+            if (this.multiTransView === "VALUE") {
+                if (this.transCnt === 1) this.viewAmount.push(this.tradeInputs[0].tradeAmount);else {
+                    for (var i = 0; i < this.transCnt; i++) {
+                        this.viewAmount.push(this.tradeInputs[i].tradeAmount);
+                    }
+                }
+            } else {
+                if (this.transCnt === 1) this.viewAmount.push("100");else {
+                    for (var i = 0; i < this.transCnt; i++) {
+                        var percent = (this.tradeInputs[i].tradeAmount / this.amount.price * 100).toFixed(3).toString();
+                        this.viewAmount.push(percent);
+                    }
+                }
+            }
+            console.log(this.viewAmount);
         }
     },
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['transCnt', 'amount']))
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['transCnt', 'amount', 'tradeInputs', 'multiTransView']))
 });
 
 /***/ }),
@@ -6803,19 +6822,18 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     mounted: function mounted() {
         // const container = document.querySelector('.trade-list-container')
         // const ps = new PerfectScrollbar(container);
+        this.transfersCnt = 1;
+        this.$store.dispatch('setTransCnt', 1);
+        this.setAverage(this.amount.price, this.transfersCnt);
     },
     data: function data() {
         return {
             transfersCnt: 1,
-            transferLimits: 10, //???
-            viewOption: ""
+            transferLimits: 10 //???
         };
     },
 
     methods: {
-        setView: function setView(e) {
-            this.viewOption = e.target.value;
-        },
         getIndexString: function getIndexString(i) {
             var s = "";
             switch (i) {
@@ -6833,13 +6851,42 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                     break;
             }
             return s;
+        },
+        setAmounts: function setAmounts(total) {
+            console.log("set multi amount");
+        },
+        setAverage: function setAverage(total, transCnt, amountInput) {
+            var average = parseFloat((parseFloat(total) / this.transfersCnt).toFixed(3));
+            var tradeInputs = this.tradeInputs;
+            if (this.transfersCnt >= 2) {
+                var lastPrice = parseFloat((total - average * (this.transfersCnt - 1)).toFixed(3));
+                for (var i = 0; i < this.transfersCnt; i++) {
+                    tradeInputs[i].tradeAmount = average.toString();
+                }
+                // tradeInputs[this.transfersCnt-1].tradeAmount = lastPrice.toString()
+            } else {
+                tradeInputs[0].tradeAmount = total;
+            }
+            console.log(tradeInputs);
         }
     },
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['amount'])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])(['amount', 'transCnt', 'tradeInputs', 'multiTransView'])),
     watch: {
         transfersCnt: function transfersCnt() {
             this.$store.dispatch('setTransCnt', this.transfersCnt);
-        }
+            this.setAverage(this.amount.price, this.transfersCnt);
+        },
+
+        amount: {
+            handler: function handler() {
+                var total = this.amount.price;
+                this.setAverage(this.amount.price, this.transfersCnt);
+                this.setAmounts(total);
+            },
+
+            deep: true
+        },
+        multiTransView: function multiTransView() {}
     }
 });
 
@@ -7692,7 +7739,7 @@ module.exports = __webpack_require__("./node_modules/regenerator-runtime/runtime
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30904716\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue":
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3ba87f54\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
@@ -7707,7 +7754,22 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45322d21\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue":
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f6096de\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.scroll-area {\n  position: relative;\n  margin: auto;\n  width: 600px;\n  height: 400px;\n  overflow:scroll;\n  margin-top:-4%;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-71f4483e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
@@ -7716,21 +7778,6 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 // module
 exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d1d345e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.scroll-area {\r\n  position: relative;\r\n  margin: auto;\r\n  width: 600px;\r\n  height: 400px;\r\n  overflow:scroll;\r\n  margin-top:-4%;\n}\r\n", ""]);
 
 // exports
 
@@ -8720,7 +8767,7 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1487cd47\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringRange.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-0c7bc47f\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/TransferType.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -8730,64 +8777,71 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "info-list-container" },
-    [_c("PreviousButton"), _vm._v(" "), _vm._m(0)],
+    [
+      _c("PreviousButton"),
+      _vm._v(" "),
+      _c("div", { staticClass: "transfer-type-container" }, [
+        _c("div", { staticClass: "transfer-title" }, [
+          _vm._v(
+            "\n            I NEED " +
+              _vm._s(this.needType()) +
+              " CURRENCY\n        "
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-button-list" }, [
+          _c("div", { staticClass: "submit-area" }, [
+            _c(
+              "button",
+              {
+                staticClass: "submitButton",
+                attrs: { id: "singleTransfer" },
+                on: {
+                  click: function($event) {
+                    return _vm.singleSubmit()
+                  }
+                }
+              },
+              [_vm._v("SINGLE TRANSFER")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "submit-area" }, [
+            _c(
+              "button",
+              {
+                staticClass: "submitButton",
+                attrs: { id: "multipleTransfer" },
+                on: {
+                  click: function($event) {
+                    return _vm.multiSubmit()
+                  }
+                }
+              },
+              [_vm._v("MULTIPLE TRANSFERS")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "submit-area" }, [
+            _c(
+              "button",
+              {
+                staticClass: "submitButton",
+                attrs: { id: "recurringTransfer" },
+                on: {
+                  click: function($event) {
+                    return _vm.recurringSubmit()
+                  }
+                }
+              },
+              [_vm._v("RECURRING TRANSFERS")]
+            )
+          ])
+        ])
+      ])
+    ],
     1
   )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "transfer-type-container recurring-transfer" },
-      [
-        _c("div", { staticClass: "transfer-title" }, [
-          _vm._v("\n            RECURRING TRANSFERS RANGE\n        ")
-        ])
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1487cd47", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-18d0cf90\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DebugPage.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "info-page", attrs: { id: "info-page" } }, [
-    _c("div", {
-      staticClass: "chart-container",
-      attrs: { id: "chart-container" }
-    }),
-    _vm._v(" "),
-    _c(
-      "div",
-      { attrs: { id: "user-panel" } },
-      [
-        _c(
-          "transition",
-          { attrs: { name: "slide-fade" } },
-          [_c("MultiSetTime")],
-          1
-        )
-      ],
-      1
-    )
-  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -8795,13 +8849,13 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-18d0cf90", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-0c7bc47f", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1dc6cca0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-174ef21a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -8900,13 +8954,36 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1dc6cca0", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-174ef21a", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-308b707d\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/MultiSetTime.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1bca1c6a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { attrs: { id: "Minidesk" } }, [
+    _c("div", { staticClass: "minidesk-flow" }, [_c("Flow")], 1)
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1bca1c6a", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1edc160a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringChoose.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -8919,72 +8996,278 @@ var render = function() {
     [
       _c("PreviousButton"),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "transfer-type-container multi-transfer" },
-        [
-          _c("div", { staticClass: "transfer-title" }, [
-            _vm._v("MULTIPLE TRANSFERS")
-          ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "amount-container" },
-            [_c("AmountInput")],
-            1
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "transfer-title" }, [
-            _vm._v("HOW MANY TRANSFERS?")
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "trade-input-container" }, [
+      _c("div", { staticClass: "transfer-type-container" }, [
+        _c("div", { staticClass: "transfer-title" }, [
+          _vm._v("\n            RECURRING TRANSFER\n        ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-button-list" }, [
+          _c("div", { staticClass: "submit-area" }, [
             _c(
-              "select",
+              "button",
               {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.transfersCnt,
-                    expression: "transfersCnt"
-                  }
-                ],
-                staticClass: "input-group-select",
+                staticClass: "submitButton submit-recurring",
+                attrs: { id: "futureTrade" },
                 on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.transfersCnt = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
+                  click: function($event) {
+                    return _vm.tradeRange()
                   }
                 }
               },
-              _vm._l(_vm.transferLimits, function(i) {
-                return _c("option", { domProps: { value: i } }, [
-                  _vm._v(" " + _vm._s(i) + " ")
-                ])
-              }),
-              0
+              [_vm._v("DATE RANGE")]
             )
           ]),
           _vm._v(" "),
-          _c("MultiTransInput"),
-          _vm._v(" "),
-          _c("transition", { attrs: { name: "fade" } }, [_c("CustomAlert")], 1),
-          _vm._v(" "),
-          _vm._m(0)
-        ],
-        1
-      )
+          _c("div", { staticClass: "submit-area" }, [
+            _c(
+              "button",
+              {
+                staticClass: "submitButton submit-recurring",
+                attrs: { id: "todayTrade" },
+                on: {
+                  click: function($event) {
+                    return _vm.tradeSet()
+                  }
+                }
+              },
+              [_vm._v("SET NUMBER OF OCCURENCES")]
+            )
+          ])
+        ])
+      ])
     ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1edc160a", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-237b967a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Chart.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", {
+    directives: [
+      {
+        name: "show",
+        rawName: "v-show",
+        value: _vm.showChart === true,
+        expression: "showChart === true"
+      }
+    ],
+    staticClass: "chart",
+    attrs: { id: "chart" }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-237b967a", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-280c9248\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/AmountInput.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "trade-input-container" }, [
+    _c("div", { staticClass: "input-group currency-input-container" }, [
+      _c("div", { staticClass: "input-group-prepend" }, [
+        _c("span", { staticClass: "input-group-text" }, [
+          _vm._v(_vm._s(this.amount.symbol))
+        ])
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.priceInput,
+            expression: "priceInput"
+          }
+        ],
+        staticClass: "amount-input form-control",
+        attrs: {
+          type: "number",
+          id: "transactionAmount",
+          placeholder: "AMOUNT"
+        },
+        domProps: { value: _vm.priceInput },
+        on: {
+          input: [
+            function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.priceInput = $event.target.value
+            },
+            _vm.amountChange
+          ]
+        }
+      })
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-280c9248", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2fd83210\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.showMainChart !== false,
+          expression: "showMainChart !== false"
+        }
+      ],
+      staticClass: "chart-header"
+    },
+    [
+      _c("div", { staticClass: "currency-title" }, [
+        _c("div", [_vm._v(_vm._s(_vm.chartTitle))])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "price-description" }, [
+        _vm.chartType === "candle"
+          ? _c("div", { staticClass: "descript-candle" }, [
+              _vm.tradeType === "buy"
+                ? _c("div", { staticClass: "descript-candle" }, [
+                    _vm._v(
+                      "\n                Downward price movements of the " +
+                        _vm._s(_vm.foreignCurrency)
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      "\n                are beneficial to you as a buyer and are illustrated"
+                    ),
+                    _c("br"),
+                    _vm._v("\n                in orange.\n            ")
+                  ])
+                : _vm.tradeType === "sell"
+                  ? _c("div", { staticClass: "descript-candle" }, [
+                      _vm._v(
+                        "\n                Downward price movements of the " +
+                          _vm._s(_vm.homeCurrency)
+                      ),
+                      _c("br"),
+                      _vm._v(
+                        "\n                are beneficial to you as a buyer and are illustrated"
+                      ),
+                      _c("br"),
+                      _vm._v("\n                in orange.\n            ")
+                    ])
+                  : _c("div")
+            ])
+          : _vm.chartType === "line"
+            ? _c("div", { staticClass: "descript-line" }, [
+                _vm.tradeType !== "sell"
+                  ? _c("div", [
+                      _vm._v(
+                        "\n                Relative performance of " +
+                          _vm._s(
+                            _vm.foreignCurrency + " to " + _vm.homeCurrency
+                          ) +
+                          "\n            "
+                      )
+                    ])
+                  : _c("div", [
+                      _vm._v(
+                        "\n                Relative performance of " +
+                          _vm._s(
+                            _vm.homeCurrency + " to " + _vm.foreignCurrency
+                          ) +
+                          "\n            "
+                      )
+                    ])
+              ])
+            : _c("div", [_vm._v("non")])
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "pricePercentage-area",
+          attrs: { id: "pricePercentageButton" }
+        },
+        _vm._l(_vm.yLabelTypeOptions, function(_option) {
+          return _c("button", {
+            staticClass: "chartAreaButton pricePercentageButton",
+            attrs: {
+              id: _option.value + "Button",
+              value: _option.value,
+              disabled: _vm.isDisabled(_option)
+            },
+            domProps: { innerHTML: _vm._s(_option.label) },
+            on: { click: _vm.setYLabelType }
+          })
+        }),
+        0
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2fd83210", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3b982d1a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringRange.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "info-list-container" },
+    [_c("PreviousButton"), _vm._v(" "), _vm._m(0)],
     1
   )
 }
@@ -8993,13 +9276,15 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "submit-area" }, [
-      _c(
-        "button",
-        { staticClass: "submitButton", attrs: { id: "submitButton" } },
-        [_vm._v("submit")]
-      )
-    ])
+    return _c(
+      "div",
+      { staticClass: "transfer-type-container recurring-transfer" },
+      [
+        _c("div", { staticClass: "transfer-title" }, [
+          _vm._v("\n            RECURRING TRANSFERS RANGE\n        ")
+        ])
+      ]
+    )
   }
 ]
 render._withStripped = true
@@ -9007,13 +9292,13 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-308b707d", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-3b982d1a", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-30904716\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DatePicker.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3ba87f54\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DatePicker.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -9055,13 +9340,634 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-30904716", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-3ba87f54", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-36194a92\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3f36c2ff\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringSet.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "info-list-container" },
+    [_c("PreviousButton"), _vm._v(" "), _vm._m(0)],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "transfer-type-container recurring-transfer" },
+      [
+        _c("div", { staticClass: "transfer-title" }, [
+          _vm._v("\n            RECURRING TRANSFERS SET\n        ")
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-3f36c2ff", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-41299ffa\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/PreviousButton.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "previous-button" }, [
+    _c(
+      "button",
+      {
+        staticClass: "submitButton submit-previous",
+        on: {
+          click: function($event) {
+            return _vm.previousFlow()
+          }
+        }
+      },
+      [_vm._v("‹")]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-41299ffa", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-45717028\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { ref: "stepper", staticClass: "bs-stepper", attrs: { id: "bs-stepper" } },
+    [
+      _c(
+        "div",
+        { staticClass: "bs-stepper-header", attrs: { role: "tablist" } },
+        [
+          _c(
+            "div",
+            { staticClass: "step", attrs: { "data-target": "#assess-part" } },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "step-trigger",
+                  attrs: {
+                    type: "button",
+                    role: "tab",
+                    "aria-controls": "assess-part",
+                    id: "assess-part-trigger"
+                  },
+                  on: { click: _vm.setFlow }
+                },
+                [
+                  _c("span", { staticClass: "bs-stepper-circle" }, [
+                    _vm._v("ASSESS")
+                  ])
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "line" }),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "step", attrs: { "data-target": "#analyze-part" } },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "step-trigger",
+                  attrs: {
+                    type: "button",
+                    role: "tab",
+                    "aria-controls": "analyze-part",
+                    id: "analyze-part-trigger"
+                  },
+                  on: { click: _vm.setFlow }
+                },
+                [
+                  _c("span", { staticClass: "bs-stepper-circle" }, [
+                    _vm._v("ANALYZE")
+                  ])
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "line" }),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "step", attrs: { "data-target": "#hedge-part" } },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "step-trigger",
+                  attrs: {
+                    type: "button",
+                    role: "tab",
+                    "aria-controls": "hedge-part",
+                    id: "hedge-part-trigger"
+                  },
+                  on: { click: _vm.setFlow }
+                },
+                [
+                  _c("span", { staticClass: "bs-stepper-circle" }, [
+                    _vm._v("HEDGE")
+                  ])
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "line" }),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "step", attrs: { "data-target": "#save-part" } },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "step-trigger",
+                  attrs: {
+                    type: "button",
+                    role: "tab",
+                    "aria-controls": "save-part",
+                    id: "save-part-trigger"
+                  },
+                  on: { click: _vm.setFlow }
+                },
+                [
+                  _c("span", { staticClass: "bs-stepper-circle" }, [
+                    _vm._v("SAVE")
+                  ])
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "line" }),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "step", attrs: { "data-target": "#manage-part" } },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "step-trigger",
+                  attrs: {
+                    type: "button",
+                    role: "tab",
+                    "aria-controls": "manage-part",
+                    id: "manage-part-trigger"
+                  },
+                  on: { click: _vm.setFlow }
+                },
+                [
+                  _c("span", { staticClass: "bs-stepper-circle" }, [
+                    _vm._v("MANAGE")
+                  ])
+                ]
+              )
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "bs-stepper-content" }, [
+        _c(
+          "div",
+          {
+            staticClass: "content",
+            attrs: {
+              id: "assess-part",
+              role: "tabpanel",
+              "aria-labelledby": "assess-part-trigger"
+            }
+          },
+          [_c("FlowAccess")],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "content",
+            attrs: {
+              id: "analyze-part",
+              role: "tabpanel",
+              "aria-labelledby": "analyze-part-trigger"
+            }
+          },
+          [_vm._v("\n            ANALYZE-PAGE-CONTENT \n        ")]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "content",
+            attrs: {
+              id: "hedge-part",
+              role: "tabpanel",
+              "aria-labelledby": "hedge-part-trigger"
+            }
+          },
+          [_vm._v("\n            HEDGE-PAGE-CONTENT                \n        ")]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "content",
+            attrs: {
+              id: "save-part",
+              role: "tabpanel",
+              "aria-labelledby": "save-part-trigger"
+            }
+          },
+          [_vm._v("\n            SAVE-PAGE-CONTENT\n        ")]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "content",
+            attrs: {
+              id: "manage-part",
+              role: "tabpanel",
+              "aria-labelledby": "manage-part-trigger"
+            }
+          },
+          [_vm._v("\n            MANAGE-PAGE-CONTENT\n        ")]
+        )
+      ])
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-45717028", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-47c943ac\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/FlowAccess.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "minidesk-bottom" },
+    [
+      _c("MainChart"),
+      _vm._v(" "),
+      _c(
+        "div",
+        { attrs: { id: "user-panel" } },
+        [
+          _c(
+            "transition",
+            { attrs: { name: "slide-fade" } },
+            [_c(_vm.subflow, { tag: "component" })],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-47c943ac", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4f6096de\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/MultiTransInput.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "multi-trans" },
+    [
+      _c("div", { staticClass: "transfer-title" }, [
+        _vm._v("VIEW BY\n        "),
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: {
+              value: "OFTOTAL",
+              id: "submitButton",
+              disabled: this.multiTransView === "OFTOTAL"
+            },
+            on: { click: _vm.setView }
+          },
+          [_vm._v("% OF TOTAL")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: {
+              value: "VALUE",
+              id: "submitButton",
+              disabled: this.multiTransView === "VALUE"
+            },
+            on: { click: _vm.setView }
+          },
+          [_vm._v("$ VALUE")]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "vue-custom-scrollbar",
+        { staticClass: "scroll-area", attrs: { settings: _vm.settings } },
+        _vm._l(_vm.transCnt, function(i) {
+          return _c("div", { attrs: { id: i } }, [
+            _vm._v(
+              " \n            \n            " +
+                _vm._s(_vm.getIndexString(i) + " TRANSFER") +
+                "\n            "
+            ),
+            _c("div", { staticClass: "input-group date-input-container" }, [
+              _c("div", { staticClass: "input-group-prepend" }, [
+                _c("span", { staticClass: "input-group-text" }, [
+                  _vm._v("Date")
+                ])
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  type: "date",
+                  name: "tradeDate",
+                  id: "tradeDate",
+                  placeholder: "MM/DD/YYYY"
+                },
+                domProps: { value: _vm.getDateValue(i) },
+                on: {
+                  input: function($event) {
+                    return _vm.setDateValue(i, $event.target.valueAsDate)
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "trade-input-container" }, [
+              _c(
+                "div",
+                { staticClass: "input-group currency-input-container" },
+                [
+                  _c("input", {
+                    staticClass: "amount-input form-control",
+                    attrs: {
+                      type: "number",
+                      id: "transactionAmount",
+                      placeholder: "AMOUNT"
+                    },
+                    domProps: { value: _vm.getAmountValue(i) },
+                    on: {
+                      input: function($event) {
+                        return _vm.setAmountValue(i, $event.target.value)
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "input-group-prepend" }, [
+                    _c("span", { staticClass: "input-group-text" }, [
+                      _vm._v(_vm._s(_vm.getSymbol()))
+                    ])
+                  ])
+                ]
+              )
+            ])
+          ])
+        }),
+        0
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4f6096de", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5d73c19d\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleSetTime.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "info-list-container" },
+    [
+      _c("PreviousButton"),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "transfer-type-container" },
+        [
+          _c("div", { staticClass: "transfer-title" }, [
+            _vm._v("\n            SINGLE TRANSFER\n        ")
+          ]),
+          _vm._v(" "),
+          _c("AmountInput"),
+          _vm._v(" "),
+          _c("div", { staticClass: "transfer-title transfer-title-date" }, [
+            _vm._v("\n            TRANSFER DATE\n        ")
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "trade-input-container" },
+            [
+              _c("div", { staticClass: "input-group date-input-container" }, [
+                _vm._m(0),
+                _vm._v(" "),
+                _c("input", {
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "date",
+                    name: "tradeDate",
+                    id: "tradeDate",
+                    placeholder: "MM/DD/YYYY"
+                  },
+                  domProps: {
+                    value: _vm.myDate && _vm.myDate.toISOString().split("T")[0]
+                  },
+                  on: {
+                    input: function($event) {
+                      _vm.myDate = $event.target.valueAsDate
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c(
+                "transition",
+                { attrs: { name: "fade" } },
+                [_c("CustomAlert")],
+                1
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "transfer-button-list" }, [
+                _c("div", { staticClass: "submit-area" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "submitButton submit-time",
+                      attrs: { id: "singleTransfer" },
+                      on: {
+                        click: function($event) {
+                          return _vm.nextFlow()
+                        }
+                      }
+                    },
+                    [_vm._v("SUBMIT")]
+                  )
+                ])
+              ])
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Date")])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5d73c19d", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5ff01210\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DebugPage.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "info-page", attrs: { id: "info-page" } }, [
+    _c("div", {
+      staticClass: "chart-container",
+      attrs: { id: "chart-container" }
+    }),
+    _vm._v(" "),
+    _c(
+      "div",
+      { attrs: { id: "user-panel" } },
+      [
+        _c(
+          "transition",
+          { attrs: { name: "slide-fade" } },
+          [_c("MultiSetTime")],
+          1
+        )
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5ff01210", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-66db4d5c\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -9305,21 +10211,24 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-36194a92", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-66db4d5c", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-39bd59ac\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-71f4483e\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/CustomAlert.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "Minidesk" } }, [
-    _c("div", { staticClass: "minidesk-flow" }, [_c("Flow")], 1)
+  return _c("div", { staticClass: "alert-container" }, [
+    _c("div", {
+      class: _vm.alertClass,
+      domProps: { innerHTML: _vm._s(_vm.tradeExplaination) }
+    })
   ])
 }
 var staticRenderFns = []
@@ -9328,13 +10237,13 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-39bd59ac", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-71f4483e", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3a72c5b3\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-723cf9f4\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -9414,571 +10323,13 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-3a72c5b3", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-723cf9f4", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3b28e7d0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleSetTime.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "info-list-container" },
-    [
-      _c("PreviousButton"),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "transfer-type-container" },
-        [
-          _c("div", { staticClass: "transfer-title" }, [
-            _vm._v("\n            SINGLE TRANSFER\n        ")
-          ]),
-          _vm._v(" "),
-          _c("AmountInput"),
-          _vm._v(" "),
-          _c("div", { staticClass: "transfer-title transfer-title-date" }, [
-            _vm._v("\n            TRANSFER DATE\n        ")
-          ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "trade-input-container" },
-            [
-              _c("div", { staticClass: "input-group date-input-container" }, [
-                _vm._m(0),
-                _vm._v(" "),
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "date",
-                    name: "tradeDate",
-                    id: "tradeDate",
-                    placeholder: "MM/DD/YYYY"
-                  },
-                  domProps: {
-                    value: _vm.myDate && _vm.myDate.toISOString().split("T")[0]
-                  },
-                  on: {
-                    input: function($event) {
-                      _vm.myDate = $event.target.valueAsDate
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c(
-                "transition",
-                { attrs: { name: "fade" } },
-                [_c("CustomAlert")],
-                1
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "transfer-button-list" }, [
-                _c("div", { staticClass: "submit-area" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "submitButton submit-time",
-                      attrs: { id: "singleTransfer" },
-                      on: {
-                        click: function($event) {
-                          return _vm.nextFlow()
-                        }
-                      }
-                    },
-                    [_vm._v("SUBMIT")]
-                  )
-                ])
-              ])
-            ],
-            1
-          )
-        ],
-        1
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "input-group-prepend" }, [
-      _c("span", { staticClass: "input-group-text" }, [_vm._v("Date")])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-3b28e7d0", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-407206e8\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { ref: "stepper", staticClass: "bs-stepper", attrs: { id: "bs-stepper" } },
-    [
-      _c(
-        "div",
-        { staticClass: "bs-stepper-header", attrs: { role: "tablist" } },
-        [
-          _c(
-            "div",
-            { staticClass: "step", attrs: { "data-target": "#assess-part" } },
-            [
-              _c(
-                "button",
-                {
-                  staticClass: "step-trigger",
-                  attrs: {
-                    type: "button",
-                    role: "tab",
-                    "aria-controls": "assess-part",
-                    id: "assess-part-trigger"
-                  },
-                  on: { click: _vm.setFlow }
-                },
-                [
-                  _c("span", { staticClass: "bs-stepper-circle" }, [
-                    _vm._v("ASSESS")
-                  ])
-                ]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "line" }),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "step", attrs: { "data-target": "#analyze-part" } },
-            [
-              _c(
-                "button",
-                {
-                  staticClass: "step-trigger",
-                  attrs: {
-                    type: "button",
-                    role: "tab",
-                    "aria-controls": "analyze-part",
-                    id: "analyze-part-trigger"
-                  },
-                  on: { click: _vm.setFlow }
-                },
-                [
-                  _c("span", { staticClass: "bs-stepper-circle" }, [
-                    _vm._v("ANALYZE")
-                  ])
-                ]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "line" }),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "step", attrs: { "data-target": "#hedge-part" } },
-            [
-              _c(
-                "button",
-                {
-                  staticClass: "step-trigger",
-                  attrs: {
-                    type: "button",
-                    role: "tab",
-                    "aria-controls": "hedge-part",
-                    id: "hedge-part-trigger"
-                  },
-                  on: { click: _vm.setFlow }
-                },
-                [
-                  _c("span", { staticClass: "bs-stepper-circle" }, [
-                    _vm._v("HEDGE")
-                  ])
-                ]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "line" }),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "step", attrs: { "data-target": "#save-part" } },
-            [
-              _c(
-                "button",
-                {
-                  staticClass: "step-trigger",
-                  attrs: {
-                    type: "button",
-                    role: "tab",
-                    "aria-controls": "save-part",
-                    id: "save-part-trigger"
-                  },
-                  on: { click: _vm.setFlow }
-                },
-                [
-                  _c("span", { staticClass: "bs-stepper-circle" }, [
-                    _vm._v("SAVE")
-                  ])
-                ]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "line" }),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "step", attrs: { "data-target": "#manage-part" } },
-            [
-              _c(
-                "button",
-                {
-                  staticClass: "step-trigger",
-                  attrs: {
-                    type: "button",
-                    role: "tab",
-                    "aria-controls": "manage-part",
-                    id: "manage-part-trigger"
-                  },
-                  on: { click: _vm.setFlow }
-                },
-                [
-                  _c("span", { staticClass: "bs-stepper-circle" }, [
-                    _vm._v("MANAGE")
-                  ])
-                ]
-              )
-            ]
-          )
-        ]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "bs-stepper-content" }, [
-        _c(
-          "div",
-          {
-            staticClass: "content",
-            attrs: {
-              id: "assess-part",
-              role: "tabpanel",
-              "aria-labelledby": "assess-part-trigger"
-            }
-          },
-          [_c("FlowAccess")],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "content",
-            attrs: {
-              id: "analyze-part",
-              role: "tabpanel",
-              "aria-labelledby": "analyze-part-trigger"
-            }
-          },
-          [_vm._v("\n            ANALYZE-PAGE-CONTENT \n        ")]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "content",
-            attrs: {
-              id: "hedge-part",
-              role: "tabpanel",
-              "aria-labelledby": "hedge-part-trigger"
-            }
-          },
-          [_vm._v("\n            HEDGE-PAGE-CONTENT                \n        ")]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "content",
-            attrs: {
-              id: "save-part",
-              role: "tabpanel",
-              "aria-labelledby": "save-part-trigger"
-            }
-          },
-          [_vm._v("\n            SAVE-PAGE-CONTENT\n        ")]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "content",
-            attrs: {
-              id: "manage-part",
-              role: "tabpanel",
-              "aria-labelledby": "manage-part-trigger"
-            }
-          },
-          [_vm._v("\n            MANAGE-PAGE-CONTENT\n        ")]
-        )
-      ])
-    ]
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-407206e8", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-45322d21\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/CustomAlert.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "alert-container" }, [
-    _c("div", {
-      class: _vm.alertClass,
-      domProps: { innerHTML: _vm._s(_vm.tradeExplaination) }
-    })
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-45322d21", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-47e499da\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleChooseTime.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "info-list-container" },
-    [
-      _c("PreviousButton"),
-      _vm._v(" "),
-      _c("div", { staticClass: "transfer-type-container" }, [
-        _c("div", { staticClass: "transfer-title" }, [
-          _vm._v("\n            SINGLE TRANSFER\n        ")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "transfer-button-list" }, [
-          _c("div", { staticClass: "submit-area" }, [
-            _c(
-              "button",
-              {
-                staticClass: "submitButton submit-time",
-                attrs: { id: "futureTrade" },
-                on: {
-                  click: function($event) {
-                    return _vm.tradeFuture()
-                  }
-                }
-              },
-              [_vm._v("FUTURE")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "submit-area" }, [
-            _c(
-              "button",
-              {
-                staticClass: "submitButton submit-time",
-                attrs: { id: "todayTrade" },
-                on: {
-                  click: function($event) {
-                    return _vm.tradeToday()
-                  }
-                }
-              },
-              [_vm._v("TODAY")]
-            )
-          ])
-        ])
-      ])
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-47e499da", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4d1d345e\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/MultiTransInput.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "multi-trans" },
-    [
-      _c("div", { staticClass: "transfer-title" }, [
-        _vm._v("VIEW BY\r\n        "),
-        _c(
-          "button",
-          {
-            staticClass: "submitButton",
-            attrs: {
-              value: "OFTOTAL",
-              id: "submitButton",
-              disabled: this.viewOption === "OFTOTAL"
-            },
-            on: { click: _vm.setView }
-          },
-          [_vm._v("% OF TOTAL")]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "submitButton",
-            attrs: {
-              value: "VALUE",
-              id: "submitButton",
-              disabled: this.viewOption === "VALUE"
-            },
-            on: { click: _vm.setView }
-          },
-          [_vm._v("$ VALUE")]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "vue-custom-scrollbar",
-        { staticClass: "scroll-area", attrs: { settings: _vm.settings } },
-        _vm._l(_vm.cnt, function(i) {
-          return _c("div", { attrs: { id: i } }, [
-            _vm._v(
-              " \r\n            \r\n            " +
-                _vm._s(_vm.getIndexString(i) + " TRANSFER") +
-                "\r\n            "
-            ),
-            _c("div", { staticClass: "input-group date-input-container" }, [
-              _c("div", { staticClass: "input-group-prepend" }, [
-                _c("span", { staticClass: "input-group-text" }, [
-                  _vm._v("Date")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                staticClass: "form-control",
-                attrs: {
-                  type: "date",
-                  name: "tradeDate",
-                  id: "tradeDate",
-                  placeholder: "MM/DD/YYYY"
-                },
-                domProps: { value: _vm.getDateValue(i) },
-                on: {
-                  input: function($event) {
-                    return _vm.setDateValue(i, $event.target.valueAsDate)
-                  }
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "trade-input-container" }, [
-              _c(
-                "div",
-                { staticClass: "input-group currency-input-container" },
-                [
-                  _c("input", {
-                    staticClass: "amount-input form-control",
-                    attrs: {
-                      type: "number",
-                      id: "transactionAmount",
-                      placeholder: "AMOUNT"
-                    },
-                    domProps: { value: _vm.getAmountValue(i) },
-                    on: {
-                      input: function($event) {
-                        return _vm.setAmountValue(i, $event.target.value)
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "input-group-prepend" }, [
-                    _c("span", { staticClass: "input-group-text" }, [
-                      _vm._v(_vm._s(_vm.getSymbol()))
-                    ])
-                  ])
-                ]
-              )
-            ])
-          ])
-        }),
-        0
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-4d1d345e", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-54efabc1\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleConfirm.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-773a858e\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleConfirm.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -10041,13 +10392,120 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-54efabc1", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-773a858e", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-57f862bd\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/MainChart.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-9470ade0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/MultiSetTime.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "info-list-container" },
+    [
+      _c("PreviousButton"),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "transfer-type-container multi-transfer" },
+        [
+          _c("div", { staticClass: "transfer-title" }, [
+            _vm._v("MULTIPLE TRANSFERS")
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "amount-container" },
+            [_c("AmountInput")],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "transfer-title" }, [
+            _vm._v("HOW MANY TRANSFERS?")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "trade-input-container" }, [
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.transfersCnt,
+                    expression: "transfersCnt"
+                  }
+                ],
+                staticClass: "input-group-select",
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.transfersCnt = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  }
+                }
+              },
+              _vm._l(_vm.transferLimits, function(i) {
+                return _c("option", { domProps: { value: i } }, [
+                  _vm._v(" " + _vm._s(i) + " ")
+                ])
+              }),
+              0
+            )
+          ]),
+          _vm._v(" "),
+          _c("MultiTransInput"),
+          _vm._v(" "),
+          _c("transition", { attrs: { name: "fade" } }, [_c("CustomAlert")], 1),
+          _vm._v(" "),
+          _vm._m(0)
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "submit-area" }, [
+      _c(
+        "button",
+        { staticClass: "submitButton", attrs: { id: "submitButton" } },
+        [_vm._v("submit")]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-9470ade0", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-ba4b7eec\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/MainChart.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -10072,161 +10530,13 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-57f862bd", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-ba4b7eec", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5ba529a5\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      directives: [
-        {
-          name: "show",
-          rawName: "v-show",
-          value: _vm.showMainChart !== false,
-          expression: "showMainChart !== false"
-        }
-      ],
-      staticClass: "chart-header"
-    },
-    [
-      _c("div", { staticClass: "currency-title" }, [
-        _c("div", [_vm._v(_vm._s(_vm.chartTitle))])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "price-description" }, [
-        _vm.chartType === "candle"
-          ? _c("div", { staticClass: "descript-candle" }, [
-              _vm.tradeType === "buy"
-                ? _c("div", { staticClass: "descript-candle" }, [
-                    _vm._v(
-                      "\n                Downward price movements of the " +
-                        _vm._s(_vm.foreignCurrency)
-                    ),
-                    _c("br"),
-                    _vm._v(
-                      "\n                are beneficial to you as a buyer and are illustrated"
-                    ),
-                    _c("br"),
-                    _vm._v("\n                in orange.\n            ")
-                  ])
-                : _vm.tradeType === "sell"
-                  ? _c("div", { staticClass: "descript-candle" }, [
-                      _vm._v(
-                        "\n                Downward price movements of the " +
-                          _vm._s(_vm.homeCurrency)
-                      ),
-                      _c("br"),
-                      _vm._v(
-                        "\n                are beneficial to you as a buyer and are illustrated"
-                      ),
-                      _c("br"),
-                      _vm._v("\n                in orange.\n            ")
-                    ])
-                  : _c("div")
-            ])
-          : _vm.chartType === "line"
-            ? _c("div", { staticClass: "descript-line" }, [
-                _vm.tradeType !== "sell"
-                  ? _c("div", [
-                      _vm._v(
-                        "\n                Relative performance of " +
-                          _vm._s(
-                            _vm.foreignCurrency + " to " + _vm.homeCurrency
-                          ) +
-                          "\n            "
-                      )
-                    ])
-                  : _c("div", [
-                      _vm._v(
-                        "\n                Relative performance of " +
-                          _vm._s(
-                            _vm.homeCurrency + " to " + _vm.foreignCurrency
-                          ) +
-                          "\n            "
-                      )
-                    ])
-              ])
-            : _c("div", [_vm._v("non")])
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "pricePercentage-area",
-          attrs: { id: "pricePercentageButton" }
-        },
-        _vm._l(_vm.yLabelTypeOptions, function(_option) {
-          return _c("button", {
-            staticClass: "chartAreaButton pricePercentageButton",
-            attrs: {
-              id: _option.value + "Button",
-              value: _option.value,
-              disabled: _vm.isDisabled(_option)
-            },
-            domProps: { innerHTML: _vm._s(_option.label) },
-            on: { click: _vm.setYLabelType }
-          })
-        }),
-        0
-      )
-    ]
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5ba529a5", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5d576876\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Chart.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", {
-    directives: [
-      {
-        name: "show",
-        rawName: "v-show",
-        value: _vm.showChart === true,
-        expression: "showChart === true"
-      }
-    ],
-    staticClass: "chart",
-    attrs: { id: "chart" }
-  })
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5d576876", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-63e07b7d\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringChoose.vue":
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-fef52bb4\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleChooseTime.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -10241,7 +10551,7 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "transfer-type-container" }, [
         _c("div", { staticClass: "transfer-title" }, [
-          _vm._v("\n            RECURRING TRANSFER\n        ")
+          _vm._v("\n            SINGLE TRANSFER\n        ")
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "transfer-button-list" }, [
@@ -10249,15 +10559,15 @@ var render = function() {
             _c(
               "button",
               {
-                staticClass: "submitButton submit-recurring",
+                staticClass: "submitButton submit-time",
                 attrs: { id: "futureTrade" },
                 on: {
                   click: function($event) {
-                    return _vm.tradeRange()
+                    return _vm.tradeFuture()
                   }
                 }
               },
-              [_vm._v("DATE RANGE")]
+              [_vm._v("FUTURE")]
             )
           ]),
           _vm._v(" "),
@@ -10265,15 +10575,15 @@ var render = function() {
             _c(
               "button",
               {
-                staticClass: "submitButton submit-recurring",
+                staticClass: "submitButton submit-time",
                 attrs: { id: "todayTrade" },
                 on: {
                   click: function($event) {
-                    return _vm.tradeSet()
+                    return _vm.tradeToday()
                   }
                 }
               },
-              [_vm._v("SET NUMBER OF OCCURENCES")]
+              [_vm._v("TODAY")]
             )
           ])
         ])
@@ -10288,292 +10598,29 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-63e07b7d", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-fef52bb4", module.exports)
   }
 }
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-72a3527a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/PreviousButton.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "previous-button" }, [
-    _c(
-      "button",
-      {
-        staticClass: "submitButton submit-previous",
-        on: {
-          click: function($event) {
-            return _vm.previousFlow()
-          }
-        }
-      },
-      [_vm._v("‹")]
-    )
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-72a3527a", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-8c0aeb28\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringSet.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "info-list-container" },
-    [_c("PreviousButton"), _vm._v(" "), _vm._m(0)],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "transfer-type-container recurring-transfer" },
-      [
-        _c("div", { staticClass: "transfer-title" }, [
-          _vm._v("\n            RECURRING TRANSFERS SET\n        ")
-        ])
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-8c0aeb28", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-b38e38f0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/AmountInput.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "trade-input-container" }, [
-    _c("div", { staticClass: "input-group currency-input-container" }, [
-      _c("div", { staticClass: "input-group-prepend" }, [
-        _c("span", { staticClass: "input-group-text" }, [
-          _vm._v(_vm._s(this.amount.symbol))
-        ])
-      ]),
-      _vm._v(" "),
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.priceInput,
-            expression: "priceInput"
-          }
-        ],
-        staticClass: "amount-input form-control",
-        attrs: {
-          type: "number",
-          id: "transactionAmount",
-          placeholder: "AMOUNT"
-        },
-        domProps: { value: _vm.priceInput },
-        on: {
-          input: [
-            function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.priceInput = $event.target.value
-            },
-            _vm.amountChange
-          ]
-        }
-      })
-    ])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-b38e38f0", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-d3a46b28\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/FlowAccess.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "minidesk-bottom" },
-    [
-      _c("MainChart"),
-      _vm._v(" "),
-      _c(
-        "div",
-        { attrs: { id: "user-panel" } },
-        [
-          _c(
-            "transition",
-            { attrs: { name: "slide-fade" } },
-            [_c(_vm.subflow, { tag: "component" })],
-            1
-          )
-        ],
-        1
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-d3a46b28", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-f180e828\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/TransferType.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "info-list-container" },
-    [
-      _c("PreviousButton"),
-      _vm._v(" "),
-      _c("div", { staticClass: "transfer-type-container" }, [
-        _c("div", { staticClass: "transfer-title" }, [
-          _vm._v(
-            "\n            I NEED " +
-              _vm._s(this.needType()) +
-              " CURRENCY\n        "
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "transfer-button-list" }, [
-          _c("div", { staticClass: "submit-area" }, [
-            _c(
-              "button",
-              {
-                staticClass: "submitButton",
-                attrs: { id: "singleTransfer" },
-                on: {
-                  click: function($event) {
-                    return _vm.singleSubmit()
-                  }
-                }
-              },
-              [_vm._v("SINGLE TRANSFER")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "submit-area" }, [
-            _c(
-              "button",
-              {
-                staticClass: "submitButton",
-                attrs: { id: "multipleTransfer" },
-                on: {
-                  click: function($event) {
-                    return _vm.multiSubmit()
-                  }
-                }
-              },
-              [_vm._v("MULTIPLE TRANSFERS")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "submit-area" }, [
-            _c(
-              "button",
-              {
-                staticClass: "submitButton",
-                attrs: { id: "recurringTransfer" },
-                on: {
-                  click: function($event) {
-                    return _vm.recurringSubmit()
-                  }
-                }
-              },
-              [_vm._v("RECURRING TRANSFERS")]
-            )
-          ])
-        ])
-      ])
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-f180e828", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30904716\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue":
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3ba87f54\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30904716\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue");
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3ba87f54\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue");
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__("./node_modules/vue-style-loader/lib/addStylesClient.js")("18077944", content, false, {});
+var update = __webpack_require__("./node_modules/vue-style-loader/lib/addStylesClient.js")("4cc67608", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30904716\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./DatePicker.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30904716\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./DatePicker.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3ba87f54\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./DatePicker.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3ba87f54\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./DatePicker.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -10584,23 +10631,23 @@ if(false) {
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45322d21\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue":
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f6096de\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45322d21\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue");
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f6096de\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue");
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__("./node_modules/vue-style-loader/lib/addStylesClient.js")("0625f176", content, false, {});
+var update = __webpack_require__("./node_modules/vue-style-loader/lib/addStylesClient.js")("44aadf44", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45322d21\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./CustomAlert.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45322d21\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./CustomAlert.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f6096de\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MultiTransInput.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f6096de\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MultiTransInput.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -10611,23 +10658,23 @@ if(false) {
 
 /***/ }),
 
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d1d345e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue":
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-71f4483e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d1d345e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue");
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-71f4483e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue");
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__("./node_modules/vue-style-loader/lib/addStylesClient.js")("5c005c28", content, false, {});
+var update = __webpack_require__("./node_modules/vue-style-loader/lib/addStylesClient.js")("285f2492", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d1d345e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MultiTransInput.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d1d345e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MultiTransInput.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-71f4483e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./CustomAlert.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-71f4483e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./CustomAlert.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -24168,7 +24215,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/AmountInput.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-b38e38f0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/AmountInput.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-280c9248\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/AmountInput.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24185,7 +24232,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\AmountInput.vue"
+Component.options.__file = "resources/js/frontend/components/AmountInput.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24194,9 +24241,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-b38e38f0", Component.options)
+    hotAPI.createRecord("data-v-280c9248", Component.options)
   } else {
-    hotAPI.reload("data-v-b38e38f0", Component.options)
+    hotAPI.reload("data-v-280c9248", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24216,7 +24263,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/Chart.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5d576876\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Chart.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-237b967a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Chart.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24233,7 +24280,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart\\Chart.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/Chart.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24242,9 +24289,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5d576876", Component.options)
+    hotAPI.createRecord("data-v-237b967a", Component.options)
   } else {
-    hotAPI.reload("data-v-5d576876", Component.options)
+    hotAPI.reload("data-v-237b967a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24264,7 +24311,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/Footer.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3a72c5b3\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-723cf9f4\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Footer.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24281,7 +24328,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart\\Footer.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/Footer.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24290,9 +24337,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-3a72c5b3", Component.options)
+    hotAPI.createRecord("data-v-723cf9f4", Component.options)
   } else {
-    hotAPI.reload("data-v-3a72c5b3", Component.options)
+    hotAPI.reload("data-v-723cf9f4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24312,7 +24359,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/Header.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5ba529a5\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2fd83210\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/Header.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24329,7 +24376,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart\\Header.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/Header.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24338,9 +24385,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5ba529a5", Component.options)
+    hotAPI.createRecord("data-v-2fd83210", Component.options)
   } else {
-    hotAPI.reload("data-v-5ba529a5", Component.options)
+    hotAPI.reload("data-v-2fd83210", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24360,7 +24407,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1dc6cca0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-174ef21a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/InfoSelectList.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24377,7 +24424,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart\\InfoSelectList.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/InfoSelectList.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24386,9 +24433,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1dc6cca0", Component.options)
+    hotAPI.createRecord("data-v-174ef21a", Component.options)
   } else {
-    hotAPI.reload("data-v-1dc6cca0", Component.options)
+    hotAPI.reload("data-v-174ef21a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24408,7 +24455,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Chart/MainChart.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-57f862bd\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/MainChart.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-ba4b7eec\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Chart/MainChart.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24425,7 +24472,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Chart\\MainChart.vue"
+Component.options.__file = "resources/js/frontend/components/Chart/MainChart.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24434,9 +24481,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-57f862bd", Component.options)
+    hotAPI.createRecord("data-v-ba4b7eec", Component.options)
   } else {
-    hotAPI.reload("data-v-57f862bd", Component.options)
+    hotAPI.reload("data-v-ba4b7eec", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24454,13 +24501,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__("./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45322d21\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue")
+  __webpack_require__("./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-71f4483e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/CustomAlert.vue")
 }
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/CustomAlert.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-45322d21\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/CustomAlert.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-71f4483e\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/CustomAlert.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24477,7 +24524,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\CustomAlert.vue"
+Component.options.__file = "resources/js/frontend/components/CustomAlert.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24486,9 +24533,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-45322d21", Component.options)
+    hotAPI.createRecord("data-v-71f4483e", Component.options)
   } else {
-    hotAPI.reload("data-v-45322d21", Component.options)
+    hotAPI.reload("data-v-71f4483e", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24506,13 +24553,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__("./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30904716\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue")
+  __webpack_require__("./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3ba87f54\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/DatePicker.vue")
 }
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/DatePicker.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-30904716\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DatePicker.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3ba87f54\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DatePicker.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24529,7 +24576,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\DatePicker.vue"
+Component.options.__file = "resources/js/frontend/components/DatePicker.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24538,9 +24585,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-30904716", Component.options)
+    hotAPI.createRecord("data-v-3ba87f54", Component.options)
   } else {
-    hotAPI.reload("data-v-30904716", Component.options)
+    hotAPI.reload("data-v-3ba87f54", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24560,7 +24607,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/DebugPage.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-18d0cf90\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DebugPage.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5ff01210\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/DebugPage.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24577,7 +24624,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\DebugPage.vue"
+Component.options.__file = "resources/js/frontend/components/DebugPage.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24586,9 +24633,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-18d0cf90", Component.options)
+    hotAPI.createRecord("data-v-5ff01210", Component.options)
   } else {
-    hotAPI.reload("data-v-18d0cf90", Component.options)
+    hotAPI.reload("data-v-5ff01210", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24608,7 +24655,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Flow.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-407206e8\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-45717028\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Flow.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24625,7 +24672,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Flow.vue"
+Component.options.__file = "resources/js/frontend/components/Flow.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24634,9 +24681,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-407206e8", Component.options)
+    hotAPI.createRecord("data-v-45717028", Component.options)
   } else {
-    hotAPI.reload("data-v-407206e8", Component.options)
+    hotAPI.reload("data-v-45717028", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24656,7 +24703,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/FlowAccess.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-d3a46b28\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/FlowAccess.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-47c943ac\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/FlowAccess.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24673,7 +24720,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\FlowAccess.vue"
+Component.options.__file = "resources/js/frontend/components/FlowAccess.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24682,9 +24729,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-d3a46b28", Component.options)
+    hotAPI.createRecord("data-v-47c943ac", Component.options)
   } else {
-    hotAPI.reload("data-v-d3a46b28", Component.options)
+    hotAPI.reload("data-v-47c943ac", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24704,7 +24751,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Minidesk.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-39bd59ac\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1bca1c6a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Minidesk.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24721,7 +24768,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Minidesk.vue"
+Component.options.__file = "resources/js/frontend/components/Minidesk.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24730,9 +24777,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-39bd59ac", Component.options)
+    hotAPI.createRecord("data-v-1bca1c6a", Component.options)
   } else {
-    hotAPI.reload("data-v-39bd59ac", Component.options)
+    hotAPI.reload("data-v-1bca1c6a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24750,13 +24797,13 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__("./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4d1d345e\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue")
+  __webpack_require__("./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4f6096de\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/js/frontend/components/MultiTransInput.vue")
 }
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/MultiTransInput.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4d1d345e\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/MultiTransInput.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4f6096de\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/MultiTransInput.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24773,7 +24820,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\MultiTransInput.vue"
+Component.options.__file = "resources/js/frontend/components/MultiTransInput.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24782,9 +24829,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4d1d345e", Component.options)
+    hotAPI.createRecord("data-v-4f6096de", Component.options)
   } else {
-    hotAPI.reload("data-v-4d1d345e", Component.options)
+    hotAPI.reload("data-v-4f6096de", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24804,7 +24851,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/PreviousButton.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-72a3527a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/PreviousButton.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-41299ffa\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/PreviousButton.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24821,7 +24868,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\PreviousButton.vue"
+Component.options.__file = "resources/js/frontend/components/PreviousButton.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24830,9 +24877,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-72a3527a", Component.options)
+    hotAPI.createRecord("data-v-41299ffa", Component.options)
   } else {
-    hotAPI.reload("data-v-72a3527a", Component.options)
+    hotAPI.reload("data-v-41299ffa", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24852,7 +24899,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Sidebar.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-36194a92\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-66db4d5c\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Sidebar.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24869,7 +24916,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Sidebar.vue"
+Component.options.__file = "resources/js/frontend/components/Sidebar.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24878,9 +24925,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-36194a92", Component.options)
+    hotAPI.createRecord("data-v-66db4d5c", Component.options)
   } else {
-    hotAPI.reload("data-v-36194a92", Component.options)
+    hotAPI.reload("data-v-66db4d5c", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24900,7 +24947,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/MultiSetTime.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-308b707d\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/MultiSetTime.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-9470ade0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/MultiSetTime.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24917,7 +24964,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\MultiSetTime.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/MultiSetTime.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24926,9 +24973,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-308b707d", Component.options)
+    hotAPI.createRecord("data-v-9470ade0", Component.options)
   } else {
-    hotAPI.reload("data-v-308b707d", Component.options)
+    hotAPI.reload("data-v-9470ade0", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24948,7 +24995,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/RecurringChoose.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-63e07b7d\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringChoose.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1edc160a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringChoose.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -24965,7 +25012,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\RecurringChoose.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/RecurringChoose.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -24974,9 +25021,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-63e07b7d", Component.options)
+    hotAPI.createRecord("data-v-1edc160a", Component.options)
   } else {
-    hotAPI.reload("data-v-63e07b7d", Component.options)
+    hotAPI.reload("data-v-1edc160a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -24996,7 +25043,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/RecurringRange.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-1487cd47\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringRange.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3b982d1a\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringRange.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25013,7 +25060,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\RecurringRange.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/RecurringRange.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -25022,9 +25069,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1487cd47", Component.options)
+    hotAPI.createRecord("data-v-3b982d1a", Component.options)
   } else {
-    hotAPI.reload("data-v-1487cd47", Component.options)
+    hotAPI.reload("data-v-3b982d1a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -25044,7 +25091,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/RecurringSet.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-8c0aeb28\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringSet.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3f36c2ff\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/RecurringSet.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25061,7 +25108,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\RecurringSet.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/RecurringSet.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -25070,9 +25117,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-8c0aeb28", Component.options)
+    hotAPI.createRecord("data-v-3f36c2ff", Component.options)
   } else {
-    hotAPI.reload("data-v-8c0aeb28", Component.options)
+    hotAPI.reload("data-v-3f36c2ff", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -25092,7 +25139,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/SingleChooseTime.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-47e499da\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleChooseTime.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-fef52bb4\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleChooseTime.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25109,7 +25156,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\SingleChooseTime.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/SingleChooseTime.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -25118,9 +25165,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-47e499da", Component.options)
+    hotAPI.createRecord("data-v-fef52bb4", Component.options)
   } else {
-    hotAPI.reload("data-v-47e499da", Component.options)
+    hotAPI.reload("data-v-fef52bb4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -25140,7 +25187,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/SingleConfirm.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-54efabc1\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleConfirm.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-773a858e\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleConfirm.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25157,7 +25204,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\SingleConfirm.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/SingleConfirm.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -25166,9 +25213,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-54efabc1", Component.options)
+    hotAPI.createRecord("data-v-773a858e", Component.options)
   } else {
-    hotAPI.reload("data-v-54efabc1", Component.options)
+    hotAPI.reload("data-v-773a858e", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -25188,7 +25235,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/SingleSetTime.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-3b28e7d0\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleSetTime.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5d73c19d\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/SingleSetTime.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25205,7 +25252,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\SingleSetTime.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/SingleSetTime.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -25214,9 +25261,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-3b28e7d0", Component.options)
+    hotAPI.createRecord("data-v-5d73c19d", Component.options)
   } else {
-    hotAPI.reload("data-v-3b28e7d0", Component.options)
+    hotAPI.reload("data-v-5d73c19d", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -25236,7 +25283,7 @@ var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/comp
 /* script */
 var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Transfer/TransferType.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-f180e828\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/TransferType.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-0c7bc47f\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Transfer/TransferType.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25253,7 +25300,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\js\\frontend\\components\\Transfer\\TransferType.vue"
+Component.options.__file = "resources/js/frontend/components/Transfer/TransferType.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -25262,9 +25309,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-f180e828", Component.options)
+    hotAPI.createRecord("data-v-0c7bc47f", Component.options)
   } else {
-    hotAPI.reload("data-v-f180e828", Component.options)
+    hotAPI.reload("data-v-0c7bc47f", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -25358,7 +25405,12 @@ var state = {
         msgs: ""
     },
     transCnt: 1,
-    tradeDateArr: []
+    tradeDateArr: [],
+    multiTransView: "VALUE",
+    tradeInputs: [{
+        tradeDate: "",
+        tradeAmount: ""
+    }]
 };
 
 var getters = {
@@ -25424,6 +25476,12 @@ var getters = {
     },
     transCnt: function transCnt(state) {
         return state.transCnt;
+    },
+    tradeInputs: function tradeInputs(state) {
+        return state.tradeInputs;
+    },
+    multiTransView: function multiTransView(state) {
+        return state.multiTransView;
     }
 };
 
@@ -25642,7 +25700,27 @@ var actions = {
     setTransCnt: function setTransCnt(_ref21, transCnt) {
         var commit = _ref21.commit;
 
+        var tradeInputs = [];
+        console.log("init cnt " + transCnt);
+
+        for (var i = 0; i < transCnt; i++) {
+            tradeInputs.push({
+                tradeDate: "",
+                tradeAmount: ""
+            });
+        }
         commit('UPDATE_TRANS_CNTS', transCnt);
+        commit('UPDATE_TRADE_INPUT', tradeInputs);
+    },
+    setTradeInputs: function setTradeInputs(_ref22, tradeInputs) {
+        var commit = _ref22.commit;
+
+        commit('UPDATE_TRADE_INPUT', tradeInputs);
+    },
+    setMultiTransView: function setMultiTransView(_ref23, viewOption) {
+        var commit = _ref23.commit;
+
+        commit('UPDATE_VIEW_OPTION', viewOption);
     }
 };
 
@@ -25703,6 +25781,12 @@ var mutations = {
     },
     UPDATE_TRANS_CNTS: function UPDATE_TRANS_CNTS(state, transCnt) {
         return state.transCnt = transCnt;
+    },
+    UPDATE_TRADE_INPUT: function UPDATE_TRADE_INPUT(state, tradeInputs) {
+        return state.tradeInputs = tradeInputs;
+    },
+    UPDATE_VIEW_OPTION: function UPDATE_VIEW_OPTION(state, viewOption) {
+        return state.multiTransView = viewOption;
     }
 };
 
