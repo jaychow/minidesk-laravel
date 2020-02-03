@@ -5947,6 +5947,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
 
 
 
@@ -6962,6 +6963,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PreviousButton__ = __webpack_require__("./resources/js/frontend/components/PreviousButton.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PreviousButton___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__PreviousButton__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AmountInput__ = __webpack_require__("./resources/js/frontend/components/AmountInput.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AmountInput___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__AmountInput__);
 //
 //
 //
@@ -6973,13 +6976,50 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "recurring-range",
     components: {
-        PreviousButton: __WEBPACK_IMPORTED_MODULE_1__PreviousButton___default.a
+        PreviousButton: __WEBPACK_IMPORTED_MODULE_1__PreviousButton___default.a,
+        AmountInput: __WEBPACK_IMPORTED_MODULE_2__AmountInput___default.a
     }
 
 });
@@ -6994,6 +7034,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PreviousButton__ = __webpack_require__("./resources/js/frontend/components/PreviousButton.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PreviousButton___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__PreviousButton__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AmountInput__ = __webpack_require__("./resources/js/frontend/components/AmountInput.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AmountInput___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__AmountInput__);
 //
 //
 //
@@ -7004,13 +7046,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "recurring-set",
     components: {
-        PreviousButton: __WEBPACK_IMPORTED_MODULE_1__PreviousButton___default.a
+        PreviousButton: __WEBPACK_IMPORTED_MODULE_1__PreviousButton___default.a,
+        AmountInput: __WEBPACK_IMPORTED_MODULE_2__AmountInput___default.a
+    },
+    data: function data() {
+        return {
+            occurenceCnt: 1,
+            occurenceLimits: 10 //???
+        };
     }
 });
 
@@ -9267,7 +9345,33 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "info-list-container" },
-    [_c("PreviousButton"), _vm._v(" "), _vm._m(0)],
+    [
+      _c("PreviousButton"),
+      _vm._v(" "),
+      _c("div", { staticClass: "transfer-type-container recurring-transfer" }, [
+        _c("div", { staticClass: "transfer-title" }, [
+          _vm._v("\n            RECURRING TRANSFERS RANGE\n        ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "amount-container" }, [_c("AmountInput")], 1),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-title" }, [_vm._v("START DATE")]),
+        _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-title" }, [_vm._v("END DATE")]),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _vm._m(2),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-title" }, [_vm._v("FREQUENCY")]),
+        _vm._v(" "),
+        _vm._m(3),
+        _vm._v(" "),
+        _vm._m(4)
+      ])
+    ],
     1
   )
 }
@@ -9276,15 +9380,105 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "transfer-type-container recurring-transfer" },
-      [
-        _c("div", { staticClass: "transfer-title" }, [
-          _vm._v("\n            RECURRING TRANSFERS RANGE\n        ")
-        ])
-      ]
-    )
+    return _c("div", { staticClass: "input-group date-input-container" }, [
+      _c("div", { staticClass: "input-group-prepend" }, [
+        _c("span", { staticClass: "input-group-text" }, [_vm._v("Date")])
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          type: "date",
+          name: "tradeDate",
+          id: "tradeDate",
+          placeholder: "MM/DD/YYYY"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group date-input-container" }, [
+      _c("div", { staticClass: "input-group-prepend" }, [
+        _c("span", { staticClass: "input-group-text" }, [_vm._v("Date")])
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          type: "date",
+          name: "tradeDate",
+          id: "tradeDate",
+          placeholder: "MM/DD/YYYY"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "transfer-title" }, [
+      _c(
+        "button",
+        {
+          staticClass: "submitButton",
+          attrs: { value: "UNTILCANCEL", id: "submitButton" }
+        },
+        [_vm._v("UNTIL CANCELLED")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "frequency-set" }, [
+      _c("div", { staticClass: "rol1" }, [
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: { value: "DAILY", id: "submitButton" }
+          },
+          [_vm._v("DAILY")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: { value: "WEEKLY", id: "submitButton" }
+          },
+          [_vm._v("WEEKLY")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "rol2" }, [
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: { value: "MONTHLY", id: "submitButton" }
+          },
+          [_vm._v("MONTHLY")]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "submit-area" }, [
+      _c(
+        "button",
+        { staticClass: "submitButton", attrs: { id: "submitButton" } },
+        [_vm._v("submit")]
+      )
+    ])
   }
 ]
 render._withStripped = true
@@ -9356,7 +9550,69 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "info-list-container" },
-    [_c("PreviousButton"), _vm._v(" "), _vm._m(0)],
+    [
+      _c("PreviousButton"),
+      _vm._v(" "),
+      _c("div", { staticClass: "transfer-type-container recurring-transfer" }, [
+        _c("div", { staticClass: "transfer-title" }, [
+          _vm._v("\n            RECURRING TRANSFERS SET\n        ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "amount-container" }, [_c("AmountInput")], 1),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-title" }, [_vm._v("START DATE")]),
+        _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-title" }, [
+          _vm._v("NUMBER OF OCCURENCES")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "trade-input-container" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.occurenceCnt,
+                  expression: "occurenceCnt"
+                }
+              ],
+              staticClass: "input-group-select",
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.occurenceCnt = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.occurenceLimits, function(i) {
+              return _c("option", { domProps: { value: i } }, [
+                _vm._v(" " + _vm._s(i) + " ")
+              ])
+            }),
+            0
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "transfer-title" }, [_vm._v("PERIOD")]),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _vm._m(2)
+      ])
+    ],
     1
   )
 }
@@ -9365,15 +9621,70 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "transfer-type-container recurring-transfer" },
-      [
-        _c("div", { staticClass: "transfer-title" }, [
-          _vm._v("\n            RECURRING TRANSFERS SET\n        ")
-        ])
-      ]
-    )
+    return _c("div", { staticClass: "input-group date-input-container" }, [
+      _c("div", { staticClass: "input-group-prepend" }, [
+        _c("span", { staticClass: "input-group-text" }, [_vm._v("Date")])
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          type: "date",
+          name: "tradeDate",
+          id: "tradeDate",
+          placeholder: "MM/DD/YYYY"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "frequency-set" }, [
+      _c("div", { staticClass: "rol1" }, [
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: { value: "DAILY", id: "submitButton" }
+          },
+          [_vm._v("DAILY")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: { value: "WEEKLY", id: "submitButton" }
+          },
+          [_vm._v("WEEKLY")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "rol2" }, [
+        _c(
+          "button",
+          {
+            staticClass: "submitButton",
+            attrs: { value: "MONTHLY", id: "submitButton" }
+          },
+          [_vm._v("MONTHLY")]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "submit-area" }, [
+      _c(
+        "button",
+        { staticClass: "submitButton", attrs: { id: "submitButton" } },
+        [_vm._v("submit")]
+      )
+    ])
   }
 ]
 render._withStripped = true
@@ -9947,7 +10258,7 @@ var render = function() {
         _c(
           "transition",
           { attrs: { name: "slide-fade" } },
-          [_c("MultiSetTime")],
+          [_c("RecurringSet")],
           1
         )
       ],
