@@ -1,11 +1,11 @@
 <template>
 <div class="multi-trans">
     <div class="transfer-title">VIEW BY
-        <button value="OFTOTAL" class="submitButton" id="submitButton" :disabled="this.viewOption === `OFTOTAL`" @click="setView">% OF TOTAL</button>
-        <button value="VALUE" class="submitButton" id="submitButton" :disabled="this.viewOption === `VALUE`" @click="setView">$ VALUE</button>
+        <button value="OFTOTAL" class="submitButton" id="submitButton" :disabled="this.multiTransView === `OFTOTAL`" @click="setView">% OF TOTAL</button>
+        <button value="VALUE" class="submitButton" id="submitButton" :disabled="this.multiTransView === `VALUE`" @click="setView">$ VALUE</button>
     </div>
     <vue-custom-scrollbar class="scroll-area"  :settings="settings"> 
-        <div v-for="i in cnt" :id="i"> 
+        <div v-for="i in transCnt" :id="i"> 
             
             {{ getIndexString(i) + " TRANSFER" }}
             <div class="input-group date-input-container">
@@ -44,8 +44,7 @@ export default {
     data(){
         return {
             cnt: 1, 
-            viewOption: "VALUE",
-            tradeInputs: this.initTradInput(1),
+            viewAmount: [],
             settings: {
                 tagname: "div",
                 suppressScrollX: true,
@@ -55,20 +54,29 @@ export default {
         }
     },
     mounted(){
-        this.cnt = 1
-        console.log(this.amount.symbol)
-        // this.initTradInput()
+        
     },
     watch:{
-        transCnt(){
-            console.log("add " + this.transCnt)
-            this.cnt = this.transCnt
-            this.tradeInputs = this.initTradInput(this.cnt)
+        amount:{
+            handler() {
+                this.setAmountView()
+            },
+            deep: true
+        },
+        tradeInputs: {
+            handler() {
+                this.setAmountView()
+            },
+            deep: true
+        },
+        multiTransView(){
+            this.setAmountView()
         }
     },
     methods:{
         setView(e){
-            this.viewOption = e.target.value
+            // this.viewOption = e.target.value
+            this.$store.dispatch('setMultiTransView', e.target.value);
         },
         getIndexString(i){
             var s = ""
@@ -88,40 +96,54 @@ export default {
             }
             return s
         },
-        initTradInput(cnt){
-            var tradeInputs = []
-            console.log("init cnt " + cnt)
-
-            for(var i=0; i<cnt; i++){
-                tradeInputs.push({
-                    tradeDate : "",
-                    tradeAmount : ""
-                })
-            }
-            return tradeInputs
-        },
         getDateValue(i){   
             return this.tradeInputs[i-1].tradeDate && this.tradeInputs[i-1].tradeDate.toISOString().split('T')[0]
         },
         getAmountValue(i){   
-            return this.tradeInputs[i-1].tradeAmount
+            // if(this.multiTransView == "VALUE")
+                return this.viewAmount[i-1]
+            // else
+            //     return parseFloat(((this.tradeInputs[i-1].tradeAmount / this.amount.price) * 100).toFixed(4)).toString();
         },
         setDateValue(i, tradeDate){
             this.tradeInputs[i-1].tradeDate = tradeDate
+            this.$store.dispatch('setTradeInputs', this.tradeInputs)
         },
         setAmountValue(i, value){
             this.tradeInputs[i-1].tradeAmount = value
+            this.$store.dispatch('setTradeInputs', this.tradeInputs)
         },
         getSymbol(){
-            if(this.viewOption === "OFTOTAL")
+            if(this.multiTransView === "OFTOTAL")
                 return "%"
             else
                 return this.amount.symbol
+        },
+        setAmountView(){
+            this.viewAmount = []
+            if(this.multiTransView === "VALUE"){
+                if(this.transCnt === 1)
+                    this.viewAmount.push(this.tradeInputs[0].tradeAmount)
+                else{
+                    for(var i=0;i<this.transCnt;i++){
+                        this.viewAmount.push(this.tradeInputs[i].tradeAmount)
+                    }
+                }
+            }else{
+                if(this.transCnt === 1)
+                    this.viewAmount.push("100")
+                else{
+                    for(var i=0;i<this.transCnt;i++){
+                        var percent = (((this.tradeInputs[i].tradeAmount / this.amount.price)*100).toFixed(3)).toString()
+                        this.viewAmount.push(percent)
+                    }
+                }
+            }
+            console.log(this.viewAmount)
         }
-
     },
     computed: {
-        ...mapGetters(['transCnt', 'amount']),
+        ...mapGetters(['transCnt', 'amount', 'tradeInputs', 'multiTransView']),
     },
 }
 </script>

@@ -30,7 +30,7 @@ const state = {
         infoPair: [],
         infoPagesPriceData: {}    
     },
-    amount : {
+    amount: {
         symbol: "$",
         targetSymbol: "$",
         price: "",
@@ -44,6 +44,11 @@ const state = {
     },
     transCnt: 1,
     tradeDateArr: [],
+    multiTransView: "VALUE",
+    tradeInputs: [{
+        tradeDate : "",
+        tradeAmount : ""
+    }],
 }
 
 const getters = {
@@ -72,8 +77,12 @@ const getters = {
     infoPagesData: (state) => (state.infoPagesData),
     message: (state) => (state.message),
     alert: (state) => state.alert,
-    transCnt: (state) => state.transCnt
+    transCnt: (state) => state.transCnt,
+    tradeInputs: (state) => state.tradeInputs,
+    multiTransView: (state) => state.multiTransView
 }
+
+
 
 const actions  = {
     async fetchChartData({commit}) {
@@ -196,7 +205,23 @@ const actions  = {
         commit('UPDATE_TRADE_DATES', tradeDates)
     },
     setTransCnt: ({commit}, transCnt) => {
+        var tradeInputs = []
+        console.log("init cnt " + transCnt)
+    
+        for(var i=0; i<transCnt; i++){
+            tradeInputs.push({
+                tradeDate : "",
+                tradeAmount : ""
+            })
+        }
         commit('UPDATE_TRANS_CNTS', transCnt)
+        commit('UPDATE_TRADE_INPUT', tradeInputs) 
+    },
+    setTradeInputs: ({commit}, tradeInputs) => {
+        commit('UPDATE_TRADE_INPUT', tradeInputs)
+    },
+    setMultiTransView: ({commit}, viewOption) => {
+        commit('UPDATE_VIEW_OPTION', viewOption)
     }
 }
 
@@ -220,6 +245,8 @@ const mutations = {
     UPDATE_ALERT: (state, alert) => (state.alert = alert),
     UPDATE_TRADE_DATES: (state, tradeDates) => (state.tradeDateArr = tradeDates),
     UPDATE_TRANS_CNTS: (state, transCnt) => (state.transCnt = transCnt),
+    UPDATE_TRADE_INPUT: (state, tradeInputs) => (state.tradeInputs = tradeInputs),
+    UPDATE_VIEW_OPTION: (state, viewOption) => (state.multiTransView = viewOption)
 }
 
 export default {
