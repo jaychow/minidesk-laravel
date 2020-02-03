@@ -5,16 +5,52 @@
             <div class="transfer-title">
                 RECURRING TRANSFERS SET
             </div>
+            <div class="amount-container"><AmountInput/></div>
+            <div class="transfer-title">START DATE</div>
+            <div class="input-group date-input-container">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Date</span>
+                </div>
+                <input type="date" name="tradeDate" id="tradeDate" class="form-control"
+                    placeholder="MM/DD/YYYY">
+            </div>
+            <div class="transfer-title">NUMBER OF OCCURENCES</div>
+            <div class="trade-input-container">
+                <select v-model="occurenceCnt" class="input-group-select">
+                    <option v-for="i in occurenceLimits" v-bind:value="i"> {{ i }} </option>
+                </select>
+            </div>     
+            <div class="transfer-title">PERIOD</div>
+            <div class="frequency-set">
+                <div class="rol1">
+                    <button value="DAILY" class="submitButton" id="submitButton">DAILY</button>
+                    <button value="WEEKLY" class="submitButton" id="submitButton">WEEKLY</button>
+                </div>
+                <div class="rol2">
+                    <button value="MONTHLY" class="submitButton" id="submitButton">MONTHLY</button>
+                </div>
+            </div>
+            <div class="submit-area" >
+                <button class="submitButton" id="submitButton" >submit</button>
+            </div>  
         </div>
     </div>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import PreviousButton from "../PreviousButton"
+import AmountInput from "../AmountInput"
 export default {
     name: "recurring-set",
     components: {
-        PreviousButton
+        PreviousButton,
+        AmountInput
+    },
+    data(){
+        return {
+            occurenceCnt: 1,
+            occurenceLimits: 10,  //???
+        }
     },
 }
 </script>

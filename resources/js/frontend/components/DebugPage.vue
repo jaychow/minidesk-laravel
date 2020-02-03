@@ -15,9 +15,10 @@
             <transition name="slide-fade">
                 <!-- <SingleChooseTime/> -->
                 <!-- <SingleSetTime/> -->
-                <MultiSetTime/>
+                <!-- <MultiSetTime/> -->
                 <!-- <RecurringChoose/> -->
-                <!-- <RecurringRange/>                 -->
+                <!-- <RecurringRange/>    -->
+                <RecurringSet/>             
                 <!-- <Sidebar/> -->
 
             </transition>
