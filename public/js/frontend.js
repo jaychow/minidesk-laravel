@@ -7021,7 +7021,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         PreviousButton: __WEBPACK_IMPORTED_MODULE_1__PreviousButton___default.a,
         AmountInput: __WEBPACK_IMPORTED_MODULE_2__AmountInput___default.a
     }
-
 });
 
 /***/ }),
@@ -9389,8 +9388,8 @@ var staticRenderFns = [
         staticClass: "form-control",
         attrs: {
           type: "date",
-          name: "tradeDate",
-          id: "tradeDate",
+          name: "tradeStartDate",
+          id: "tradeStartDate",
           placeholder: "MM/DD/YYYY"
         }
       })
@@ -9409,8 +9408,8 @@ var staticRenderFns = [
         staticClass: "form-control",
         attrs: {
           type: "date",
-          name: "tradeDate",
-          id: "tradeDate",
+          name: "tradeEndDate",
+          id: "tradeEndDate",
           placeholder: "MM/DD/YYYY"
         }
       })

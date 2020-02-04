@@ -13515,7 +13515,6 @@ div.anychart-control button[title="Expand/Collapse plot"] {
 
 #user-panel .sidebar .amount-area .trade-input-container .input-group {
   width: 50%;
-  height: 6%;
   text-align: center;
   margin: 0 auto;
   border: 2px solid #8b8dbb;
@@ -13721,7 +13720,6 @@ div.anychart-control button[title="Expand/Collapse plot"] {
 
 .input-group {
   width: 50%;
-  height: 6%;
   text-align: center;
   margin: 0 auto;
   border: 2px solid #8b8dbb;

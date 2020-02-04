@@ -11,7 +11,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">Date</span>
                 </div>
-                <input type="date" name="tradeDate" id="tradeDate" class="form-control"
+                <input type="date" name="tradeStartDate" id="tradeStartDate" class="form-control"
                     placeholder="MM/DD/YYYY">
             </div>
             <div class="transfer-title">END DATE</div>
@@ -19,7 +19,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">Date</span>
                 </div>
-                <input type="date" name="tradeDate" id="tradeDate" class="form-control"
+                <input type="date" name="tradeEndDate" id="tradeEndDate" class="form-control"
                     placeholder="MM/DD/YYYY">
             </div>
             <div class="transfer-title">
@@ -40,7 +40,7 @@
             </div>
             <div class="submit-area" >
                 <button class="submitButton" id="submitButton" >submit</button>
-            </div>  
+            </div>
         </div>
     </div>
 </template>
@@ -54,6 +54,5 @@ export default {
         PreviousButton,
         AmountInput
     },
-    
 }
 </script>

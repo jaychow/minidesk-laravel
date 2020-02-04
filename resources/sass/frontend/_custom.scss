@@ -23,7 +23,7 @@ body {
     width: 100%;
     height:100%;
     .minidesk-flow{
-        @import "stepper.css"; 
+        @import "stepper.css";
         width: 100%;
         height:100%;
         .bs-stepper{
@@ -45,7 +45,7 @@ body {
 
                         height:100%;
 
-                        
+
                     }
                 }
             }
@@ -56,7 +56,7 @@ body {
         color:red;
         height: 100%;
     }
-    
+
     .alert-custom-pass{
         background-color: white;
         color:#4B4760;
@@ -167,7 +167,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                 border: none;
                 text-align: center;
                 cursor: pointer;
-                outline: none;    
+                outline: none;
             }
             .timescaleButton:disabled{
                 color: #8b8dbb;
@@ -265,29 +265,28 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                 height: 40%;
                 width: 50%;
                 margin: 0 auto;
-                .currency-text{    
+                .currency-text{
                     text-align: left;
                     color: #4B4760;
                     padding-top: 8%;
                 }
                 .pair-list{
                     padding-top: 2%;
-                    text-align: left; 
-                    .currency{                         
+                    text-align: left;
+                    .currency{
                         font-size: 150%;
                         text-align-last: center;
                         border: 2px solid #8b8dbb;
                         border-radius: 0.5rem;
-                    } 
-                }     
+                    }
+                }
             }
-            .trade-input-container{              
+            .trade-input-container{
                 height: 10%;
                 width: 100%;
                 // padding-top: 8%;
                 .input-group{
                     width: 50%;
-                    height: 6%;
                     text-align:center;
                     margin: 0 auto;
                     border: 2px solid #8b8dbb;
@@ -304,7 +303,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                     }
                     .amount-input{
                         border-color: transparent;
-                        outline: 0 none;                            
+                        outline: 0 none;
                     }
                     .form-control:focus {
                         border-color: transparent;
@@ -383,18 +382,18 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                         color: #4B4860;
                     }
                 }
-                
+
             }
         }
-        .transfer-type-container{  
-            padding-top: 20%;   
+        .transfer-type-container{
+            padding-top: 20%;
             .transfer-title{
                 padding-top: 2%;
                 font-size: 125%;
                 color: #000000;
-                
+
             }
-            
+
             .transfer-button-list{
                 padding-top: 5%;
                 color: #4B4860;
@@ -416,11 +415,11 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
             .transfer-button-list.recurring-button-list{
                 width: 50%;
             }
-            .trade-input-container{              
+            .trade-input-container{
                 height: 30%;
                 width: 100%;
                 padding-top: 2%;
- 
+
             }
             text-align: center;
             // height: 50%;
@@ -438,7 +437,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
             }
             .trade-input-container{
                 height: 8%;
-            } 
+            }
             .multi-trans{
                 height: 70%;
                 .ps-container{
@@ -453,7 +452,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
                 margin: 0 auto;
                 margin-bottom: 5%;
                 // margin-top: -5%;
-            }        
+            }
         }
         .title-content{
             text-align: center;
@@ -464,7 +463,6 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
 
 .input-group{
     width: 50%;
-    height: 6%;
     text-align:center;
     margin: 0 auto;
     border: 2px solid #8b8dbb;
@@ -481,7 +479,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
     }
     .amount-input{
         border-color: transparent;
-        outline: 0 none;                            
+        outline: 0 none;
     }
     .form-control:focus {
         border-color: transparent;
@@ -542,7 +540,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
     transition: opacity .5s;
 }
 .slide-fade-enter
-/* .slide-fade-leave-active below version 2.1.8 */ {  
+/* .slide-fade-leave-active below version 2.1.8 */ {
     transform: translateX(10px);
     opacity: 0;
 }
@@ -566,7 +564,7 @@ div.anychart-control button[title="Expand/Collapse plot"] { display: none; }
     margin-left: 2%;
 }
 
-.anychart-loader{ 
+.anychart-loader{
     background-color:rgba(255,255,255,.5); //loading animation background
     position:absolute;
     top:0;
