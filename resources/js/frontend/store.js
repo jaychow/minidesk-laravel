@@ -1,6 +1,5 @@
 import axios from 'axios'
-import chart from '../../api/chart'
-import options from './chart/options'
+import chart from './api/chart'
 
 const state = {
     chart: {
@@ -13,7 +12,6 @@ const state = {
             utc: - (new Date().getTimezoneOffset() / 60),
             today: new Date()
         },
-        options: options,
         data: {}
     },
     homeCurrency: '',

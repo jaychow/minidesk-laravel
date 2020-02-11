@@ -9,7 +9,9 @@ import '../bootstrap';
 import '../plugins';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import store from './store';
+
+import store from './store.js';
+import router from './router.js'
 
 Vue.use(Vuex);
 window.Vue = Vue;
@@ -22,8 +24,7 @@ window.JQuery = require('jquery');
  *
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
-Vue.component('minidesk', require('./components/Minidesk.vue'));
-
+Vue.component('Hedgedesk', require('./components/Hedgedesk.vue'));
 // const files = require.context('./', true, /\.vue$/i)
 
 // files.keys().map(key => {
@@ -38,6 +39,7 @@ Vue.component('minidesk', require('./components/Minidesk.vue'));
 
 const app = new Vue({
     el: '#app',
+    router,
     store,
     data() {
         return {
