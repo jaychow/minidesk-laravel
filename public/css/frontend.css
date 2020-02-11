@@ -13433,222 +13433,53 @@ a.text-dark:focus {
   max-height: 90px;
 }
 
+.navbar.flow {
+  width: 70%;
+  height: 10%;
+}
+
+.router-button {
+  width: 20%;
+  padding: .5em 1em;
+  margin: 0 auto;
+  line-height: 1em;
+  border: 0px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: white;
+  color: #4B4860;
+  -webkit-box-shadow: 3px 3px 9px #4B4860;
+          box-shadow: 3px 3px 9px #4B4860;
+  border-radius: 1em;
+  outline: none;
+}
+
+.router-button.router-link-active {
+  background-color: #4B4860;
+  color: white;
+}
+
+.router-button:visited,
+.router-button:hover,
+.router-button:active,
+.router-button:focus {
+  outline: 0 none;
+}
+
+.router-content {
+  height: 90%;
+}
+
 html,
 body,
-#app,
-#page-container {
+#app {
   width: 100%;
   height: 95%;
   background-color: #8b8dbb;
   font-family: "Varela Round", sans-serif;
 }
 
-.chartAreaButton {
-  height: 38px;
-  width: 68px;
-  background-color: Transparent;
-  color: #c7c9fc;
-  border: 2px solid #c7c9fc;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 15px;
-  cursor: pointer;
-  outline: none;
-}
-
-.chartAreaButton:disabled {
-  background-color: #c7c9fc;
-  color: #4a475f;
-  outline: none;
-}
-
-#Minidesk {
+#page-container,
+#Hedgedesk {
   height: 100%;
-}
-
-#chart-container {
-  width: 75%;
-  height: 100%;
-  float: left;
-  background-color: white;
-  border-radius: 10px;
-  padding-bottom: 8rem;
-}
-
-#chart-container .top-area {
-  width: 100%;
-  height: 7%;
-}
-
-#chart-container .top-area .currency-title {
-  margin: 1% 0% 0% 3%;
-  width: 67%;
-  font-size: 25px;
-  display: inline-block;
-  text-align: left;
-}
-
-#chart-container .top-area .pricePercentage-area {
-  width: 29%;
-  display: inline-block;
-  text-align: right;
-}
-
-#chart-container .chart-body {
-  height: 100%;
-}
-
-#chart-container .chart {
-  width: 100%;
-  height: 100%;
-}
-
-#chart-container .bottom-area {
-  width: 100%;
-  height: 6%;
-}
-
-#chart-container .bottom-area .timescale-area {
-  width: 50%;
-  display: inline-block;
-  text-align: left;
-}
-
-#chart-container .bottom-area .timescaleButton {
-  height: 100%;
-  width: 10%;
-  color: #c7c9fc;
-  background-color: Transparent;
-  font-size: 20px;
-  border: none;
-  text-align: center;
-  cursor: pointer;
-  outline: none;
-  border-radius: 10px;
-}
-
-#chart-container .bottom-area .timescaleButton:disabled {
-  color: #4a475f;
-}
-
-#chart-container .bottom-area .ticketTimescaleIndicator {
-  background-color: #c7c9fc;
-  color: white;
-}
-
-#chart-container .bottom-area .candleLine-area {
-  width: 49%;
-  display: inline-block;
-  text-align: right;
-}
-
-#user-panel {
-  width: 24%;
-  height: 100%;
-  float: right;
-  text-align: center;
-}
-
-#user-panel .chartInput {
-  height: 100%;
-}
-
-#user-panel .buySellButton-area {
-  height: 10%;
-}
-
-#user-panel .buySellButton-area .buySellButton {
-  width: 100%;
-  height: 98%;
-  font-size: 120%;
-  color: black;
-}
-
-#user-panel .buySellButton-area .buySellButton .buyButton {
-  border: 0px;
-  height: 95%;
-  width: 49%;
-  display: inline-block;
-  border-radius: 10px 0px 0px 0px;
-  background-color: white;
-}
-
-#user-panel .buySellButton-area .buySellButton .buyButton:disabled {
-  background-color: #4a475f;
-  outline: none;
-  color: white;
-}
-
-#user-panel .buySellButton-area .buySellButton .sellButton {
-  border: 0px;
-  height: 95%;
-  width: 49%;
-  display: inline-block;
-  border-radius: 0px 10px 0px 0px;
-  background-color: white;
-}
-
-#user-panel .buySellButton-area .buySellButton .sellButton:disabled {
-  background-color: #4a475f;
-  outline: none;
-  color: white;
-}
-
-#user-panel .amount-area {
-  width: 100%;
-  height: 90%;
-  background-color: white;
-  border-radius: 0px 0px 10px 10px;
-  text-align: center;
-  clear: both;
-  margin-top: 5px;
-  padding: 15px;
-}
-
-#user-panel .currency-selector {
-  margin-bottom: 15px;
-}
-
-#user-panel .currency-input-container {
-  margin-bottom: 15px;
-}
-
-.submitButton {
-  background-color: white;
-  color: #8b8dbb;
-  border: 2px solid #8b8dbb;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 20px;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  outline: none;
-}
-
-.submitButton:hover {
-  background-color: #c7c9fc;
-  outline: none;
-}
-
-.input-group,
-.homeCurrency,
-.foreignCurrency {
-  width: 65%;
-  height: 6%;
-  text-align: center;
-  margin: auto;
-  border: 2px solid #8b8dbb;
-  background-color: white;
-  border-radius: 0.5rem;
-  outline: none;
-}
-
-.card-footer {
-  width: 100%;
-}
-
-.error {
-  border: 1px solid red;
 }
 
