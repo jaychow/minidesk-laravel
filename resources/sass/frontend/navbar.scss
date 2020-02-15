@@ -1,0 +1,60 @@
+.custom-toggler.navbar-toggler { 
+    border-color:white; 
+    background-color: #4B4860;
+} 
+/* Setting the stroke to green using rgb values (0, 128, 0) */ 
+  
+.custom-toggler .navbar-toggler-icon { 
+    
+    background-image: url( 
+"data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E"); 
+} 
+
+.stepper{
+    width:80%;
+}
+
+.stepper-button{
+    // width: 20%;
+    padding: .5em 1em;
+    margin: 0 auto;
+    line-height: 1em;
+    border: 0px;
+    border-radius: 20px 20px 20px 20px;
+    background-color: white;
+    color: #4B4860;
+    box-shadow:3px 3px 9px #4B4860;
+    border-radius: 1em;
+    outline: none;
+}
+
+.stepper-button.router-link-active {
+    background-color: #4B4860;
+    color: white;
+}
+.stepper-button:visited, .stepper-button:hover, .stepper-button:active, .stepper-button:focus{
+    outline: 0 none;
+}
+
+.stepper-content{
+    height: 90%;
+}
+
+@media (max-width: 767px){
+    .stepper-border{
+        display: none;
+    }
+    .stepper-button{
+        margin-top: 5px;
+    }
+}
+
+.login-link{
+    
+    text-align: center;
+    color: #4B4860;
+}
+
+
+
+
