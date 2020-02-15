@@ -14,6 +14,62 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Hedgedesk.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({});
+
+/***/ }),
+
 /***/ "./node_modules/babel-runtime/regenerator/index.js":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -960,68 +1016,143 @@ var render = function() {
   return _c("div", { attrs: { id: "Hedgedesk" } }, [
     _c(
       "nav",
-      { staticClass: "navbar navbar-expand-lg mx-auto flow" },
+      {
+        staticClass:
+          "navbar navbar-light navbar-expand-md bg-faded justify-content-center"
+      },
       [
         _c(
-          "router-link",
+          "a",
           {
-            staticClass: "router-button",
-            attrs: { to: "Assess", tag: "button" }
+            staticClass: "navbar-brand d-flex w-50 mr-auto",
+            attrs: { href: "/" }
           },
-          [_vm._v("\n            Assess\n        ")]
+          [_vm._v("Hedgedesk")]
         ),
         _vm._v(" "),
-        _c("span", { staticClass: "col border my-auto" }),
+        _vm._m(0),
         _vm._v(" "),
         _c(
-          "router-link",
+          "div",
           {
-            staticClass: "router-button",
-            attrs: { to: "Analyze", tag: "button" }
+            staticClass: "navbar-collapse collapse w-100",
+            attrs: { id: "collapsingNavbar3" }
           },
-          [_c("div", [_vm._v("Analyze")])]
-        ),
-        _vm._v(" "),
-        _c("span", { staticClass: "col border my-auto" }),
-        _vm._v(" "),
-        _c(
-          "router-link",
-          {
-            staticClass: "router-button",
-            attrs: { to: "Hedge", tag: "button" }
-          },
-          [_c("div", [_vm._v("Hedge")])]
-        ),
-        _vm._v(" "),
-        _c("span", { staticClass: "col border my-auto" }),
-        _vm._v(" "),
-        _c(
-          "router-link",
-          {
-            staticClass: "router-button",
-            attrs: { to: "Save", tag: "button" }
-          },
-          [_c("div", [_vm._v("Save")])]
-        ),
-        _vm._v(" "),
-        _c("span", { staticClass: "col border my-auto" }),
-        _vm._v(" "),
-        _c(
-          "router-link",
-          {
-            staticClass: "router-button",
-            attrs: { to: "Manage", tag: "button" }
-          },
-          [_c("div", [_vm._v("Manage")])]
+          [
+            _c(
+              "ul",
+              { staticClass: "navbar-nav w-100 justify-content-center" },
+              [
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "stepper-button nav-item",
+                    attrs: { to: "Assess", tag: "button" }
+                  },
+                  [_c("li", [_vm._v("Assess")])]
+                ),
+                _vm._v(" "),
+                _c("span", {
+                  staticClass: "col border my-auto stepper-border"
+                }),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "stepper-button nav-item",
+                    attrs: { to: "Analyze", tag: "button" }
+                  },
+                  [_c("li", [_vm._v("Analyze")])]
+                ),
+                _vm._v(" "),
+                _c("span", {
+                  staticClass: "col border my-auto stepper-border"
+                }),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "stepper-button nav-item",
+                    attrs: { to: "Hedge", tag: "button" }
+                  },
+                  [_c("li", [_vm._v("Hedge")])]
+                ),
+                _vm._v(" "),
+                _c("span", {
+                  staticClass: "col border my-auto stepper-border"
+                }),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "stepper-button nav-item",
+                    attrs: { to: "Save", tag: "button" }
+                  },
+                  [_c("li", [_vm._v("Save")])]
+                ),
+                _vm._v(" "),
+                _c("span", {
+                  staticClass: "col border my-auto stepper-border"
+                }),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "stepper-button nav-item",
+                    attrs: { to: "Manage", tag: "button" }
+                  },
+                  [_c("li", [_vm._v("Manage")])]
+                )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _vm._m(1)
+          ]
         )
-      ],
-      1
+      ]
     ),
     _vm._v(" "),
-    _c("div", { staticClass: "router-content" }, [_c("router-view")], 1)
+    _c("div", { staticClass: "stepper-content" }, [_c("router-view")], 1)
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "navbar-toggler ml-auto custom-toggler",
+        attrs: {
+          type: "button",
+          "data-toggle": "collapse",
+          "data-target": "#collapsingNavbar3"
+        }
+      },
+      [_c("span", { staticClass: "navbar-toggler-icon" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "ul",
+      {
+        staticClass: "login-link navbar-nav mr-auto w-100 justify-content-end"
+      },
+      [
+        _c("li", { staticClass: "nav-item" }, [
+          _c("button", { staticClass: "stepper-button nav-item" }, [
+            _vm._v("Login/Register")
+          ])
+        ])
+      ]
+    )
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -17477,7 +17608,7 @@ module.exports = Component.exports
 var disposed = false
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */
-var __vue_script__ = null
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]],\"env\":{\"test\":{\"presets\":[[\"env\",{\"targets\":{\"node\":\"current\"}}]]},\"development\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]},\"production\":{\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":\"> 2%\",\"uglify\":true}}]]}}}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/js/frontend/components/Hedgedesk.vue")
 /* template */
 var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-354f8bb4\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/js/frontend/components/Hedgedesk.vue")
 /* template functional */
@@ -17548,7 +17679,15 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_
 var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     base: '/',
     // mode: 'history',
-    routes: [{ path: '/', redirect: '/Assess' }, { path: '/Assess', component: __WEBPACK_IMPORTED_MODULE_2__components_Flow_Assess_vue___default.a }, { path: '/Analyze', component: __WEBPACK_IMPORTED_MODULE_3__components_Flow_Analyze_vue___default.a }, { path: '/Hedge', component: __WEBPACK_IMPORTED_MODULE_4__components_Flow_Hedge_vue___default.a }, { path: '/Save', component: __WEBPACK_IMPORTED_MODULE_5__components_Flow_Save_vue___default.a }, { path: '/Manage', component: __WEBPACK_IMPORTED_MODULE_6__components_Flow_Manage_vue___default.a }] });
+    routes: [{ path: '/', redirect: '/Assess' }, {
+        path: '/Assess',
+        component: __WEBPACK_IMPORTED_MODULE_2__components_Flow_Assess_vue___default.a
+        // children:[
+        //     {
+        //         name: 'Choo'
+        //     }
+        // ]
+    }, { path: '/Analyze', component: __WEBPACK_IMPORTED_MODULE_3__components_Flow_Analyze_vue___default.a }, { path: '/Hedge', component: __WEBPACK_IMPORTED_MODULE_4__components_Flow_Hedge_vue___default.a }, { path: '/Save', component: __WEBPACK_IMPORTED_MODULE_5__components_Flow_Save_vue___default.a }, { path: '/Manage', component: __WEBPACK_IMPORTED_MODULE_6__components_Flow_Manage_vue___default.a }] });
 
 /* harmony default export */ __webpack_exports__["a"] = (router);
 

@@ -13433,13 +13433,22 @@ a.text-dark:focus {
   max-height: 90px;
 }
 
-.navbar.flow {
-  width: 70%;
-  height: 10%;
+.custom-toggler.navbar-toggler {
+  border-color: white;
+  background-color: #4B4860;
 }
 
-.router-button {
-  width: 20%;
+/* Setting the stroke to green using rgb values (0, 128, 0) */
+
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.stepper {
+  width: 80%;
+}
+
+.stepper-button {
   padding: .5em 1em;
   margin: 0 auto;
   line-height: 1em;
@@ -13453,20 +13462,35 @@ a.text-dark:focus {
   outline: none;
 }
 
-.router-button.router-link-active {
+.stepper-button.router-link-active {
   background-color: #4B4860;
   color: white;
 }
 
-.router-button:visited,
-.router-button:hover,
-.router-button:active,
-.router-button:focus {
+.stepper-button:visited,
+.stepper-button:hover,
+.stepper-button:active,
+.stepper-button:focus {
   outline: 0 none;
 }
 
-.router-content {
+.stepper-content {
   height: 90%;
+}
+
+@media (max-width: 767px) {
+  .stepper-border {
+    display: none;
+  }
+
+  .stepper-button {
+    margin-top: 5px;
+  }
+}
+
+.login-link {
+  text-align: center;
+  color: #4B4860;
 }
 
 html,
